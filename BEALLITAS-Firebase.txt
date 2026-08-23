@@ -1,0 +1,203 @@
+======================================================================
+ NETTLI — FIREBASE BEÁLLÍTÁS (Authentication + Firestore + Hosting)
+ Projekt: nettli-202608
+======================================================================
+
+MI EZ AZ APP?
+  A Nettli egy személyi vagyonkezelő (arany, részvény, kripto, hitel,
+  zálog, előfizetés). Minden felhasználó bejelentkezik, és KIZÁRÓLAG a
+  saját adatát látja. Az adat a felhőben, Firestore-ban tárolódik,
+  fiókonként egyetlen dokumentumban: vaults/{uid}. NINCS nyilvános
+  űrlap — csak bejelentkezett felhasználó ír/olvas.
+
+  Három Firebase-szolgáltatás kell:
+    - Authentication → a bejelentkezés (e-mail/jelszó).
+    - Firestore     → az adat tárolása a felhőben.
+    - Hosting       → maga a weboldal kiszolgálása (HTTPS-sel).
+
+
+----------------------------------------------------------------------
+0) ELŐFELTÉTELEK
+----------------------------------------------------------------------
+- Google-fiók, és a Firebase-projekt már létrehozva: nettli-202608
+  (console.firebase.google.com → a projekt kiválasztva).
+- A gépen a Firebase CLI (parancssori eszköz) — telepítése lentebb.
+
+
+----------------------------------------------------------------------
+1) FIREBASE CLI TELEPÍTÉSE + BEJELENTKEZÉS (egyszer, gépenként)
+----------------------------------------------------------------------
+Terminálban (a standalone telepítő nem igényel Node.js-t):
+
+    curl -sL https://firebase.tools | bash
+    firebase login
+
+  - A "firebase login" böngészőt nyit → engedélyezd a Google-fiókoddal.
+  - Ellenőrzés:  firebase projects:list   (látnod kell a nettli-202608-at)
+
+
+----------------------------------------------------------------------
+2) AUTHENTICATION (bejelentkezés) — a console-ban
+----------------------------------------------------------------------
+MIRE VALÓ: ez adja a fiókokat. Enélkül a Firestore-szabály mindent tilt,
+mert nincs "bejelentkezett felhasználó" (uid).
+
+LÉPÉSEK:
+  Console → Build → Authentication → "Get started"
+    → "Sign-in method" fül → "Email/Password" → Enable → Save.
+
+  (Opcionális, ajánlott: Authentication → Settings → "Email enumeration
+   protection" bekapcsolása — nehezíti a fiókokkal való visszaélést.)
+
+
+----------------------------------------------------------------------
+3) FIRESTORE DATABASE (adattár) — a console-ban
+----------------------------------------------------------------------
+MIRE VALÓ: itt tárolódik a felhasználók adata (vaults/{uid}).
+
+LÉPÉSEK:
+  Console → Build → Firestore Database → "Create database"
+    → Régió: europe-west (eur3)   [FIGYELEM: később NEM módosítható]
+    → Mód:   Production mode       [zárt alap; a szabályt mi adjuk meg]
+    → Create / Enable.
+
+
+----------------------------------------------------------------------
+4) A DEPLOY-FÁJLOK (már a mappában vannak)
+----------------------------------------------------------------------
+Ezek a fájlok már készen a Nettli mappájában — nem kell "firebase init":
+
+  firebase.json          → a Hosting + Firestore beállítása (mit tölts fel).
+  .firebaserc            → rögzíti a projektet: nettli-202608.
+  firestore.rules        → a biztonsági szabályok (ld. 5. pont).
+  firestore.indexes.json → (üres) index-fájl.
+
+
+----------------------------------------------------------------------
+5) FIRESTORE SZABÁLYOK — MAGYARÁZAT (firestore.rules)
+----------------------------------------------------------------------
+Ez a VÉDELEM MAGJA. A szabály:
+
+    match /vaults/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+Jelentése:
+  - request.auth != null  → csak BEJELENTKEZETT felhasználó.
+  - request.auth.uid == uid → és KIZÁRÓLAG a SAJÁT dokumentumát
+    (vaults/{a-saját-uid-ja}) írhatja/olvashatja.
+  → Egyik fiók sem látja a másik pénzügyi adatát.
+
+A szabály a "firebase deploy"-jal automatikusan felkerül (a firebase.json
+tartalmazza a firestore blokkot) — nem kell a console-ban kézzel bemásolni.
+
+
+----------------------------------------------------------------------
+6) DEPLOY (feltöltés)
+----------------------------------------------------------------------
+A Nettli mappájában:
+
+    cd "<a Nettli mappa útvonala>"
+    firebase deploy
+
+  Ez felteszi a HOSTINGOT ÉS a FIRESTORE-SZABÁLYT is.
+  A végén kiírja az élő URL-t:
+      https://nettli-202608.web.app
+      https://nettli-202608.firebaseapp.com
+
+  A Hosting alapból HTTPS-t ad (automatikus SSL). Minden későbbi
+  módosítás után futtasd újra a "firebase deploy"-t.
+
+  (Csak az egyik rész külön:
+     firebase deploy --only hosting
+     firebase deploy --only firestore:rules )
+
+
+----------------------------------------------------------------------
+7) DEPLOY UTÁN
+----------------------------------------------------------------------
+- Nyisd meg az élő oldalt (nettli-202608.web.app) → REGISZTRÁLJ egy
+  fiókot (e-mail + jelszó) → az adat a Firestore → Data fülön a
+  vaults/{uid} alatt megjelenik.
+- Új fiók ÜRESEN indul (nincs mintaadat).
+
+
+----------------------------------------------------------------------
+8) (OPCIONÁLIS) EGYEDI DOMAIN
+----------------------------------------------------------------------
+Console → Build → Hosting → "Add custom domain" → add meg a domained
+(pl. nettli.hu) → kövesd a DNS-lépéseket. Az SSL automatikus.
+Utána vedd fel az új domaint: Authentication → Settings → Authorized
+domains (a .web.app alapból bent van).
+
+
+----------------------------------------------------------------------
+9) BIZTONSÁG DIÓHÉJBAN
+----------------------------------------------------------------------
+- HTTPS: a Hosting adja automatikusan.
+- Auth + Rules: a bejelentkezés + a uid-re zárt szabály védi az adatot.
+- apiKey: a kódban lévő apiKey NEM titok (publikus azonosító); a védelmet
+  az Auth + a Firestore-szabályok adják.
+- App Check (bot-védelem): a Nettlinél kevésbé kritikus, mert NINCS
+  nyilvános írás (csak bejelentkezett user ír). Később bekapcsolható.
+- Backup: a Fiók → Export data funkcióval bármikor JSON mentés.
+
+
+======================================================================
+ GYORS CHECKLIST
+======================================================================
+[ ] 1. Firebase CLI telepítve, firebase login kész
+[ ] 2. Authentication → Email/Password: Enabled
+[ ] 3. Firestore Database létrehozva (europe-west, Production)
+[ ] 4. Deploy-fájlok a mappában (adottak)
+[ ] 6. firebase deploy → megvan a nettli-202608.web.app
+[ ] 7. Regisztráltál egy tesztfiókot, az adat megjelenik a Firestore-ban
+[ ] 8. (Opcionális) egyedi domain
+======================================================================
+
+======================================================================
+  JELSZÓ-VISSZAÁLLÍTÓ E-MAIL TESTRESZABÁSA (Nettli márka)
+======================================================================
+  Az "Elfelejtetted a jelszavad?" gomb a Firebase saját visszaállító
+  levelét küldi (nem az EmailJS-t). Ennek szövege/feladóneve testre
+  szabható a konzolban. FONTOS: a Firebase kerete/HTML-je fix — csak
+  a feladónév, tárgy, szöveg és a válasz-cím módosítható.
+
+HOL:
+  Firebase Console -> Authentication -> Templates (Sablonok)
+  -> "Password reset" (Jelszó-visszaállítás) -> ceruza (szerkesztés).
+  Nyelv: állítsd Magyarra (a nyelvválasztóban), hogy a lenti szöveg
+  jelenjen meg magyar felhasználóknak.
+
+MÁSOLD BE:
+
+  Feladó neve (Sender name):
+      Nettli
+
+  Tárgy (Subject):
+      Jelszó visszaállítása – Nettli
+
+  Üzenet (Message):
+      Szia!
+
+      Jelszó-visszaállítási kérés érkezett a Nettli-fiókodhoz (%EMAIL%).
+      Állítsd be az új jelszavad az alábbi linken:
+
+      %LINK%
+
+      Ha nem te kérted, hagyd figyelmen kívül ezt a levelet — a
+      jelszavad változatlan marad.
+
+      Üdv,
+      a Nettli
+
+  Válasz-cím (Reply-to): a saját e-mail címed (nem kötelező).
+
+MEGJEGYZÉS:
+  - A %LINK% kötelező (ez a visszaállító hivatkozás). A %EMAIL% a címzett
+    e-mailjét szúrja be.
+  - A feladó címe alapból: noreply@<projekt>.firebaseapp.com. Saját
+    domainű feladóhoz külön SMTP/domain-hitelesítés kell (haladó, opcionális).
+  - Teljes HTML-brandinget (mint az EmailJS-leveleknél) a Firebase itt
+    nem enged — csak a fenti mezők állíthatók.
+======================================================================

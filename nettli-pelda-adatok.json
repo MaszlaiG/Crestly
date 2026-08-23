@@ -1,0 +1,45 @@
+{
+  "gold": { "grams": 0, "cost": 0, "pricePerGram": 32000 },
+  "goldSpot": 32000,
+  "goldItems": [
+    { "id": "gld_001", "name": "1 uncia rúd (PAMP)", "code": "PAMP-100", "form": "rúd", "purity": "999.9", "grams": 31.1, "cost": 850000, "date": "2024-06-15" },
+    { "id": "gld_002", "name": "Krugerrand", "code": "KRUG-01", "form": "érme", "purity": "916", "grams": 33.93, "cost": 780000, "date": "2025-01-20" },
+    { "id": "gld_003", "name": "10 g rúd", "code": "ARG-10", "form": "rúd", "purity": "999.9", "grams": 10, "cost": 265000, "date": "2025-09-05" },
+    { "id": "gld_004", "name": "Arany nyaklánc", "code": "", "form": "ékszer", "purity": "585", "grams": 12.4, "cost": 190000, "date": "2023-12-24" }
+  ],
+  "stocks": [
+    { "id": "st_001", "ticker": "OTP", "name": "OTP Bank Nyrt.", "qty": 50, "avg": 16500, "avgNative": 16500, "price": 16500, "divYield": null, "divType": "cash", "divAuto": true, "currency": "HUF", "buyDate": "2024-03-12" },
+    { "id": "st_002", "ticker": "MOL", "name": "MOL Nyrt.", "qty": 100, "avg": 2800, "avgNative": 2800, "price": 2800, "divYield": null, "divType": "cash", "divAuto": true, "currency": "HUF", "buyDate": "2024-08-01" },
+    { "id": "st_003", "ticker": "AAPL", "name": "Apple Inc.", "qty": 12, "avg": 64800, "avgNative": 180, "price": 64800, "divYield": null, "divType": "cash", "divAuto": true, "currency": "USD", "buyDate": "2025-02-18" }
+  ],
+  "crypto": [
+    { "id": "cr_001", "coin": "BTC", "name": "Bitcoin", "type": "buy", "qty": 0.05, "price": 25000000, "priceNative": 25000000, "fee": 5000, "feeNative": 5000, "date": "2025-03-10", "currency": "HUF" },
+    { "id": "cr_002", "coin": "ETH", "name": "Ethereum", "type": "buy", "qty": 0.8, "price": 1200000, "priceNative": 1200000, "fee": 3000, "feeNative": 3000, "date": "2025-05-22", "currency": "HUF" },
+    { "id": "cr_003", "coin": "SOL", "name": "Solana", "type": "buy", "qty": 10, "price": 60000, "priceNative": 60000, "fee": 1000, "feeNative": 1000, "date": "2025-11-15", "currency": "HUF" },
+    { "id": "cr_004", "coin": "ETH", "name": "Ethereum", "type": "sell", "qty": 0.3, "price": 1500000, "priceNative": 1500000, "fee": 2000, "feeNative": 2000, "date": "2026-06-01", "currency": "HUF" }
+  ],
+  "loans": [
+    { "id": "ln_001", "name": "Személyi kölcsön", "orig": 2000000, "start": "2024-09-01", "months": 48, "payday": 10, "firstPayment": "2024-10-10", "freq": "monthly", "rate": 12.5, "thm": 14.2, "monthly": 53000, "end": "2028-09-10" },
+    { "id": "ln_002", "name": "Lakásfelújítási hitel", "orig": 5000000, "start": "2025-04-01", "months": 60, "payday": 5, "firstPayment": "2025-05-05", "freq": "monthly", "rate": 9.9, "thm": 10.8, "monthly": 106000, "end": "2030-04-05" }
+  ],
+  "pledges": [
+    { "id": "pl_001", "goldIds": ["gld_002"], "goldNames": ["Krugerrand"], "ticketNo": "ZL-2026-0042", "principal": 400000, "feePct": 1.5, "start": "2026-06-01", "days": 90, "rate": 24, "thm": 28, "end": "2026-08-29" }
+  ],
+  "services": [
+    { "id": "sv_001", "name": "Netflix", "cat": ["Streaming"], "amount": 4990, "cycle": "monthly", "day": 15, "active": true },
+    { "id": "sv_002", "name": "Spotify", "cat": ["Zene"], "amount": 1990, "cycle": "monthly", "day": 5, "active": true },
+    { "id": "sv_003", "name": "Digi Internet", "cat": ["Internet"], "amount": 6500, "cycle": "monthly", "day": 10, "active": true },
+    { "id": "sv_004", "name": "Mobil előfizetés", "cat": ["Telefon"], "amount": 5990, "cycle": "monthly", "day": 20, "active": true },
+    { "id": "sv_005", "name": "iCloud+", "cat": ["Szoftver/Felhő"], "amount": 990, "cycle": "monthly", "day": 3, "active": true },
+    { "id": "sv_006", "name": "Konditerem bérlet", "cat": ["Edzés/Sport"], "amount": 12000, "cycle": "monthly", "day": 1, "active": false },
+    { "id": "sv_007", "name": "Lakásbiztosítás", "cat": ["Biztosítás"], "amount": 42000, "cycle": "yearly", "day": 1, "active": true }
+  ],
+  "taxSettings": { "us": 15, "szja": 15, "szocho": 13 },
+  "modules": { "gold": true, "stocks": true, "crypto": true, "pledge": true, "loans": true, "services": true },
+  "paidInstallments": {
+    "ln_001": { "0": true, "1": true, "2": true, "3": true, "4": true, "5": true },
+    "ln_002": { "0": true, "1": true, "2": true }
+  },
+  "usdHuf": 360,
+  "ui": { "editBtns": true, "delBtns": true, "theme": "sunset", "appearance": "auto", "lang": "hu" }
+}
