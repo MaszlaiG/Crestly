@@ -2,6 +2,8 @@
 
 **Language / Nyelv:** [English](#english) · [Magyar](#magyar)
 
+**🌐 Live / Élő oldal:** <https://maszlaig.github.io/Nettli/>
+
 **🔗 GitHub:** <!-- Illeszd be ide a projekt repójának linkjét, pl. https://github.com/felhasznalonev/nettli --> _(link hamarosan)_
 
 ---
@@ -76,12 +78,14 @@ Stock dividends are tracked automatically from Yahoo's dividend history (rolling
 
 ```
 Nettli/
-├── index.html         # full UI (tabs, modals, sign-in)
-├── script.js          # logic: state, price fetching, P&L, i18n, currency, theme
-├── style.css          # design + responsive layout
-├── firebase-store.js  # Firebase Auth + Cloud Firestore data layer (vaults/{uid})
-├── firebase.json      # Hosting + Firestore deploy config
-├── firestore.rules    # Firestore security rules
+├── index.html            # full UI (tabs, modals, sign-in)
+├── js/
+│   ├── script.js         # logic: state, price fetching, P&L, i18n, currency, theme
+│   ├── firebase-store.js # Firebase Auth + Cloud Firestore data layer (vaults/{uid})
+│   └── fit-text.js       # auto-shrinks large numbers to fit their card
+├── css/style.css         # design + responsive layout
+├── firebase.json         # Hosting + Firestore deploy config
+├── firestore.rules       # Firestore security rules
 └── README.md
 ```
 
@@ -174,12 +178,14 @@ A részvényosztalékokat automatikusan a Yahoo osztaléktörténetéből követ
 
 ```
 Nettli/
-├── index.html         # teljes felület (fülek, modálok, bejelentkezés)
-├── script.js          # logika: állapot, árfolyam-lekérés, P&L, i18n, pénznem, téma
-├── style.css          # dizájn + reszponzív elrendezés
-├── firebase-store.js  # Firebase Auth + Cloud Firestore adatréteg (vaults/{uid})
-├── firebase.json      # Hosting + Firestore deploy-konfiguráció
-├── firestore.rules    # Firestore biztonsági szabályok
+├── index.html            # teljes felület (fülek, modálok, bejelentkezés)
+├── js/
+│   ├── script.js         # logika: állapot, árfolyam-lekérés, P&L, i18n, pénznem, téma
+│   ├── firebase-store.js # Firebase Auth + Cloud Firestore adatréteg (vaults/{uid})
+│   └── fit-text.js       # a nagy számokat a kártyájukhoz méretezi
+├── css/style.css         # dizájn + reszponzív elrendezés
+├── firebase.json         # Hosting + Firestore deploy-konfiguráció
+├── firestore.rules       # Firestore biztonsági szabályok
 └── README.md
 ```
 

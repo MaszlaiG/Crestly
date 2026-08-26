@@ -824,7 +824,7 @@ function updateTaxSettings() {
 function salaryDefaults() {
   return { gross: 0, szja: 15, szocho: 0, tb: 18.5, day: 0 };
 }
-// Fills the salary form inputs from saved state.
+
 function renderSalary() {
   const s = state.salary || salaryDefaults();
   const g = document.getElementById('acc-sal-gross');
@@ -839,7 +839,7 @@ function renderSalary() {
   if (day) day.value = s.day || '';
   renderSalaryBreakdown();
 }
-// Reads the current salary form inputs (percentages, gross, payday).
+
 function readSalaryInputs() {
   return {
     gross: parseAmount('acc-sal-gross'),
@@ -849,7 +849,7 @@ function readSalaryInputs() {
     day: parseInt(document.getElementById('acc-sal-day').value) || 0
   };
 }
-// Live-computed net-pay breakdown shown under the salary form.
+
 function renderSalaryBreakdown() {
   const box = document.getElementById('salary-breakdown');
   if (!box) return;
@@ -1625,14 +1625,13 @@ function eurRate() {
 function usdRate() {
   return usdHuf && isFinite(usdHuf) && usdHuf > 0 ? usdHuf : USD_HUF_FALLBACK;
 }
-// HUF per 1 unit of the given currency, always returns a usable number
-// (uses a safe fallback when live FX rates are not yet available).
+
 function svRate(cur) {
   if (cur === 'USD') return usdRate();
   if (cur === 'EUR') return eurRate();
   return 1;
 }
-// Converts a subscription's native fee to HUF using the current rate.
+
 function serviceAmountHuf(s) {
   return (s.amount || 0) * svRate(s.currency || 'HUF');
 }
@@ -1710,8 +1709,7 @@ function formatThousands(el) {
   const newPos = Math.max(0, el.value.length - caretFromEnd);
   el.setSelectionRange(newPos, newPos);
 }
-// Like formatThousands but allows up to 2 decimals (comma or dot as separator),
-// so foreign-currency fees such as 22,88 EUR can be entered.
+
 function formatMoney(el) {
   const caretFromEnd = el.value.length - el.selectionStart;
   let s = el.value.replace(/[^\d.,]/g, '').replace(/\./g, ',');
