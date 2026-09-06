@@ -94,7 +94,7 @@ Nettli/
 There is **no build step**. Set up a Firebase project (fill in the config and deploy `firestore.rules`), then either:
 
 1. **Open `index.html` directly** in a modern browser, or
-2. **Host the files on any static host** (Firebase Hosting, GitHub Pages, Netlify, your own server) and open the site.
+2. **Publish the files with GitHub Pages** and open the site. (Firebase is used only for data storage — Auth + Firestore.)
 
 On first use, register an account (email + password). Live prices are fetched from public APIs; your data is stored in Firestore under your account.
 
@@ -194,7 +194,7 @@ Nettli/
 **Nincs build lépés.** Állíts be egy Firebase-projektet (töltsd ki a konfigurációt és telepítsd a `firestore.rules`-t), majd vagy:
 
 1. **Nyisd meg közvetlenül az `index.html`-t** egy modern böngészőben, vagy
-2. **Töltsd fel a fájlokat tetszőleges statikus tárhelyre** (Firebase Hosting, GitHub Pages, Netlify, saját szerver) és nyisd meg az oldalt.
+2. **Tedd közzé a fájlokat GitHub Pages-szel** és nyisd meg az oldalt. (A Firebase csak az adattárolás — Auth + Firestore.)
 
 Első használatkor regisztrálj egy fiókot (e-mail + jelszó). Az élő árfolyamok nyilvános API-kból jönnek; az adataid a Firestore-ban, a fiókodhoz kötve tárolódnak.
 

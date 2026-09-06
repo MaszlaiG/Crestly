@@ -1,6 +1,7 @@
 ======================================================================
- NETTLI — FIREBASE BEÁLLÍTÁS (Authentication + Firestore + Hosting)
+ NETTLI — FIREBASE BEÁLLÍTÁS (Authentication + Firestore)
  Projekt: nettli-202608
+ (A weboldalt GitHub-ra töltjük fel — a Firebase csak az adattárolás.)
 ======================================================================
 
 MI EZ AZ APP?
@@ -10,10 +11,13 @@ MI EZ AZ APP?
   fiókonként egyetlen dokumentumban: vaults/{uid}. NINCS nyilvános
   űrlap — csak bejelentkezett felhasználó ír/olvas.
 
-  Három Firebase-szolgáltatás kell:
+  Két Firebase-szolgáltatás kell:
     - Authentication → a bejelentkezés (e-mail/jelszó).
     - Firestore     → az adat tárolása a felhőben.
-    - Hosting       → maga a weboldal kiszolgálása (HTTPS-sel).
+
+  A weboldal kiszolgálása NEM a Firebase Hostingon történik, hanem
+  GitHubon (GitHub Pages). A Firebase-t itt kizárólag adattárolásra
+  (Auth + Firestore) használjuk.
 
 
 ----------------------------------------------------------------------
@@ -67,7 +71,7 @@ LÉPÉSEK:
 ----------------------------------------------------------------------
 Ezek a fájlok már készen a Nettli mappájában — nem kell "firebase init":
 
-  firebase.json          → a Hosting + Firestore beállítása (mit tölts fel).
+  firebase.json          → a Firestore beállítása (szabály + index fájl).
   .firebaserc            → rögzíti a projektet: nettli-202608.
   firestore.rules        → a biztonsági szabályok (ld. 5. pont).
   firestore.indexes.json → (üres) index-fájl.
@@ -88,53 +92,49 @@ Jelentése:
     (vaults/{a-saját-uid-ja}) írhatja/olvashatja.
   → Egyik fiók sem látja a másik pénzügyi adatát.
 
-A szabály a "firebase deploy"-jal automatikusan felkerül (a firebase.json
-tartalmazza a firestore blokkot) — nem kell a console-ban kézzel bemásolni.
+A szabály a "firebase deploy --only firestore:rules"-zal automatikusan
+felkerül (a firebase.json tartalmazza a firestore blokkot) — nem kell a
+console-ban kézzel bemásolni.
 
 
 ----------------------------------------------------------------------
-6) DEPLOY (feltöltés)
+6) A FIRESTORE-SZABÁLY FELTÖLTÉSE
 ----------------------------------------------------------------------
-A Nettli mappájában:
+A Nettli mappájában (a weboldal kiszolgálása GitHubon van, ide csak a
+Firestore-szabály/index kerül fel):
 
     cd "<a Nettli mappa útvonala>"
-    firebase deploy
+    firebase deploy --only firestore:rules
 
-  Ez felteszi a HOSTINGOT ÉS a FIRESTORE-SZABÁLYT is.
-  A végén kiírja az élő URL-t:
-      https://nettli-202608.web.app
-      https://nettli-202608.firebaseapp.com
-
-  A Hosting alapból HTTPS-t ad (automatikus SSL). Minden későbbi
-  módosítás után futtasd újra a "firebase deploy"-t.
-
-  (Csak az egyik rész külön:
-     firebase deploy --only hosting
-     firebase deploy --only firestore:rules )
+  Ez felteszi a FIRESTORE-SZABÁLYT. Minden szabálymódosítás után futtasd
+  újra. (A firestore.indexes.json is így megy fel, ha bővül.)
 
 
 ----------------------------------------------------------------------
-7) DEPLOY UTÁN
+7) A WEBOLDAL KÖZZÉTÉTELE (GitHub)
 ----------------------------------------------------------------------
-- Nyisd meg az élő oldalt (nettli-202608.web.app) → REGISZTRÁLJ egy
-  fiókot (e-mail + jelszó) → az adat a Firestore → Data fülön a
-  vaults/{uid} alatt megjelenik.
+- A statikus fájlokat (index.html, css/, js/ stb.) töltsd fel a GitHub
+  repóba, és a GitHub Pages szolgálja ki (Settings → Pages).
+- Nyisd meg az élő oldalt → REGISZTRÁLJ egy fiókot (e-mail + jelszó) →
+  az adat a Firestore → Data fülön a vaults/{uid} alatt megjelenik.
+- FONTOS: a GitHub Pages domainjét (pl. <felhasznalo>.github.io) vedd fel
+  az engedélyezett domainek közé: Authentication → Settings → Authorized
+  domains — különben a bejelentkezés nem működik az élő oldalon.
 - Új fiók ÜRESEN indul (nincs mintaadat).
 
 
 ----------------------------------------------------------------------
 8) (OPCIONÁLIS) EGYEDI DOMAIN
 ----------------------------------------------------------------------
-Console → Build → Hosting → "Add custom domain" → add meg a domained
-(pl. nettli.hu) → kövesd a DNS-lépéseket. Az SSL automatikus.
-Utána vedd fel az új domaint: Authentication → Settings → Authorized
-domains (a .web.app alapból bent van).
+Egyedi domaint a GitHub Pages-nél állíts be (repo → Settings → Pages →
+Custom domain), és állítsd be a DNS-t a domainszolgáltatónál. Utána vedd
+fel az új domaint: Authentication → Settings → Authorized domains.
 
 
 ----------------------------------------------------------------------
 9) BIZTONSÁG DIÓHÉJBAN
 ----------------------------------------------------------------------
-- HTTPS: a Hosting adja automatikusan.
+- HTTPS: a GitHub Pages adja automatikusan.
 - Auth + Rules: a bejelentkezés + a uid-re zárt szabály védi az adatot.
 - apiKey: a kódban lévő apiKey NEM titok (publikus azonosító); a védelmet
   az Auth + a Firestore-szabályok adják.
@@ -150,9 +150,11 @@ domains (a .web.app alapból bent van).
 [ ] 2. Authentication → Email/Password: Enabled
 [ ] 3. Firestore Database létrehozva (europe-west, Production)
 [ ] 4. Deploy-fájlok a mappában (adottak)
-[ ] 6. firebase deploy → megvan a nettli-202608.web.app
+[ ] 5. firebase deploy --only firestore:rules → a szabály felkerült
+[ ] 6. A weboldal fent van GitHubon (GitHub Pages), és a domain fel van
+       véve az Authorized domains közé
 [ ] 7. Regisztráltál egy tesztfiókot, az adat megjelenik a Firestore-ban
-[ ] 8. (Opcionális) egyedi domain
+[ ] 8. (Opcionális) egyedi domain (GitHub Pages)
 ======================================================================
 
 ======================================================================

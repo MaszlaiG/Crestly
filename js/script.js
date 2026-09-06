@@ -646,6 +646,7 @@ LocalStore.onAuthChange((user) => {
     });
   } else {
     currentUid = null;
+    _dataLoaded = false;
     if (loginModal) loginModal.classList.add('open');
     if (typeof syncModalScrollLock === 'function') syncModalScrollLock();
   }
@@ -825,6 +826,17 @@ function salaryDefaults() {
   return { gross: 0, szja: 15, szocho: 0, tb: 18.5, day: 0 };
 }
 
+function salaryNetMonthly() {
+  const s = state.salary;
+  if (!s || !s.gross) return 0;
+  const net =
+    s.gross -
+    (s.gross * (s.szja || 0)) / 100 -
+    (s.gross * (s.szocho || 0)) / 100 -
+    (s.gross * (s.tb || 0)) / 100;
+  return net > 0 ? net : 0;
+}
+
 function renderSalary() {
   const s = state.salary || salaryDefaults();
   const g = document.getElementById('acc-sal-gross');
@@ -838,6 +850,8 @@ function renderSalary() {
   if (tb) tb.value = s.tb || s.tb === 0 ? s.tb : '';
   if (day) day.value = s.day || '';
   renderSalaryBreakdown();
+  renderSalaryAdjustments();
+  renderIncomeTimeline();
 }
 
 function readSalaryInputs() {
@@ -894,6 +908,209 @@ function updateSalarySettings() {
   renderAll();
   accMsg('acc-sal-msg', '✓ Fizetési adatok elmentve.', false);
 }
+
+const INCOME_YEAR = 2026;
+const MONTHS_HU = [
+  'Január',
+  'Február',
+  'Március',
+  'Április',
+  'Május',
+  'Június',
+  'Július',
+  'Augusztus',
+  'Szeptember',
+  'Október',
+  'November',
+  'December'
+];
+const MONTHS_HU_SHORT = [
+  'Jan',
+  'Feb',
+  'Már',
+  'Ápr',
+  'Máj',
+  'Jún',
+  'Júl',
+  'Aug',
+  'Szep',
+  'Okt',
+  'Nov',
+  'Dec'
+];
+function incomeAdjustmentsForMonth(monthIdx0, year) {
+  return (state.salaryAdjustments || []).filter(
+    (a) => (a.year || INCOME_YEAR) === year && a.month - 1 === monthIdx0
+  );
+}
+// Havi bevétel-sorozat: alapfizetés + korrekciók (itemizálva)
+function monthlyIncomeSeries(year) {
+  const base = salaryNetMonthly();
+  const totals = new Array(12).fill(0);
+  const items = Array.from({ length: 12 }, () => []);
+  for (let i = 0; i < 12; i++) {
+    if (base > 0) {
+      items[i].push({ label: 'Nettó alapfizetés', amount: base });
+      totals[i] += base;
+    }
+    incomeAdjustmentsForMonth(i, year).forEach((a) => {
+      const amt = Number(a.amount) || 0;
+      if (amt !== 0) {
+        items[i].push({ label: a.note || (amt >= 0 ? 'Korrekció (+)' : 'Korrekció (−)'), amount: amt });
+        totals[i] += amt;
+      }
+    });
+    if (totals[i] < 0) totals[i] = 0;
+  }
+  return { base, totals, items };
+}
+
+function addSalaryAdjustment() {
+  const month = parseInt(document.getElementById('sal-adj-month').value) || 0;
+  const type = document.getElementById('sal-adj-type').value;
+  const amountRaw = parseAmount('sal-adj-amount');
+  const note = (document.getElementById('sal-adj-note').value || '').trim();
+  if (month < 1 || month > 12) {
+    accMsg('sal-adj-msg', 'Válassz hónapot.', true);
+    return;
+  }
+  if (!amountRaw || amountRaw <= 0) {
+    accMsg('sal-adj-msg', 'Adj meg egy pozitív összeget.', true);
+    return;
+  }
+  const amount = type === 'sub' ? -amountRaw : amountRaw;
+  if (!Array.isArray(state.salaryAdjustments)) state.salaryAdjustments = [];
+  state.salaryAdjustments.push({ id: uid(), year: INCOME_YEAR, month, amount, note });
+  save();
+  document.getElementById('sal-adj-amount').value = '';
+  document.getElementById('sal-adj-note').value = '';
+  renderAll();
+  accMsg('sal-adj-msg', '✓ Korrekció hozzáadva.', false);
+}
+
+function deleteSalaryAdjustment(id) {
+  state.salaryAdjustments = (state.salaryAdjustments || []).filter((a) => a.id !== id);
+  save();
+  renderAll();
+}
+
+function renderSalaryAdjustments() {
+  const box = document.getElementById('salary-adjust-list');
+  if (!box) return;
+  const list = (state.salaryAdjustments || [])
+    .filter((a) => (a.year || INCOME_YEAR) === INCOME_YEAR)
+    .slice()
+    .sort((a, b) => a.month - b.month);
+  if (!list.length) {
+    box.innerHTML =
+      '<div style="color:var(--muted);font-size:12px;padding:6px 0">Még nincs korrekció. Add hozzá a prémiumot, a 13. havit, a túlórát (+) vagy a levonásokat (−).</div>';
+    return;
+  }
+  box.innerHTML = list
+    .map((a) => {
+      const amt = Number(a.amount) || 0;
+      const pos = amt >= 0;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="min-width:74px;font-size:12px;color:var(--muted);font-weight:600">${MONTHS_HU[a.month - 1]}</span>
+        <span style="flex:1;font-size:13px;font-weight:600">${a.note ? escHtml(a.note) : pos ? 'Korrekció (+)' : 'Korrekció (−)'}</span>
+        <span class="${pos ? 'green' : 'red'}" style="font-weight:700;white-space:nowrap">${pos ? '+' : '−'} ${fmtAgg(Math.abs(amt))}</span>
+        <button class="btn btn-danger btn-sm js-del-btn" onclick="deleteSalaryAdjustment('${a.id}')" title="Törlés">×</button>
+      </div>`;
+    })
+    .join('');
+}
+
+let _incTLsel = null;
+function selectIncomeMonth(i) {
+  _incTLsel = i;
+  renderIncomeTimeline();
+}
+function renderIncomeTimeline() {
+  const box = document.getElementById('salary-timeline');
+  if (!box) return;
+  const YEAR = INCOME_YEAR;
+  const { totals, items } = monthlyIncomeSeries(YEAR);
+  const maxV = Math.max(1, ...totals);
+  const totYear = totals.reduce((a, b) => a + b, 0);
+  const avg = totYear / 12;
+
+  const today = new Date();
+  let curIdx;
+  if (today.getFullYear() < YEAR) curIdx = -1;
+  else if (today.getFullYear() > YEAR) curIdx = 12;
+  else curIdx = today.getMonth();
+  const dayFrac =
+    curIdx >= 0 && curIdx < 12 ? (today.getDate() - 1) / new Date(YEAR, curIdx + 1, 0).getDate() : 0;
+  const todayPct = curIdx < 0 ? 0 : curIdx >= 12 ? 100 : ((curIdx + dayFrac) / 12) * 100;
+
+  if (_incTLsel == null || _incTLsel < 0 || _incTLsel > 11)
+    _incTLsel = curIdx < 0 ? 0 : curIdx > 11 ? 11 : curIdx;
+  const sel = _incTLsel;
+
+  const H = 96;
+  const cols = MONTHS_HU_SHORT.map((name, i) => {
+    const v = totals[i];
+    const h = Math.max(v > 0 ? 2 : 0, Math.round((v / maxV) * H));
+    const future = i > curIdx;
+    const op = future ? 0.4 : 1;
+    const dash = future ? ';outline:1px dashed var(--border2);outline-offset:-1px' : '';
+    const selBg = i === sel ? 'background:var(--surface2);' : '';
+    return `<div onclick="selectIncomeMonth(${i})" title="${MONTHS_HU[i]}" style="flex:1 1 0;min-width:40px;cursor:pointer;display:flex;flex-direction:column;align-items:center;border-radius:8px;padding:2px 0;${selBg}">
+      <div style="height:${H}px;display:flex;align-items:flex-end;justify-content:center;width:100%">
+        <div style="width:58%;max-width:22px;height:${h}px;background:var(--accent2);border-radius:3px 3px 0 0;opacity:${op}${dash}"></div>
+      </div>
+      <div style="height:2px;width:80%;background:var(--border2)"></div>
+      <div style="font-size:10px;margin-top:4px;color:${i === curIdx ? 'var(--accent)' : 'var(--muted)'};font-weight:${i === sel || i === curIdx ? 700 : 600}">${name}</div>
+    </div>`;
+  }).join('');
+
+  const chart = `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <div style="position:relative;min-width:360px">
+      ${curIdx > 0 ? `<div style="position:absolute;top:0;bottom:20px;left:0;width:${todayPct}%;background:var(--surface2);opacity:0.4;border-radius:6px;pointer-events:none"></div>` : ''}
+      <div style="display:flex;align-items:stretch;gap:2px;position:relative">${cols}</div>
+      ${
+        curIdx >= 0 && curIdx < 12
+          ? `<div style="position:absolute;top:0;bottom:20px;left:${todayPct}%;border-left:2px dashed var(--accent);pointer-events:none"></div>
+      <div style="position:absolute;top:-4px;left:${todayPct}%;transform:translateX(-50%);font-size:9px;font-weight:700;background:var(--accent);color:#1a1206;padding:1px 6px;border-radius:7px;pointer-events:none">Ma</div>`
+          : ''
+      }
+    </div>
+  </div>`;
+
+  const status = sel < curIdx ? 'Elmúlt' : sel === curIdx ? 'Aktuális' : 'Hátravan';
+  const statusCol =
+    sel === curIdx ? 'background:var(--accent);color:#1a1206' : 'background:var(--surface2);color:var(--muted)';
+  const listHtml = items[sel].length
+    ? items[sel]
+        .slice()
+        .sort((a, b) => b.amount - a.amount)
+        .map((it) => {
+          const pos = it.amount >= 0;
+          return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0"><span style="color:var(--muted)">${escHtml(it.label)}</span><span class="${pos ? 'green' : 'red'}" style="font-weight:600;white-space:nowrap">${pos ? '+' : '−'} ${fmtAgg(Math.abs(it.amount))}</span></div>`;
+        })
+        .join('')
+    : '<div style="font-size:12px;color:var(--muted);padding:3px 0">Nincs rögzített bevétel erre a hónapra.</div>';
+
+  box.innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;font-size:12px;align-items:center">
+      <span>Éves bevétel: <strong class="green">${fmtAgg(totYear)}</strong></span>
+      <span style="margin-left:auto">Havi átlag: <strong>${fmtAgg(avg)}</strong></span>
+    </div>
+    ${chart}
+    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:8px">
+      <span>Tömör = elmúlt · halvány = még hátra van</span>
+      <span>Kattints egy hónapra a bontásért</span>
+    </div>
+    <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <strong style="font-size:14px">${MONTHS_HU[sel]} ${YEAR}</strong>
+        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;${statusCol}">${status}</span>
+        <span style="margin-left:auto;font-weight:700" class="green">${fmtAgg(totals[sel])}</span>
+      </div>
+      ${listHtml}
+    </div>`;
+}
+
 function sendAccountPasswordReset() {
   const user = LocalStore.currentUser;
   if (!user || !user.email) {
@@ -980,13 +1197,19 @@ let state = {
     loans: true,
     services: true
   },
-  paidInstallments: {}
+  paidInstallments: {},
+  salaryAdjustments: [],
+  expenseReport: null
 };
 let priceCache = {};
 let goldSpotLive = false;
 let _saveTimer = null;
+let _dataLoaded = false;
 function save() {
-  if (!currentUid) return;
+  // Biztonsági zár: amíg a felhasználó adatai nem töltődtek be sikeresen,
+  // NEM írunk a Firestore-ba, különben egy hibás/lassú betöltés utáni üres
+  // alapállapot felülírhatná (kitörölhetné) a valódi adatokat.
+  if (!currentUid || !_dataLoaded) return;
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
     try {
@@ -1053,9 +1276,12 @@ function normalizeState() {
 }
 function load() {
   if (!currentUid) return Promise.resolve();
+  _dataLoaded = false;
+  let loadFailed = false;
   return LocalStore.loadVault()
     .catch((e) => {
       console.error('[Nettli] betöltés hiba:', e);
+      loadFailed = true;
       return null;
     })
     .then((d) => {
@@ -1087,7 +1313,9 @@ function load() {
         };
       }
       const bizKeys = ['bizIncome', 'bizExpense', 'orders', 'bizTaxRate'];
-      if (currentUid && bizKeys.some((k) => k in state)) {
+      // Csak sikeres betöltés után engedjük a mentést (adatvédelem).
+      if (!loadFailed) _dataLoaded = true;
+      if (_dataLoaded && bizKeys.some((k) => k in state)) {
         bizKeys.forEach((k) => delete state[k]);
         try {
           LocalStore.saveVault(state);
@@ -1540,6 +1768,7 @@ function importData(input) {
       return;
     }
     state = data;
+    _dataLoaded = true; // szándékos visszatöltés — a mentés innentől engedélyezett
     normalizeState();
     save();
     renderAll();
@@ -5226,6 +5455,270 @@ function buildUpcomingDatesHTML() {
     })
     .join('');
 }
+let _cashTLsel = null;
+function computeCashTimeline(year) {
+  const m = state.modules || {};
+  const on = (k) => m[k] !== false;
+  const income = new Array(12).fill(0);
+  const expense = new Array(12).fill(0);
+  const incItems = Array.from({ length: 12 }, () => []);
+  const expItems = Array.from({ length: 12 }, () => []);
+  const monthOf = (dateStr) => {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return null;
+    return d.getFullYear() === year ? d.getMonth() : null;
+  };
+  const addInc = (i, label, amt) => {
+    if (!(amt > 0)) return;
+    income[i] += amt;
+    incItems[i].push({ label, amount: amt });
+  };
+  const addExp = (i, label, amt) => {
+    if (!(amt > 0)) return;
+    expense[i] += amt;
+    expItems[i].push({ label, amount: amt });
+  };
+
+  // --- BEVÉTEL ---
+  // Alkalmazotti nettó fizetés + havi korrekciók
+  const salary = salaryNetMonthly();
+  for (let i = 0; i < 12; i++) {
+    if (salary > 0) addInc(i, 'Nettó fizetés', salary);
+    incomeAdjustmentsForMonth(i, year).forEach((a) => {
+      const amt = Number(a.amount) || 0;
+      if (amt > 0) addInc(i, a.note || 'Bevételi korrekció (+)', amt);
+      else if (amt < 0) {
+        income[i] += amt;
+        incItems[i].push({ label: a.note || 'Bevételi korrekció (−)', amount: amt });
+      }
+    });
+    if (income[i] < 0) income[i] = 0;
+  }
+
+  // Osztalék (nettó, a fizető hónapokban)
+  if (on('stocks') && fxReady()) {
+    const groups = {};
+    state.stocks.forEach((s) => {
+      (groups[s.ticker] = groups[s.ticker] || []).push(s);
+    });
+    Object.entries(groups).forEach(([ticker, lots]) => {
+      const first = lots[0];
+      if (!stockIsCash(first)) return;
+      const qty = lots.reduce((a, l) => a + l.qty, 0);
+      const cur = first.currency || 'HUF';
+      const monthMap =
+        first.divAuto && first.divByMonthNative ? first.divByMonthNative : manualDivMonthMap(first);
+      if (!monthMap) return;
+      Object.entries(monthMap).forEach(([mo, perShareN]) => {
+        const usd = nativeToUsd(perShareN * qty, cur);
+        if (usd === null) return;
+        const net = netDividend(usd * usdHuf);
+        const idx = +mo - 1;
+        if (idx >= 0 && idx < 12) addInc(idx, 'Osztalék · ' + ticker.toUpperCase(), net);
+      });
+    });
+  }
+
+  // Kripto eladás bevétele (az eladás hónapjában)
+  if (on('crypto')) {
+    state.crypto.forEach((t) => {
+      if (t.type !== 'sell') return;
+      const mo = monthOf(t.date);
+      if (mo !== null)
+        addInc(mo, 'Kripto eladás · ' + (t.coin || '').toUpperCase(), t.qty * t.price - (t.fee || 0));
+    });
+  }
+
+  // --- KIADÁS ---
+  // Aranyvétel
+  if (on('gold')) {
+    (state.goldItems || []).forEach((g) => {
+      const mo = monthOf(g.date);
+      if (mo !== null) addExp(mo, 'Aranyvétel · ' + (g.name || g.code || 'arany'), g.cost || 0);
+    });
+  }
+  // Részvényvétel (avg HUF-ban tárolva)
+  if (on('stocks')) {
+    state.stocks.forEach((s) => {
+      const mo = monthOf(s.buyDate);
+      if (mo !== null)
+        addExp(mo, 'Részvényvétel · ' + (s.ticker || '').toUpperCase(), (s.qty || 0) * (s.avg || 0));
+    });
+  }
+  // Kriptovétel
+  if (on('crypto')) {
+    state.crypto.forEach((t) => {
+      if (t.type !== 'buy') return;
+      const mo = monthOf(t.date);
+      if (mo !== null)
+        addExp(mo, 'Kriptovétel · ' + (t.coin || '').toUpperCase(), t.qty * t.price + (t.fee || 0));
+    });
+  }
+  // Hiteltörlesztő (a törlesztési időszakon belüli hónapokban)
+  if (on('loans')) {
+    (state.loans || []).forEach((l) => {
+      const monthly = l.monthly || 0;
+      if (!monthly) return;
+      const s = l.firstPayment || l.start ? new Date(l.firstPayment || l.start) : null;
+      const e = l.end ? new Date(l.end) : null;
+      for (let i = 0; i < 12; i++) {
+        const first = new Date(year, i, 1);
+        const last = new Date(year, i + 1, 0);
+        if (s && !isNaN(s.getTime()) && s > last) continue;
+        if (e && !isNaN(e.getTime()) && e < first) continue;
+        addExp(i, 'Hiteltörlesztő · ' + (l.name || 'hitel'), monthly);
+      }
+    });
+  }
+  // Előfizetések (havi szintre vetítve, tételesen)
+  if (on('services')) {
+    (state.services || [])
+      .filter((s) => s.active)
+      .forEach((s) => {
+        const c = serviceMonthlyCost(s);
+        if (c > 0) for (let i = 0; i < 12; i++) addExp(i, 'Előfizetés · ' + (s.name || 'egyéb'), c);
+      });
+  }
+
+  return { income, expense, incItems, expItems };
+}
+
+function selectTimelineMonth(i) {
+  _cashTLsel = i;
+  renderCashTimeline();
+}
+
+function renderCashTimeline() {
+  const box = document.getElementById('d-timeline');
+  if (!box) return;
+  const YEAR = 2026;
+  const MONTHS = ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec'];
+  const FULL = [
+    'Január',
+    'Február',
+    'Március',
+    'Április',
+    'Május',
+    'Június',
+    'Július',
+    'Augusztus',
+    'Szeptember',
+    'Október',
+    'November',
+    'December'
+  ];
+  const { income, expense, incItems, expItems } = computeCashTimeline(YEAR);
+  const maxV = Math.max(1, ...income, ...expense);
+  const totIn = income.reduce((a, b) => a + b, 0);
+  const totOut = expense.reduce((a, b) => a + b, 0);
+  const totNet = totIn - totOut;
+
+  // Múlt / jövő a mai naphoz képest
+  const today = new Date();
+  let curIdx;
+  if (today.getFullYear() < YEAR) curIdx = -1;
+  else if (today.getFullYear() > YEAR) curIdx = 12;
+  else curIdx = today.getMonth();
+  const dayFrac =
+    curIdx >= 0 && curIdx < 12 ? (today.getDate() - 1) / new Date(YEAR, curIdx + 1, 0).getDate() : 0;
+  const todayPct = curIdx < 0 ? 0 : curIdx >= 12 ? 100 : ((curIdx + dayFrac) / 12) * 100;
+
+  // Kiválasztott hónap (alap: az aktuális)
+  if (_cashTLsel == null || _cashTLsel < 0 || _cashTLsel > 11)
+    _cashTLsel = curIdx < 0 ? 0 : curIdx > 11 ? 11 : curIdx;
+  const sel = _cashTLsel;
+
+  const H = 62;
+  const cols = MONTHS.map((name, i) => {
+    const inc = income[i];
+    const exp = expense[i];
+    const incH = Math.round((inc / maxV) * H);
+    const expH = Math.round((exp / maxV) * H);
+    const future = i > curIdx;
+    const op = future ? 0.4 : 1;
+    const dash = future ? ';outline:1px dashed var(--border2);outline-offset:-1px' : '';
+    const selBg = i === sel ? 'background:var(--surface2);' : '';
+    return `<div onclick="selectTimelineMonth(${i})" title="${FULL[i]}" style="flex:1 1 0;min-width:40px;cursor:pointer;display:flex;flex-direction:column;align-items:center;border-radius:8px;padding:2px 0;${selBg}">
+      <div style="height:${H}px;display:flex;align-items:flex-end;justify-content:center;width:100%">
+        <div style="width:58%;max-width:20px;height:${incH}px;min-height:${inc > 0 ? 2 : 0}px;background:var(--accent2);border-radius:3px 3px 0 0;opacity:${op}${dash}"></div>
+      </div>
+      <div style="height:2px;width:80%;background:var(--border2)"></div>
+      <div style="height:${H}px;display:flex;align-items:flex-start;justify-content:center;width:100%">
+        <div style="width:58%;max-width:20px;height:${expH}px;min-height:${exp > 0 ? 2 : 0}px;background:var(--red);border-radius:0 0 3px 3px;opacity:${op}${dash}"></div>
+      </div>
+      <div style="font-size:10px;margin-top:4px;color:${i === curIdx ? 'var(--accent)' : 'var(--muted)'};font-weight:${i === sel || i === curIdx ? 700 : 600}">${name}</div>
+    </div>`;
+  }).join('');
+
+  const chart = `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <div style="position:relative;min-width:360px">
+      ${curIdx > 0 ? `<div style="position:absolute;top:0;bottom:20px;left:0;width:${todayPct}%;background:var(--surface2);opacity:0.4;border-radius:6px;pointer-events:none"></div>` : ''}
+      <div style="display:flex;align-items:stretch;gap:2px;position:relative">${cols}</div>
+      ${
+        curIdx >= 0 && curIdx < 12
+          ? `<div style="position:absolute;top:0;bottom:20px;left:${todayPct}%;border-left:2px dashed var(--accent);pointer-events:none"></div>
+      <div style="position:absolute;top:-4px;left:${todayPct}%;transform:translateX(-50%);font-size:9px;font-weight:700;background:var(--accent);color:#1a1206;padding:1px 6px;border-radius:7px;pointer-events:none">Ma</div>`
+          : ''
+      }
+    </div>
+  </div>`;
+
+  const sw = (c) =>
+    `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c};margin-right:5px;vertical-align:-1px"></span>`;
+  const listHtml = (items, cls) =>
+    items.length
+      ? items
+          .slice()
+          .sort((a, b) => b.amount - a.amount)
+          .map(
+            (it) =>
+              `<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0"><span style="color:var(--muted)">${it.label}</span><span class="${cls}" style="font-weight:600;white-space:nowrap">${fmtAgg(it.amount)}</span></div>`
+          )
+          .join('')
+      : '<div style="font-size:12px;color:var(--muted);padding:3px 0">—</div>';
+
+  const status = sel < curIdx ? 'past' : sel === curIdx ? 'cur' : 'future';
+  const badge =
+    status === 'past'
+      ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--surface2);color:var(--muted)">Elmúlt</span>'
+      : status === 'cur'
+        ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--accent);color:#1a1206">Aktuális</span>'
+        : '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--surface2);color:var(--accent2)">Hátravan</span>';
+  const selNet = income[sel] - expense[sel];
+  const detail = `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <strong style="font-size:14px">${FULL[sel]} ${YEAR}</strong>
+      ${badge}
+      <span style="margin-left:auto;font-weight:700" class="${selNet >= 0 ? 'green' : 'red'}">${selNet >= 0 ? '+' : ''}${fmtAgg(selNet)}</span>
+    </div>
+    <div class="grid g2" style="gap:12px">
+      <div>
+        <div style="font-size:11.5px;font-weight:700;margin-bottom:5px">${sw('var(--accent2)')}Bevétel · <span class="green">${fmtAgg(income[sel])}</span></div>
+        ${listHtml(incItems[sel], 'green')}
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:700;margin-bottom:5px">${sw('var(--red)')}Kiadás · <span class="red">${fmtAgg(expense[sel])}</span></div>
+        ${listHtml(expItems[sel], 'red')}
+      </div>
+    </div>
+  </div>`;
+
+  box.innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;font-size:12px;align-items:center">
+      <span>${sw('var(--accent2)')}Bevétel: <strong class="green">${fmtAgg(totIn)}</strong></span>
+      <span>${sw('var(--red)')}Kiadás: <strong class="red">${fmtAgg(totOut)}</strong></span>
+      <span style="margin-left:auto">Éves egyenleg: <strong class="${totNet >= 0 ? 'green' : 'red'}">${totNet >= 0 ? '+' : ''}${fmtAgg(totNet)}</strong></span>
+    </div>
+    ${chart}
+    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:8px">
+      <span>Tömör sáv = elmúlt · halvány sáv = még hátra van</span>
+      <span>Kattints egy hónapra a részletekért</span>
+    </div>
+    ${detail}
+    <div style="font-size:10.5px;color:var(--muted);margin-top:12px;line-height:1.5">A fizetés, a hiteltörlesztő és az előfizetések minden hónapban ismétlődnek; az arany-, részvény- és kriptovétel, a kriptoeladás és az osztalék a tényleges dátumuk hónapjában jelenik meg. Az előfizetések havi szintre vetítve (az éves díjak 1/12-e) szerepelnek.</div>`;
+}
+
 function renderDashboard() {
   const m = state.modules || {};
   const useGold = m.gold !== false,
@@ -5250,7 +5743,7 @@ function renderDashboard() {
   showCard('d-monthly-card', anyOn('loans', 'services'));
   showCard('d-donut-card', anyOn('gold', 'stocks', 'crypto', 'loans', 'pledge'));
   showCard('d-breakdown-card', anyOn('gold', 'stocks', 'crypto'));
-  showCard('d-cashflow-card', anyOn('stocks', 'loans', 'services'));
+  showCard('d-cashflow-card', anyOn('stocks', 'loans', 'services') || salaryNetMonthly() > 0);
   showCard('d-div-tax-card', on('stocks'));
   showCard('d-div-cal-card', on('stocks'));
   showCard('d-top-card', anyOn('gold', 'stocks', 'crypto'));
@@ -5509,8 +6002,10 @@ function renderDashboard() {
   }
   const cf = document.getElementById('d-cashflow');
   if (cf) {
-    const netMonthly = monthlyDiv - totalMonthly;
+    const salaryNet = salaryNetMonthly();
+    const netMonthly = monthlyDiv + salaryNet - totalMonthly;
     cf.innerHTML = `
+      ${salaryNet > 0 ? `<div class="tax-row"><span style="color:var(--muted)">Bevétel — nettó fizetés / hó</span><span class="green">${fmtAgg(salaryNet)}</span></div>` : ''}
       ${useStocks ? `<div class="tax-row"><span style="color:var(--muted)">Bevétel — osztalék / hó</span><span class="green">${fmtAgg(monthlyDiv)}</span></div>` : ''}
       ${useLoans ? `<div class="tax-row"><span style="color:var(--muted)">Hiteltörlesztő / hó</span><span style="color:var(--accent3);font-weight:600">${fmtAgg(monthlyLoan)}</span></div>` : ''}
       ${useServices ? `<div class="tax-row"><span style="color:var(--muted)">Szolgáltatások / hó</span><span style="color:var(--accent3);font-weight:600">${fmtAgg(svcMonthly)}</span></div>` : ''}
@@ -5611,16 +6106,9 @@ function renderDashboard() {
       dc.innerHTML =
         '<div style="color:var(--muted);font-size:12px;padding:8px 0">A Részvény modul ki van kapcsolva.</div>';
   }
+  renderCashTimeline();
 }
 function renderWatch() {
-  const rb = document.getElementById('watch-refresh-bar');
-  if (rb)
-    rb.innerHTML = `
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
-      <button class="btn btn-secondary btn-sm" onclick="refreshAllPrices()">Élő árfolyam frissítés</button>
-      <span class="refresh-status" style="font-size:11px;color:var(--muted)"></span>
-    </div>
-    <div style="font-size:11.5px;margin-bottom:16px"><span id="fx-info"></span></div>`;
   updateFxLabel();
   const coins = calcCryptoPL();
   const stockBox = document.getElementById('dash-stocks');
@@ -5964,6 +6452,678 @@ function donutHover(i) {
     el.style.background = i === idx ? 'var(--surface2)' : 'transparent';
   });
 }
+// ===== KIADÁS: Revolut bankszámlakivonat feldolgozása =====
+let _xlsxLoading = null;
+function loadXLSX() {
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  if (_xlsxLoading) return _xlsxLoading;
+  _xlsxLoading = new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = () => resolve(window.XLSX);
+    sc.onerror = () =>
+      reject(new Error('A táblázat-feldolgozó nem tölthető be (nincs internet?).'));
+    document.head.appendChild(sc);
+  });
+  return _xlsxLoading;
+}
+
+function expMsg(text, isError) {
+  accMsg('exp-upload-msg', text, isError);
+}
+
+function _normHeader(h) {
+  return String(h || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
+}
+// A neveket prioritási sorrendben nézi: az első név első találata nyer.
+function _pickCol(header, names) {
+  const H = header.map(_normHeader);
+  for (const n of names) {
+    for (let i = 0; i < H.length; i++) {
+      if (H[i] && (H[i] === n || H[i].includes(n))) return i;
+    }
+  }
+  return -1;
+}
+function canonType(raw) {
+  const f = _normHeader(raw);
+  if (!f) return 'Egyéb';
+  if (f.includes('kartya') || f === 'card_payment') return 'Kártyás vásárlás';
+  if (f.includes('atm') || f.includes('keszpenz')) return 'Készpénzfelvétel (ATM)';
+  if (f.includes('atutal') || f.includes('transfer')) return 'Átutalás';
+  if (f.includes('feltolt') || f.includes('topup')) return 'Feltöltés';
+  if (f.includes('visszater') || f.includes('refund')) return 'Visszatérítés';
+  if (f.includes('terhel') || f === 'fee' || f.includes('dij') || f.includes('jutalek'))
+    return 'Díj / terhelés';
+  if (f.includes('valt') || f.includes('exchange')) return 'Devizaváltás';
+  if (f.includes('kamat') || f.includes('interest')) return 'Kamat';
+  if (f.includes('ado') || f === 'tax') return 'Adó';
+  return String(raw).trim() || 'Egyéb';
+}
+function _parseNum(v) {
+  if (typeof v === 'number') return v;
+  if (v == null) return NaN;
+  let s = String(v).trim().replace(/\s| /g, '');
+  if (!s) return NaN;
+  if (s.indexOf(',') > -1 && s.indexOf('.') > -1) {
+    if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else s = s.replace(/,/g, '');
+  } else if (s.indexOf(',') > -1) {
+    s = s.replace(',', '.');
+  }
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : n;
+}
+function _excelDate(v) {
+  if (v instanceof Date && !isNaN(v.getTime())) return toLocalDateStr(v);
+  if (typeof v === 'number') {
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    if (!isNaN(d.getTime())) return toLocalDateStr(d);
+  }
+  const s = String(v || '').trim();
+  if (!s) return null;
+  const m1 = s.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  if (m1) return `${m1[1]}-${String(m1[2]).padStart(2, '0')}-${String(m1[3]).padStart(2, '0')}`;
+  const m2 = s.match(/(\d{1,2})[/.](\d{1,2})[/.](\d{4})/);
+  if (m2) return `${m2[3]}-${String(m2[2]).padStart(2, '0')}-${String(m2[1]).padStart(2, '0')}`;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : toLocalDateStr(d);
+}
+// Kizárt (nem teljesült) státuszok — ékezet nélküli, kisbetűs formában
+const BAD_STATES = [
+  'reverted',
+  'declined',
+  'failed',
+  'pending',
+  'cancelled',
+  'visszavonva',
+  'visszateritve',
+  'elutasitva',
+  'sikertelen',
+  'fuggoben',
+  'folyamatban',
+  'torolve'
+];
+// A kivonat forrásbankjának felismerése a fejléc alapján.
+function detectBank(header) {
+  const H = (header || []).map(_normHeader).join('|');
+  if (
+    H.includes('banki azonosito') ||
+    H.includes('forgalom') ||
+    H.includes('ellenoldali') ||
+    H.includes('konyveles')
+  )
+    return 'OTP';
+  if (
+    H.includes('teljesites') ||
+    H.includes('state') ||
+    H.includes('termek') ||
+    H.includes('product') ||
+    H.includes('completed')
+  )
+    return 'Revolut';
+  return 'Egyéb';
+}
+function parseRevolutSheet(aoa) {
+  let hIdx = -1;
+  for (let i = 0; i < Math.min(aoa.length, 20); i++) {
+    const row = (aoa[i] || []).map(_normHeader);
+    if (row.includes('amount') || row.includes('osszeg')) {
+      hIdx = i;
+      break;
+    }
+  }
+  if (hIdx < 0) return null;
+  const header = aoa[hIdx];
+  const bank = detectBank(header);
+  const cType = _pickCol(header, ['forgalom', 'type', 'tipus']);
+  // Elsődleges leírás: kereskedő / ellenoldali név; tartalék: közlemény
+  const cDesc = _pickCol(header, [
+    'ellenoldali nev',
+    'ellenoldali',
+    'description',
+    'megnevezes',
+    'leiras',
+    'partner'
+  ]);
+  const cMemo = _pickCol(header, ['kozlemeny', 'reference', 'narrative', 'megjegyzes']);
+  // Dátum: a tényleges tranzakció napja (nem a könyvelésé, ami átcsúszhat a
+  // következő hónapba). Revolutnál a „Teljesítés dátuma”, OTP-nél a „Tranzakció időpontja”.
+  const cDate = _pickCol(header, [
+    'teljesites',
+    'completed',
+    'tranzakcio idopont',
+    'idopont',
+    'kezdes',
+    'started',
+    'datum',
+    'date'
+  ]);
+  const cStart = _pickCol(header, [
+    'tranzakcio idopont',
+    'idopont',
+    'kezdes',
+    'started',
+    'datum',
+    'date'
+  ]);
+  const cRef = _pickCol(header, ['banki azonosito', 'azonosito', 'reference id']);
+  const cAmount = _pickCol(header, ['amount', 'osszeg']);
+  const cFee = _pickCol(header, ['fee', 'dij']);
+  const cCur = _pickCol(header, ['currency', 'penznem', 'deviza']);
+  const cState = _pickCol(header, ['state', 'statusz', 'allapot']);
+  if (cAmount < 0 || cDate < 0) return null;
+  const txns = [];
+  for (let i = hIdx + 1; i < aoa.length; i++) {
+    const row = aoa[i];
+    if (!row || !row.length) continue;
+    const st = cState >= 0 ? _normHeader(row[cState]) : '';
+    if (st && BAD_STATES.some((b) => st.includes(b))) continue;
+    const amount = _parseNum(row[cAmount]);
+    const fee = cFee >= 0 ? _parseNum(row[cFee]) : 0;
+    const a = isNaN(amount) ? 0 : amount;
+    const f = isNaN(fee) ? 0 : fee;
+    if (isNaN(amount) && isNaN(fee)) continue;
+    // A valós pénzmozgás: összeg − díj. Előjeles: negatív = kiadás, pozitív = bevétel.
+    // (Így a díj-soroknál, ahol az összeg 0 és a díj a terhelés, is helyes.)
+    const netFlow = a - f;
+    if (netFlow === 0) continue; // nincs pénzmozgás
+    const date = _excelDate(row[cDate]);
+    if (!date) continue;
+    const type = canonType(cType >= 0 ? row[cType] : '');
+    // Leírás: kereskedő/ellenoldali név → ha üres, közlemény → ha az is üres, a típus.
+    let desc = cDesc >= 0 ? String(row[cDesc] || '').trim() : '';
+    if (!desc && cMemo >= 0) desc = String(row[cMemo] || '').trim();
+    if (!desc) desc = type;
+    const currency = (cCur >= 0 ? String(row[cCur] || '').trim().toUpperCase() : '') || 'HUF';
+    // Stabil kulcs a duplikátumok kiszűréséhez ismételt feltöltésnél.
+    // Ha van banki tranzakció-azonosító (OTP), az egyedi és tökéletes kulcs.
+    // Egyébként a tranzakció időpontja (másodpercre pontos) + összeg + leírás.
+    const refRaw = cRef >= 0 ? String(row[cRef] || '').trim() : '';
+    const startedRaw = String((cStart >= 0 ? row[cStart] : row[cDate]) || '').trim();
+    const k = refRaw
+      ? 'ref:' + refRaw
+      : startedRaw + '|' + String(row[cAmount]) + '|' + (cFee >= 0 ? String(row[cFee]) : '') + '|' + desc;
+    txns.push({ date, type, desc, amt: netFlow, currency, k, bank });
+  }
+  return txns;
+}
+// Előjeles összeg egy tételhez (kcompatibilitás a régi, csak-kiadás formátummal)
+function _txnSigned(t) {
+  if (typeof t.amt === 'number') return t.amt;
+  return -(t.amount || 0);
+}
+
+function handleRevolutUpload(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const isCsv = /\.csv$/i.test(file.name) || file.type === 'text/csv';
+  expMsg('Feldolgozás…', false);
+  loadXLSX()
+    .then((XLSX) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          let wb;
+          if (isCsv) {
+            // CSV: UTF-8 szövegként olvassuk, hogy az ékezetes fejlécek (Összeg, Díj…)
+            // helyesen dekódolódjanak, ne Latin-1-ként.
+            wb = XLSX.read(e.target.result, { type: 'string' });
+          } else {
+            wb = XLSX.read(new Uint8Array(e.target.result), {
+              type: 'array',
+              cellDates: true,
+              codepage: 65001
+            });
+          }
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '' });
+          const txns = parseRevolutSheet(aoa);
+          if (!txns) {
+            expMsg(
+              'Nem ismerem fel a kivonat oszlopait. Kell egy „Összeg/Amount” és egy dátum oszlop (Revolut kivonat).',
+              true
+            );
+            return;
+          }
+          if (!txns.length) {
+            expMsg('Nem találtam feldolgozható tételt a fájlban.', true);
+            return;
+          }
+          // Hozzáfűzés a korábbi tételekhez, duplikátum-szűréssel.
+          const prev =
+            state.expenseReport && Array.isArray(state.expenseReport.txns)
+              ? state.expenseReport
+              : { txns: [], imports: [] };
+          const merged = prev.txns.slice();
+          const seen = new Set(merged.map((t) => t.k).filter(Boolean));
+          const importId = uid();
+          let added = 0,
+            dup = 0;
+          txns.forEach((t) => {
+            if (t.k && seen.has(t.k)) {
+              dup++;
+              return;
+            }
+            if (t.k) seen.add(t.k);
+            t.imp = importId; // melyik importhoz tartozik (törléshez)
+            merged.push(t);
+            added++;
+          });
+          const months = {};
+          txns.forEach((t) => (months[t.date.slice(0, 7)] = true));
+          const imports = (prev.imports || []).slice();
+          imports.push({
+            id: importId,
+            fileName: file.name,
+            importedAt: new Date().toISOString(),
+            added,
+            dup,
+            months: Object.keys(months).sort()
+          });
+          state.expenseReport = { txns: merged, imports, updatedAt: new Date().toISOString() };
+          save();
+          renderExpenseReport();
+          expMsg(
+            '✓ ' +
+              added +
+              ' új tétel hozzáadva' +
+              (dup ? ', ' + dup + ' duplikátum kihagyva' : '') +
+              '. Összesen ' +
+              merged.length +
+              ' tétel.',
+            false
+          );
+        } catch (err) {
+          expMsg('Hiba a fájl feldolgozásakor: ' + (err.message || err), true);
+        }
+      };
+      reader.onerror = () => expMsg('A fájl nem olvasható.', true);
+      if (isCsv) reader.readAsText(file, 'UTF-8');
+      else reader.readAsArrayBuffer(file);
+    })
+    .catch((err) => expMsg(err.message || 'Betöltési hiba.', true));
+  input.value = '';
+}
+
+async function clearExpenseReport() {
+  if (!(await uiConfirm('Biztosan törlöd az ÖSSZES betöltött kimutatás adatát?'))) return;
+  state.expenseReport = null;
+  save();
+  renderExpenseReport();
+  expMsg('', false);
+}
+
+async function deleteExpenseImport(id) {
+  const rep = state.expenseReport;
+  if (!rep || !Array.isArray(rep.imports)) return;
+  const im = rep.imports.find((x) => x.id === id);
+  if (!im) return;
+  const label =
+    (Array.isArray(im.months) && im.months.length ? im.months.join(', ') : im.fileName || 'kimutatás');
+  if (!(await uiConfirm('Törlöd ennek a kimutatásnak az adatait?\n\n' + label))) return;
+  const remainTxns = rep.txns.filter((t) => t.imp !== id);
+  const remainImports = rep.imports.filter((x) => x.id !== id);
+  if (!remainTxns.length) {
+    state.expenseReport = null;
+  } else {
+    state.expenseReport = {
+      txns: remainTxns,
+      imports: remainImports,
+      updatedAt: new Date().toISOString()
+    };
+  }
+  save();
+  renderExpenseReport();
+  expMsg('✓ Kimutatás törölve: ' + label, false);
+}
+
+function _expToHuf(amt, cur) {
+  if (cur === 'HUF') return amt;
+  const r = rateForCurrency(cur);
+  return r ? amt * r : null;
+}
+
+function _fmtYm(ym) {
+  const [y, m] = ym.split('-');
+  return y + '. ' + (MONTHS_HU_SHORT[+m - 1] || m);
+}
+let _expFilter = { month: 'all', bank: 'all', dir: 'all', type: 'all', q: '' };
+
+function renderExpenseReport() {
+  const box = document.getElementById('exp-report');
+  const clearBtn = document.getElementById('exp-clear-btn');
+  const rep = state.expenseReport;
+  const has = !!(rep && rep.txns && rep.txns.length);
+  if (clearBtn) clearBtn.style.display = has ? '' : 'none';
+  if (!box) return;
+  if (!has) {
+    box.innerHTML = '';
+    return;
+  }
+  const txns = rep.txns;
+  let incomeHuf = 0,
+    expenseHuf = 0,
+    nonConv = 0;
+  const inByMonth = {},
+    outByMonth = {},
+    expByType = {},
+    incByType = {},
+    byMerchant = {},
+    byCur = {},
+    monthsSet = {},
+    typesSet = {},
+    banksSet = {};
+  let minDate = null,
+    maxDate = null;
+  txns.forEach((t) => {
+    const s = _txnSigned(t);
+    const ym = t.date.slice(0, 7);
+    monthsSet[ym] = true;
+    typesSet[t.type || 'Egyéb'] = true;
+    banksSet[t.bank || 'Egyéb'] = true;
+    if (!minDate || t.date < minDate) minDate = t.date;
+    if (!maxDate || t.date > maxDate) maxDate = t.date;
+    byCur[t.currency] = (byCur[t.currency] || 0) + s;
+    const mag = _expToHuf(Math.abs(s), t.currency);
+    if (mag == null) {
+      nonConv++;
+      return;
+    }
+    if (s > 0) {
+      incomeHuf += mag;
+      inByMonth[ym] = (inByMonth[ym] || 0) + mag;
+      incByType[t.type] = (incByType[t.type] || 0) + mag;
+    } else {
+      expenseHuf += mag;
+      outByMonth[ym] = (outByMonth[ym] || 0) + mag;
+      expByType[t.type] = (expByType[t.type] || 0) + mag;
+      const mk = (t.desc || '(nincs megnevezés)').slice(0, 42);
+      byMerchant[mk] = (byMerchant[mk] || 0) + mag;
+    }
+  });
+  const netHuf = incomeHuf - expenseHuf;
+
+  const imports = Array.isArray(rep.imports) ? rep.imports : [];
+  const lastImport = imports.length
+    ? imports[imports.length - 1]
+    : rep.importedAt
+      ? { importedAt: rep.importedAt, fileName: rep.fileName }
+      : null;
+  const importedStr =
+    lastImport && lastImport.importedAt
+      ? new Date(lastImport.importedAt).toLocaleDateString(LOC())
+      : '—';
+  const importCount = imports.length || (rep.fileName ? 1 : 0);
+  const curList = Object.keys(byCur).sort();
+  const months = Object.keys(monthsSet).sort();
+
+  // Havi bontás — bevétel (zöld) és kiadás (piros) sávok
+  const maxM = Math.max(1, ...months.map((k) => Math.max(inByMonth[k] || 0, outByMonth[k] || 0)));
+  const monthlyRows = months
+    .map((k) => {
+      const inc = inByMonth[k] || 0;
+      const out = outByMonth[k] || 0;
+      const net = inc - out;
+      const iw = Math.max(inc > 0 ? 2 : 0, Math.round((inc / maxM) * 100));
+      const ow = Math.max(out > 0 ? 2 : 0, Math.round((out / maxM) * 100));
+      return `<div style="display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:10px;padding:6px 0">
+        <span style="font-size:11px;color:var(--muted);font-weight:600">${_fmtYm(k)}</span>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="height:8px;border-radius:4px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:${iw}%;background:var(--accent2);border-radius:4px"></div></div>
+          <div style="height:8px;border-radius:4px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:${ow}%;background:var(--red);border-radius:4px"></div></div>
+        </div>
+        <span class="${net >= 0 ? 'green' : 'red'}" style="font-size:12px;font-weight:600;white-space:nowrap;text-align:right">${net >= 0 ? '+' : ''}${fmtAgg(net)}</span>
+      </div>`;
+    })
+    .join('');
+
+  const typeList = (obj, cls) => {
+    const ks = Object.keys(obj).sort((a, b) => obj[b] - obj[a]);
+    const tot = ks.reduce((a, k) => a + obj[k], 0);
+    if (!ks.length) return '<div style="color:var(--muted);font-size:12px">Nincs adat.</div>';
+    return ks
+      .map((t) => {
+        const v = obj[t];
+        const pct = tot > 0 ? (v / tot) * 100 : 0;
+        return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t)}</span>
+          <span style="white-space:nowrap"><strong class="${cls}">${fmtAgg(v)}</strong> <span style="color:var(--muted);font-size:11px">${pct.toFixed(1)}%</span></span>
+        </div>`;
+      })
+      .join('');
+  };
+
+  const merchants = Object.keys(byMerchant)
+    .sort((a, b) => byMerchant[b] - byMerchant[a])
+    .slice(0, 10);
+  const merchantRows = merchants.length
+    ? merchants
+        .map(
+          (mkey) =>
+            `<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(mkey)}</span>
+          <span class="red" style="font-weight:600;white-space:nowrap">${fmtAgg(byMerchant[mkey])}</span>
+        </div>`
+        )
+        .join('')
+    : '<div style="color:var(--muted);font-size:12px">Nincs adat.</div>';
+
+  const curNote =
+    curList.length > 1
+      ? `<div style="font-size:11px;color:var(--muted);margin-top:6px">Devizánként (nettó): ${curList
+          .map((c) => `${c}: ${fmtCur(byCur[c], c)}`)
+          .join(' · ')}</div>`
+      : '';
+  const nonConvNote =
+    nonConv > 0
+      ? `<div style="font-size:11px;color:var(--accent3);margin-top:6px">${nonConv} tétel nem váltható HUF-ra (ismeretlen árfolyam). Frissítsd az élő árfolyamot a Fiók oldalon.</div>`
+      : '';
+
+  const importRows = imports
+    .slice()
+    .reverse()
+    .map((im) => {
+      const d = im.importedAt ? new Date(im.importedAt).toLocaleDateString(LOC()) : '—';
+      const ms = Array.isArray(im.months) && im.months.length ? im.months.join(', ') : '—';
+      const delBtn = im.id
+        ? `<button class="btn btn-danger btn-sm js-del-btn" title="Ennek a kimutatásnak a törlése" onclick="deleteExpenseImport('${im.id}')">×</button>`
+        : '';
+      return `<div style="display:flex;align-items:center;gap:10px;font-size:12.5px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="flex:1;min-width:0"><strong>${ms}</strong> <span style="color:var(--muted)">· ${escHtml(im.fileName || 'kivonat')}</span><br><span style="color:var(--muted);font-size:11px">+${im.added || 0} tétel${im.dup ? ` · ${im.dup} dupla` : ''} · ${d}</span></span>
+        ${delBtn}
+      </div>`;
+    })
+    .join('');
+  const importsCard = imports.length
+    ? `<div class="card" style="margin-bottom:16px">
+        <div class="card-title">Importált kimutatások (${imports.length})</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">A × gombbal egy adott kimutatás összes tételét törlöd.</div>
+        ${importRows}
+      </div>`
+    : '';
+
+  // Szűrő-vezérlők a részletezőhöz
+  if (_expFilter.month !== 'all' && !monthsSet[_expFilter.month]) _expFilter.month = 'all';
+  if (_expFilter.type !== 'all' && !typesSet[_expFilter.type]) _expFilter.type = 'all';
+  if (_expFilter.bank !== 'all' && !banksSet[_expFilter.bank]) _expFilter.bank = 'all';
+  const bankKeys = Object.keys(banksSet).sort();
+  const bankOpts =
+    `<option value="all"${_expFilter.bank === 'all' ? ' selected' : ''}>Minden bank</option>` +
+    bankKeys
+      .map(
+        (b) =>
+          `<option value="${escHtml(b)}"${_expFilter.bank === b ? ' selected' : ''}>${escHtml(b)}</option>`
+      )
+      .join('');
+  const monthOpts =
+    `<option value="all"${_expFilter.month === 'all' ? ' selected' : ''}>Összes hónap</option>` +
+    months
+      .slice()
+      .reverse()
+      .map(
+        (m) => `<option value="${m}"${_expFilter.month === m ? ' selected' : ''}>${_fmtYm(m)}</option>`
+      )
+      .join('');
+  const dirOpts = [
+    ['all', 'Minden irány'],
+    ['out', 'Csak kiadás'],
+    ['in', 'Csak bevétel']
+  ]
+    .map(([v, l]) => `<option value="${v}"${_expFilter.dir === v ? ' selected' : ''}>${l}</option>`)
+    .join('');
+  const typeOpts =
+    `<option value="all"${_expFilter.type === 'all' ? ' selected' : ''}>Minden típus</option>` +
+    Object.keys(typesSet)
+      .sort()
+      .map(
+        (t) =>
+          `<option value="${escHtml(t)}"${_expFilter.type === t ? ' selected' : ''}>${escHtml(t)}</option>`
+      )
+      .join('');
+
+  box.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px">
+      <div class="card card-stat-green">
+        <div class="card-title" style="opacity:.8">Bevétel (HUF)</div>
+        <div class="stat-value green" style="font-size:24px">${fmtAgg(incomeHuf)}</div>
+      </div>
+      <div class="card card-stat-red">
+        <div class="card-title" style="opacity:.8">Kiadás (HUF)</div>
+        <div class="stat-value red" style="font-size:24px">${fmtAgg(expenseHuf)}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Egyenleg</div>
+        <div class="stat-value ${netHuf >= 0 ? 'green' : 'red'}" style="font-size:24px">${netHuf >= 0 ? '+' : ''}${fmtAgg(netHuf)}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-size:11px;color:var(--muted)">${txns.length} tétel · ${minDate || '—'} – ${maxDate || '—'} · ${months.length} hónap · ${importCount} import · utolsó: ${importedStr}${curNote}${nonConvNote}</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Havi bevétel / kiadás</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-bottom:8px">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--accent2);margin-right:5px;vertical-align:-1px"></span>Bevétel</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--red);margin-right:5px;vertical-align:-1px"></span>Kiadás</span>
+        <span style="margin-left:auto">jobbra: havi egyenleg</span>
+      </div>
+      ${monthlyRows || '<div style="color:var(--muted);font-size:12px">Nincs adat.</div>'}
+    </div>
+
+    ${importsCard}
+
+    <div class="grid g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">Kiadás típus szerint</div>
+        ${typeList(expByType, 'red')}
+      </div>
+      <div class="card">
+        <div class="card-title">Bevétel forrás szerint</div>
+        ${typeList(incByType, 'green')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Top 10 kiadás (megnevezés)</div>
+      ${merchantRows}
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Részletező</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px">
+        <div><label>Hónap</label><select id="exp-f-month" onchange="applyExpenseFilter()">${monthOpts}</select></div>
+        <div><label>Bank</label><select id="exp-f-bank" onchange="applyExpenseFilter()">${bankOpts}</select></div>
+        <div><label>Irány</label><select id="exp-f-dir" onchange="applyExpenseFilter()">${dirOpts}</select></div>
+        <div><label>Típus</label><select id="exp-f-type" onchange="applyExpenseFilter()">${typeOpts}</select></div>
+        <div><label>Keresés</label><input type="text" id="exp-f-q" placeholder="megnevezés…" value="${escHtml(_expFilter.q)}" oninput="applyExpenseFilter()" /></div>
+      </div>
+      <div id="exp-detail-body"></div>
+    </div>`;
+  renderExpenseDetail();
+}
+
+function applyExpenseFilter() {
+  const val = (id) => {
+    const el = document.getElementById(id);
+    return el ? el.value : 'all';
+  };
+  _expFilter = {
+    month: val('exp-f-month'),
+    bank: val('exp-f-bank'),
+    dir: val('exp-f-dir'),
+    type: val('exp-f-type'),
+    q: (val('exp-f-q') || '').trim().toLowerCase()
+  };
+  renderExpenseDetail();
+}
+
+function renderExpenseDetail() {
+  const body = document.getElementById('exp-detail-body');
+  const rep = state.expenseReport;
+  if (!body || !rep || !rep.txns) return;
+  const f = _expFilter;
+  const rows = rep.txns.filter((t) => {
+    const s = _txnSigned(t);
+    if (f.month !== 'all' && t.date.slice(0, 7) !== f.month) return false;
+    if (f.bank && f.bank !== 'all' && (t.bank || 'Egyéb') !== f.bank) return false;
+    if (f.dir === 'out' && s >= 0) return false;
+    if (f.dir === 'in' && s <= 0) return false;
+    if (f.type !== 'all' && (t.type || 'Egyéb') !== f.type) return false;
+    if (
+      f.q &&
+      !(t.desc || '').toLowerCase().includes(f.q) &&
+      !(t.type || '').toLowerCase().includes(f.q)
+    )
+      return false;
+    return true;
+  });
+  rows.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  let inSum = 0,
+    outSum = 0;
+  rows.forEach((t) => {
+    const s = _txnSigned(t);
+    const mag = _expToHuf(Math.abs(s), t.currency);
+    if (mag == null) return;
+    if (s > 0) inSum += mag;
+    else outSum += mag;
+  });
+  const net = inSum - outSum;
+  const cap = rows.slice(0, 300);
+  const trs = cap
+    .map((t) => {
+      const s = _txnSigned(t);
+      const pos = s > 0;
+      return `<tr>
+        <td style="white-space:nowrap">${t.date}</td>
+        <td style="white-space:nowrap;color:var(--muted)">${escHtml(t.bank || '—')}</td>
+        <td>${escHtml(t.desc || '—')}</td>
+        <td style="white-space:nowrap;color:var(--muted)">${escHtml(t.type)}</td>
+        <td class="num ${pos ? 'green' : 'red'}" style="white-space:nowrap;text-align:right">${pos ? '+' : '−'} ${fmtCur(Math.abs(s), t.currency)}</td>
+      </tr>`;
+    })
+    .join('');
+  body.innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin-bottom:10px">
+      <span>${rows.length} tétel</span>
+      <span>Bevétel: <strong class="green">${fmtAgg(inSum)}</strong></span>
+      <span>Kiadás: <strong class="red">${fmtAgg(outSum)}</strong></span>
+      <span>Egyenleg: <strong class="${net >= 0 ? 'green' : 'red'}">${net >= 0 ? '+' : ''}${fmtAgg(net)}</strong></span>
+    </div>
+    <div class="scroll-table">
+      <table style="width:100%;font-size:12.5px">
+        <thead><tr><th>Dátum</th><th>Bank</th><th>Megnevezés</th><th>Típus</th><th style="text-align:right">Összeg</th></tr></thead>
+        <tbody>${trs || '<tr><td colspan="5" style="color:var(--muted);padding:8px 0">Nincs a szűrésnek megfelelő tétel.</td></tr>'}</tbody>
+      </table>
+    </div>
+    ${rows.length > cap.length ? `<div style="font-size:11px;color:var(--muted);margin-top:8px">Csak az első ${cap.length} tétel látszik (${rows.length} összesen). Szűkíts hónappal vagy kereséssel.</div>` : ''}`;
+}
+
 function renderAll() {
   renderStocks();
   renderCrypto();
@@ -5975,6 +7135,7 @@ function renderAll() {
   renderWatch();
   renderTaxSettings();
   renderSalary();
+  renderExpenseReport();
 }
 document.addEventListener('DOMContentLoaded', () => {
   const crD = document.getElementById('cr-date');

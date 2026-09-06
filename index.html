@@ -51,6 +51,8 @@
       <button data-tab="pledge" onclick="showTab('pledge')">Zálog</button>
       <button data-tab="loan" onclick="showTab('loan')">Hitel</button>
       <button data-tab="services" onclick="showTab('services')">Szolgáltatások</button>
+      <button data-tab="salary" onclick="showTab('salary')">Bevétel</button>
+      <button data-tab="expense" onclick="showTab('expense')">Kiadás</button>
       <button data-tab="account" onclick="showTab('account')">Fiók</button>
     </nav>
 
@@ -157,6 +159,14 @@
           <div class="card-title">Osztalék adózása (becsült)</div>
           <div id="d-div-tax"></div>
         </div>
+
+        <div class="card" id="d-timeline-card" style="margin-bottom: 24px">
+          <div class="card-title">Pénzügyi idővonal — 2026</div>
+          <div style="color: var(--muted); font-size: 12px; margin-bottom: 8px">
+            Havi összes bevétel és kiadás (az arany-, részvény- és kriptovétel is kiadás)
+          </div>
+          <div id="d-timeline"></div>
+        </div>
       </div>
 
       <div class="tab-content" id="tab-watch">
@@ -164,8 +174,6 @@
           <div class="section-title" style="font-size: 22px; margin-bottom: 4px">Interaktív Figyelő</div>
           <div style="color: var(--muted); font-size: 12px">Élő követés: kripto, részvények és befektetési arany</div>
         </div>
-
-        <div id="watch-refresh-bar"></div>
 
         <div class="watch-section" data-watch-module="crypto">
           <div class="section-title" style="font-size: 14px; margin-bottom: 12px">Kripto</div>
@@ -1249,6 +1257,18 @@
             Profiladatok, biztonság, adózás és adatkezelés
           </div>
 
+          <div class="card" style="margin-bottom: 16px">
+            <div class="card-title">Élő árfolyam</div>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
+              Frissítsd a kripto-, részvény- és aranyárfolyamokat, valamint a HUF átváltási árfolyamot.
+            </p>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+              <button class="btn btn-secondary btn-sm" onclick="refreshAllPrices()">Élő árfolyam frissítés</button>
+              <span class="refresh-status" style="font-size:11px;color:var(--muted)"></span>
+            </div>
+            <div style="font-size:11.5px"><span id="fx-info"></span></div>
+          </div>
+
           <div class="grid g2" style="margin-bottom: 16px">
             <div class="card">
               <div class="card-title">Profiladatok</div>
@@ -1400,73 +1420,6 @@
               <div id="acc-tax-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
               <button class="btn" onclick="updateTaxSettings()">Adókulcsok mentése</button>
             </div>
-
-            <div class="card">
-              <div class="card-title">Alkalmazotti fizetés</div>
-              <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
-                Add meg a bruttó fizetésed és a levonások kulcsait. A rendszer kiszámolja a nettó bevételed, valamint
-                azt, hogy a hónap hányadik napján várható a kifizetés.
-              </p>
-              <div class="form-grid fg2" style="margin-bottom: 16px">
-                <div style="grid-column: 1 / -1">
-                  <label>Bruttó fizetés (Ft)</label>
-                  <input
-                    type="text"
-                    inputmode="numeric"
-                    id="acc-sal-gross"
-                    placeholder="0"
-                    oninput="formatThousands(this); renderSalaryBreakdown()"
-                  />
-                </div>
-                <div>
-                  <label>Személyi jövedelemadó – SZJA (%)</label>
-                  <input
-                    type="number"
-                    id="acc-sal-szja"
-                    placeholder="15"
-                    step="0.01"
-                    min="0"
-                    oninput="renderSalaryBreakdown()"
-                  />
-                </div>
-                <div>
-                  <label>Szociális hozzájárulási adó – SZOCHO (%)</label>
-                  <input
-                    type="number"
-                    id="acc-sal-szocho"
-                    placeholder="0"
-                    step="0.01"
-                    min="0"
-                    oninput="renderSalaryBreakdown()"
-                  />
-                </div>
-                <div>
-                  <label>Társadalombiztosítás – TB (%)</label>
-                  <input
-                    type="number"
-                    id="acc-sal-tb"
-                    placeholder="18.5"
-                    step="0.01"
-                    min="0"
-                    oninput="renderSalaryBreakdown()"
-                  />
-                </div>
-                <div>
-                  <label>Kifizetés napja (hónapban)</label>
-                  <input
-                    type="number"
-                    id="acc-sal-day"
-                    placeholder="pl. 10"
-                    min="1"
-                    max="31"
-                    oninput="renderSalaryBreakdown()"
-                  />
-                </div>
-              </div>
-              <div id="salary-breakdown"></div>
-              <div id="acc-sal-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
-              <button class="btn" onclick="updateSalarySettings()">Fizetés mentése</button>
-            </div>
           </div>
 
           <div class="card" style="margin-bottom: 16px">
@@ -1497,6 +1450,187 @@
               <button class="btn btn-secondary btn-sm" onclick="openModal('data-modal')">Megnyitás</button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-salary">
+        <div style="max-width: 1000px; margin: 0 auto">
+          <div class="section-title" style="font-size: 22px; margin-bottom: 4px">Alkalmazotti bevétel</div>
+          <div style="color: var(--muted); font-size: 12px; margin-bottom: 24px">
+            A munkabéred nettó összege — beszámít a havi pénzáramlásba és a pénzügyi idővonalba
+          </div>
+
+          <div class="card" style="margin-bottom: 16px">
+            <div class="card-title">Alkalmazotti fizetés</div>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
+              Add meg a bruttó fizetésed és a levonások kulcsait. A rendszer kiszámolja a nettó bevételed, valamint
+              azt, hogy a hónap hányadik napján várható a kifizetés.
+            </p>
+            <div class="form-grid fg2" style="margin-bottom: 16px">
+              <div style="grid-column: 1 / -1">
+                <label>Bruttó fizetés (Ft)</label>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="acc-sal-gross"
+                  placeholder="0"
+                  oninput="formatThousands(this); renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>Személyi jövedelemadó – SZJA (%)</label>
+                <input
+                  type="number"
+                  id="acc-sal-szja"
+                  placeholder="15"
+                  step="0.01"
+                  min="0"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>Szociális hozzájárulási adó – SZOCHO (%)</label>
+                <input
+                  type="number"
+                  id="acc-sal-szocho"
+                  placeholder="0"
+                  step="0.01"
+                  min="0"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>Társadalombiztosítás – TB (%)</label>
+                <input
+                  type="number"
+                  id="acc-sal-tb"
+                  placeholder="18.5"
+                  step="0.01"
+                  min="0"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>Kifizetés napja (hónapban)</label>
+                <input
+                  type="number"
+                  id="acc-sal-day"
+                  placeholder="pl. 10"
+                  min="1"
+                  max="31"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+            </div>
+            <div id="salary-breakdown"></div>
+            <div id="acc-sal-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
+            <button class="btn" onclick="updateSalarySettings()">Fizetés mentése</button>
+          </div>
+
+          <div class="card" style="margin-bottom: 16px">
+            <div class="card-title">Bevételi korrekciók</div>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
+              Havi eltérések az alapfizetéshez képest: prémium, 13. havi, túlóra (+), vagy táppénz, fizetés nélküli
+              szabadság (−). A korrekciók beszámítanak a bevételi idővonalba és a havi pénzáramlásba.
+            </p>
+            <div class="form-grid fg2" style="margin-bottom: 12px">
+              <div>
+                <label>Hónap</label>
+                <select id="sal-adj-month">
+                  <option value="1">Január</option>
+                  <option value="2">Február</option>
+                  <option value="3">Március</option>
+                  <option value="4">Április</option>
+                  <option value="5">Május</option>
+                  <option value="6">Június</option>
+                  <option value="7">Július</option>
+                  <option value="8">Augusztus</option>
+                  <option value="9">Szeptember</option>
+                  <option value="10">Október</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+              </div>
+              <div>
+                <label>Típus</label>
+                <select id="sal-adj-type">
+                  <option value="add">Hozzáadás (+)</option>
+                  <option value="sub">Levonás (−)</option>
+                </select>
+              </div>
+              <div>
+                <label>Összeg (Ft)</label>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="sal-adj-amount"
+                  placeholder="0"
+                  oninput="formatThousands(this)"
+                />
+              </div>
+              <div>
+                <label>Megnevezés</label>
+                <input type="text" id="sal-adj-note" placeholder="pl. Prémium, 13. havi" />
+              </div>
+            </div>
+            <div id="sal-adj-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 10px"></div>
+            <button class="btn" onclick="addSalaryAdjustment()">+ Korrekció hozzáadása</button>
+            <div id="salary-adjust-list" style="margin-top: 16px"></div>
+          </div>
+
+          <div class="card" style="margin-bottom: 16px">
+            <div class="card-title">Bevételi idővonal — 2026</div>
+            <div style="color: var(--muted); font-size: 12px; margin-bottom: 12px">
+              Havi összes bevétel (alap fizetés + korrekciók), 2026 januárjától
+            </div>
+            <div id="salary-timeline"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-expense">
+        <div style="max-width: 1000px; margin: 0 auto">
+          <div class="section-title" style="font-size: 22px; margin-bottom: 4px">Kiadás</div>
+          <div style="color: var(--muted); font-size: 12px; margin-bottom: 24px">
+            Töltsd fel a Revolut bankszámlakivonatot (Excel/CSV) — bevétel, kiadás és minden mozgás egy helyen, havi
+            bontással és szűrhető részletezővel
+          </div>
+
+          <div class="card" style="margin-bottom: 16px">
+            <div class="card-title">Bankszámlakivonat feltöltése</div>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
+              Támogatott: <strong>Revolut</strong> (Excel/CSV) és <strong>OTP Bank</strong> (Excel) kivonat. A feldolgozás a
+              böngésződben, helyben történik — az adat nem kerül fel sehova. A <strong>teljes kivonat</strong>
+              feldolgozódik: bevétel, kiadás, készpénzfelvétel és feltöltés is. A részletezőben hónapra és típusra
+              szűrhetsz. Több hónapot is feltölthetsz egymás után — az adatok összeadódnak (a duplikátumok kimaradnak).
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+              <label
+                class="btn"
+                style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px"
+              >
+                <span>📄 Fájl kiválasztása</span>
+                <input
+                  type="file"
+                  id="exp-file"
+                  accept=".xlsx,.xls,.csv"
+                  style="display: none"
+                  onchange="handleRevolutUpload(this)"
+                />
+              </label>
+              <button
+                id="exp-clear-btn"
+                class="btn btn-secondary"
+                style="display: none"
+                onclick="clearExpenseReport()"
+              >
+                Összes törlése
+              </button>
+            </div>
+            <div id="exp-upload-msg" style="min-height: 18px; font-size: 12px; margin-top: 12px"></div>
+          </div>
+
+          <div id="exp-report"></div>
         </div>
       </div>
     </main>

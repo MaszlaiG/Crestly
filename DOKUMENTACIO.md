@@ -149,7 +149,7 @@ Mobil-first, azzal az alapelvvel, hogy **semmi nem lóg ki vízszintesen** — a
 ## 8. Beüzemelés
 
 1. Firebase-projekt + konfiguráció (`firestore.rules` telepítés).
-2. A fájlok feltöltése statikus tárhelyre (Firebase Hosting / GitHub Pages / Netlify / saját szerver).
+2. A fájlok feltöltése GitHubra (GitHub Pages szolgálja ki a weboldalt). A Firebase csak az adattárolás (Auth + Firestore).
 3. Regisztráció; az élő árfolyamok automatikusan frissülnek, az adat a `vaults/<uid>`-ba kerül.
 
 Nincs build lépés; fejlesztéshez elég egy statikus fájlkiszolgáló. (Az élő árfolyamokhoz internet szükséges; internet nélkül a legutóbbi cache-elt értékekkel számol.)
