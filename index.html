@@ -1848,7 +1848,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
     <script>
       var firebaseConfig = {
         apiKey: "AIzaSyAJ3-2_w0J3p3Eg7Su5yA0V1x_Cac5ghQM",
@@ -1860,17 +1859,9 @@
         measurementId: "G-ZEWH3YT14R",
       };
       firebase.initializeApp(firebaseConfig);
-      // Long-polling: egyes hálózatok / böngészők (pl. Safari szigorú
-      // adatvédelem, VPN, proxy) blokkolják a Firestore streaming (WebChannel)
-      // kapcsolatát ("access control checks"). A long-polling ezt megkerüli.
-      try {
-        firebase.firestore().settings({ experimentalForceLongPolling: true });
-      } catch (e) {
-        console.warn('[Nettli] Firestore settings:', e);
-      }
     </script>
-    <script src="js/firebase-store.js?v=20260906"></script>
-    <script src="js/script.js?v=20260906"></script>
-    <script src="js/fit-text.js?v=20260906"></script>
+    <script src="js/firebase-store.js?v=20260906b"></script>
+    <script src="js/script.js?v=20260906b"></script>
+    <script src="js/fit-text.js?v=20260906b"></script>
   </body>
 </html>
