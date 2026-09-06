@@ -2268,7 +2268,7 @@ function fxRateIsSane(usd, eur) {
   );
 }
 async function fetchFxRates() {
-  const url = 'https://api.frankfurter.app/latest?from=USD&to=HUF,EUR';
+  const url = 'https://api.frankfurter.dev/v1/latest?from=USD&to=HUF,EUR';
   let d = null;
   try {
     const r = await fetch(url + '&_=' + Date.now(), {
@@ -2339,7 +2339,7 @@ async function fxRateForDate(currency, dateStr) {
   }
   if (!fxHistoryCache[dateStr]) {
     try {
-      const r = await fetch(`https://api.frankfurter.app/${dateStr}?from=USD&to=HUF,EUR`);
+      const r = await fetch(`https://api.frankfurter.dev/v1/${dateStr}?from=USD&to=HUF,EUR`);
       const d = await r.json();
       if (d.rates?.HUF) {
         const usd = d.rates.HUF;
