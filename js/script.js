@@ -1340,7 +1340,7 @@ function exportData() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (e) {
     uiAlert('A mentés exportálása nem sikerült.');
-    console.error('[VagyonMentor] export error:', e);
+    console.error('[Nettli] export error:', e);
   }
 }
 function generateFinancialReport() {
@@ -1792,9 +1792,6 @@ async function resetAllData() {
     }))
   )
     return;
-  try {
-    localStorage.removeItem('vagyonmentor_v2');
-  } catch (e) {}
   const reset = {
     stocks: [],
     crypto: [],
