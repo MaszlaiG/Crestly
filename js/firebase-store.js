@@ -51,6 +51,28 @@
     return null;
   }
 
+  // Van-e érdemi adat az állapotban? (pajzs az üres felülíráshoz)
+  function vaultIsEmpty(s) {
+    if (!s || typeof s !== 'object') return true;
+    var arr = function (k) {
+      return Array.isArray(s[k]) && s[k].length > 0;
+    };
+    if (
+      arr('stocks') ||
+      arr('crypto') ||
+      arr('goldItems') ||
+      arr('loans') ||
+      arr('pledges') ||
+      arr('services') ||
+      arr('salaryAdjustments')
+    )
+      return false;
+    if (s.expenseReport && Array.isArray(s.expenseReport.txns) && s.expenseReport.txns.length > 0)
+      return false;
+    if (s.salary && Number(s.salary.gross) > 0) return false;
+    return true;
+  }
+
   function fieldsToObj(fields) {
     var o = {};
     Object.keys(fields || {}).forEach(function (k) {
@@ -89,7 +111,7 @@
         try {
           cb(userObj(u));
         } catch (e) {
-          console.error('[Nettli] auth listener hiba:', e);
+          console.error('[Crestly] auth listener hiba:', e);
         }
       });
     },
@@ -162,7 +184,7 @@
       });
     },
 
-    saveVault: function (obj) {
+    saveVault: function (obj, opts) {
       var u = auth.currentUser;
       if (!u) return Promise.resolve();
       var clean;
@@ -171,27 +193,51 @@
       } catch (e) {
         clean = obj;
       }
-      var body = JSON.stringify({ fields: objToFields(clean) });
-      return u
-        .getIdToken()
-        .then(function (token) {
-          return fetch(FS_BASE + '/vaults/' + u.uid, {
-            method: 'PATCH',
-            headers: {
-              Authorization: 'Bearer ' + token,
-              'Content-Type': 'application/json'
-            },
-            body: body
-          });
-        })
-        .then(function (r) {
+      var allowEmpty = opts && opts.allowEmpty;
+
+      function writeDoc(token) {
+        return fetch(FS_BASE + '/vaults/' + u.uid, {
+          method: 'PATCH',
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ fields: objToFields(clean) })
+        }).then(function (r) {
           if (!r.ok)
             return r.text().then(function (t) {
               throw new Error('Firestore mentés HTTP ' + r.status + ' ' + t);
             });
+        });
+      }
+
+      return u
+        .getIdToken()
+        .then(function (token) {
+          // PAJZS: ha üres állapotot mentenénk (nincs érdemi adat), előbb
+          // megnézzük a felhőt — ha ott VAN adat, NEM írjuk felül üressel.
+          if (!allowEmpty && vaultIsEmpty(clean)) {
+            return fetch(FS_BASE + '/vaults/' + u.uid, {
+              headers: { Authorization: 'Bearer ' + token }
+            })
+              .then(function (r) {
+                return r.ok ? r.json() : null;
+              })
+              .then(function (doc) {
+                var current = doc && doc.fields ? fieldsToObj(doc.fields) : null;
+                if (current && !vaultIsEmpty(current)) {
+                  console.warn(
+                    '[Crestly] PAJZS: üres állapot mentése kihagyva — a felhőben van adat, nem írjuk felül.'
+                  );
+                  return; // NE írjuk felül
+                }
+                return writeDoc(token); // új/üres fiók — biztonságos írni
+              });
+          }
+          return writeDoc(token);
         })
         .catch(function (e) {
-          console.error('[Nettli] mentés hiba:', e);
+          console.error('[Crestly] mentés hiba:', e);
         });
     },
 

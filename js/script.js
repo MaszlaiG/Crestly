@@ -426,7 +426,7 @@ const I18N_HU_EN = {
   'A mentés exportálása nem sikerült.': 'Exporting the backup failed.',
   'A mentés nem sikerült.': 'The export failed.',
   'A mentés visszatöltve.': 'Backup restored.',
-  'Ez nem egy érvényes Nettli mentésfájl.': 'This is not a valid Nettli backup file.',
+  'Ez nem egy érvényes Crestly mentésfájl.': 'This is not a valid Crestly backup file.',
   'Hibás mentésfájl — nem JSON formátum.': 'Invalid backup file — not JSON format.',
   'Biztosan kijelentkezel?': 'Are you sure you want to sign out?',
   'Biztosan visszatöltöd ezt a mentést? A jelenlegi adatok felülíródnak ezen az eszközön.':
@@ -631,8 +631,29 @@ LocalStore.onAuthChange((user) => {
     if (accName) accName.value = user.name || '';
     if (accEmail) accEmail.value = user.email || '';
     migrateLocalDataIfNeeded().finally(() => {
-      load().then(() => {
+      load().then(async () => {
         normalizeState();
+        // Háló: ha a felhő ÜRES, de van érdemi helyi mentés, ajánljuk fel.
+        if (_dataLoaded && !vaultHasData(state)) {
+          const bk = getLocalBackup();
+          if (bk && bk.data && vaultHasData(bk.data)) {
+            const when = new Date(bk.t).toLocaleString(LOC());
+            if (
+              await uiConfirm(
+                'A felhőben most nincs adat, de találtam egy helyi biztonsági mentést (' +
+                  when +
+                  '). Visszatöltöd?',
+                { title: 'Helyi mentés', confirmText: 'Visszatöltés' }
+              )
+            ) {
+              state = bk.data;
+              normalizeState();
+              save();
+            }
+          }
+        } else {
+          backupLocal();
+        }
         renderAll();
         renderModuleSettings();
         applyModuleVisibility();
@@ -1205,17 +1226,55 @@ let priceCache = {};
 let goldSpotLive = false;
 let _saveTimer = null;
 let _dataLoaded = false;
-function save() {
+function vaultHasData(s) {
+  if (!s || typeof s !== 'object') return false;
+  const arr = (k) => Array.isArray(s[k]) && s[k].length > 0;
+  if (
+    arr('stocks') ||
+    arr('crypto') ||
+    arr('goldItems') ||
+    arr('loans') ||
+    arr('pledges') ||
+    arr('services') ||
+    arr('salaryAdjustments')
+  )
+    return true;
+  if (s.expenseReport && Array.isArray(s.expenseReport.txns) && s.expenseReport.txns.length > 0)
+    return true;
+  if (s.salary && Number(s.salary.gross) > 0) return true;
+  return false;
+}
+// Helyi biztonsági másolat (a felhő melletti háló)
+function backupLocal() {
+  try {
+    if (currentUid && vaultHasData(state)) {
+      localStorage.setItem(
+        'nettli_backup_' + currentUid,
+        JSON.stringify({ t: Date.now(), data: state })
+      );
+    }
+  } catch (e) {}
+}
+function getLocalBackup() {
+  try {
+    const raw = localStorage.getItem('nettli_backup_' + currentUid);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+function save(allowEmpty) {
   // Biztonsági zár: amíg a felhasználó adatai nem töltődtek be sikeresen,
   // NEM írunk a Firestore-ba, különben egy hibás/lassú betöltés utáni üres
   // alapállapot felülírhatná (kitörölhetné) a valódi adatokat.
   if (!currentUid || !_dataLoaded) return;
+  backupLocal();
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
     try {
-      LocalStore.saveVault(state);
+      LocalStore.saveVault(state, { allowEmpty: !!allowEmpty });
     } catch (e) {
-      console.error('[Nettli] mentés hiba:', e);
+      console.error('[Crestly] mentés hiba:', e);
     }
   }, 600);
 }
@@ -1280,7 +1339,7 @@ function load() {
   let loadFailed = false;
   return LocalStore.loadVault()
     .catch((e) => {
-      console.error('[Nettli] betöltés hiba:', e);
+      console.error('[Crestly] betöltés hiba:', e);
       loadFailed = true;
       return null;
     })
@@ -1320,7 +1379,7 @@ function load() {
         try {
           LocalStore.saveVault(state);
         } catch (e) {
-          console.error('[Nettli] üzleti adatok törlése hiba:', e);
+          console.error('[Crestly] üzleti adatok törlése hiba:', e);
         }
       }
     });
@@ -1340,7 +1399,7 @@ function exportData() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (e) {
     uiAlert('A mentés exportálása nem sikerült.');
-    console.error('[Nettli] export error:', e);
+    console.error('[Crestly] export error:', e);
   }
 }
 function generateFinancialReport() {
@@ -1626,22 +1685,22 @@ function generateFinancialReport() {
       : ''
   );
   const html = `<!doctype html><html lang="hu"><head><meta charset="utf-8">
-<title>Nettli_penzugyi_kimutatas_${dateFile}</title>
+<title>Crestly_penzugyi_kimutatas_${dateFile}</title>
 <style>
 *{box-sizing:border-box}
 body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#1c1c1c;margin:0;background:#eceae4;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .doc{max-width:840px;margin:0 auto;background:#fff;padding:34px 40px}
 h1{font-size:22px;margin:0 0 2px}
-.brand{color:#b8873a;font-weight:700;letter-spacing:.5px;font-size:12px;text-transform:uppercase;margin-bottom:10px}
+.brand{color:#a9b24a;font-weight:700;letter-spacing:.5px;font-size:12px;text-transform:uppercase;margin-bottom:10px}
 .meta{color:#666;font-size:11.5px;margin-bottom:6px;line-height:1.6}
-h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:#b8873a;border-bottom:2px solid #e6e0d4;padding-bottom:6px;margin:28px 0 12px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:#a9b24a;border-bottom:2px solid #e6e0d4;padding-bottom:6px;margin:28px 0 12px}
 table{width:100%;border-collapse:collapse;font-size:11.5px}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid #efefef}
 th{color:#999;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tfoot td{font-weight:700;border-top:2px solid #ddd;border-bottom:none;background:#faf7f1}
 tr.subtotal td{font-weight:700;border-top:1px solid #ddd;background:#faf9f6}
-.pos{color:#1a7f4b}.neg{color:#b23b2e}.muted{color:#999}.gold{color:#b8873a}
+.pos{color:#1a7f4b}.neg{color:#b23b2e}.muted{color:#999}.gold{color:#a9b24a}
 .summary{display:grid;grid-template-columns:repeat(2,1fr);gap:0 28px}
 .sum-item{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid #f1f1f1;font-size:12.5px}
 .sum-item .lbl{color:#555}.sum-item .val{font-weight:700;white-space:nowrap}
@@ -1650,7 +1709,7 @@ thead{display:table-header-group}
 tr{page-break-inside:avoid}
 footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;font-size:10px;line-height:1.6}
 #vm-loader{position:fixed;inset:0;z-index:9999;background:#eceae4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:15px;color:#555}
-#vm-loader .spin{width:34px;height:34px;border:3px solid #d8d2c6;border-top-color:#b8873a;border-radius:50%;animation:vmspin 0.8s linear infinite}
+#vm-loader .spin{width:34px;height:34px;border:3px solid #d8d2c6;border-top-color:#a9b24a;border-radius:50%;animation:vmspin 0.8s linear infinite}
 @keyframes vmspin{to{transform:rotate(360deg)}}
 @media print{body{background:#fff}.no-print{display:none!important}.doc{max-width:none;padding:0}@page{size:A4;margin:14mm}}
 </style>
@@ -1659,7 +1718,7 @@ footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;fon
 <body>
 <div id="vm-loader"><div class="spin"></div><div>Kimutatás készítése…</div></div>
 <div class="doc">
-  <div class="brand">Nettli</div>
+  <div class="brand">Crestly</div>
   <h1>Pénzügyi kimutatás</h1>
   <div class="meta">
     Készült: ${esc(genStr)}${acctName ? ` &nbsp;·&nbsp; ${esc(acctName)}` : ''}${acctEmail ? ` &nbsp;·&nbsp; ${esc(acctEmail)}` : ''}<br>
@@ -1677,7 +1736,7 @@ footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;fon
   ${useServices ? `<section><h2>Előfizetések / szolgáltatások</h2>${svcHtml}</section>` : ''}
 
   <footer>
-    Ez a kimutatás tájékoztató jellegű, a Nettli alkalmazásban rögzített adatokból és az utolsó lekért árfolyamokból készült. Nem minősül pénzügyi tanácsadásnak vagy hivatalos elszámolásnak. A pontos, naprakész értékekért frissítsd az élő árfolyamokat a kimutatás előtt.
+    Ez a kimutatás tájékoztató jellegű, a Crestly alkalmazásban rögzített adatokból és az utolsó lekért árfolyamokból készült. Nem minősül pénzügyi tanácsadásnak vagy hivatalos elszámolásnak. A pontos, naprakész értékekért frissítsd az élő árfolyamokat a kimutatás előtt.
   </footer>
 </div>
 <script>
@@ -1694,7 +1753,7 @@ footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;fon
     var el=document.querySelector('.doc');
     var opt={
       margin:[17,10,15,10],
-      filename:'Nettli_penzugyi_kimutatas_${dateFile}.pdf',
+      filename:'Crestly_penzugyi_kimutatas_${dateFile}.pdf',
       image:{type:'jpeg',quality:0.98},
       html2canvas:{scale:2,backgroundColor:'#ffffff',useCORS:true},
       jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
@@ -1707,12 +1766,12 @@ footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;fon
       for(var i=1;i<=total;i++){
         pdf.setPage(i);
         pdf.setFont('helvetica','bold'); pdf.setFontSize(10); pdf.setTextColor(184,135,58);
-        pdf.text('Nettli', pw/2, 9, {align:'center'});
+        pdf.text('Crestly', pw/2, 9, {align:'center'});
         pdf.setDrawColor(228,222,210); pdf.setLineWidth(0.2); pdf.line(10,11.5,pw-10,11.5);
         pdf.setFont('helvetica','normal'); pdf.setFontSize(8.5); pdf.setTextColor(150,150,150);
         pdf.text(i+' / '+total, pw/2, ph-6, {align:'center'});
       }
-      try { pdf.setProperties({ title:'Nettli penzugyi kimutatas ${dateFile}' }); } catch(e){}
+      try { pdf.setProperties({ title:'Crestly penzugyi kimutatas ${dateFile}' }); } catch(e){}
       var url=URL.createObjectURL(pdf.output('blob'));
       document.body.innerHTML='';
       document.body.style.margin='0';
@@ -1751,7 +1810,7 @@ function importData(input) {
       return;
     }
     if (!data || typeof data !== 'object' || Array.isArray(data)) {
-      uiAlert('Ez nem egy érvényes Nettli mentésfájl.');
+      uiAlert('Ez nem egy érvényes Crestly mentésfájl.');
       input.value = '';
       return;
     }
@@ -1809,9 +1868,13 @@ async function resetAllData() {
   ['bizIncome', 'bizExpense', 'orders', 'bizTaxRate'].forEach((k) => delete state[k]);
   Object.assign(state, reset);
   try {
-    if (currentUid) await LocalStore.saveVault(state);
+    // Szándékos, végleges törlés — a pajzsot itt engedjük (allowEmpty).
+    try {
+      localStorage.removeItem('nettli_backup_' + currentUid);
+    } catch (e) {}
+    if (currentUid) await LocalStore.saveVault(state, { allowEmpty: true });
   } catch (e) {
-    console.error('[Nettli] reset error:', e);
+    console.error('[Crestly] reset error:', e);
   }
   location.reload();
 }
@@ -3678,14 +3741,14 @@ function renderCrypto() {
         '<div style="color:var(--muted);font-size:12px;padding:10px 0">Nincs nyitott pozíció</div>';
     } else {
       const palette = [
-        '#C08A2E',
-        '#3FA36C',
-        '#4FA7BD',
-        '#8B6690',
-        '#C24A3A',
-        '#B8873A',
-        '#6E8B3D',
-        '#B0703A'
+        '#c2992e',
+        '#10a06b',
+        '#159c86',
+        '#3f8f74',
+        '#9c7a34',
+        '#a9b24a',
+        '#6ea63b',
+        '#2bbf88'
       ];
       const n = coinStats.length;
       const cols = n > 5 ? 2 : n > 1 ? 3 : 1;
@@ -5874,31 +5937,31 @@ function renderDashboard() {
     donutSegs.push({
       label: L('Arany', 'Gold'),
       value: goldVal,
-      color: '#C08A2E'
+      color: '#c2992e'
     });
   if (useStocks)
     donutSegs.push({
       label: L('Részvény', 'Stocks'),
       value: stockVal,
-      color: '#3FA36C'
+      color: '#10a06b'
     });
   if (useCrypto)
     donutSegs.push({
       label: L('Kripto', 'Crypto'),
       value: cryptoOpen,
-      color: '#4FA7BD'
+      color: '#159c86'
     });
   if (usePledge)
     donutSegs.push({
       label: L('Zálog (−)', 'Pledge (−)'),
       value: totalPledge,
-      color: '#8B6690'
+      color: '#3f8f74'
     });
   if (useLoans)
     donutSegs.push({
       label: L('Hitel (−)', 'Loans (−)'),
       value: totalLoan,
-      color: '#C24A3A'
+      color: '#9c7a34'
     });
   drawDonut(donutSegs, {
     label: L('Teljes vagyon', 'Net worth'),
