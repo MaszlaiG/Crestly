@@ -633,7 +633,7 @@ LocalStore.onAuthChange((user) => {
     migrateLocalDataIfNeeded().finally(() => {
       load().then(async () => {
         normalizeState();
-        // Háló: ha a felhő ÜRES, de van érdemi helyi mentés, ajánljuk fel.
+
         if (_dataLoaded && !vaultHasData(state)) {
           const bk = getLocalBackup();
           if (bk && bk.data && vaultHasData(bk.data)) {
@@ -964,7 +964,7 @@ function incomeAdjustmentsForMonth(monthIdx0, year) {
     (a) => (a.year || INCOME_YEAR) === year && a.month - 1 === monthIdx0
   );
 }
-// Havi bevétel-sorozat: alapfizetés + korrekciók (itemizálva)
+
 function monthlyIncomeSeries(year) {
   const base = salaryNetMonthly();
   const totals = new Array(12).fill(0);
@@ -1244,7 +1244,7 @@ function vaultHasData(s) {
   if (s.salary && Number(s.salary.gross) > 0) return true;
   return false;
 }
-// Helyi biztonsági másolat (a felhő melletti háló)
+
 function backupLocal() {
   try {
     if (currentUid && vaultHasData(state)) {
@@ -1264,9 +1264,7 @@ function getLocalBackup() {
   }
 }
 function save(allowEmpty) {
-  // Biztonsági zár: amíg a felhasználó adatai nem töltődtek be sikeresen,
-  // NEM írunk a Firestore-ba, különben egy hibás/lassú betöltés utáni üres
-  // alapállapot felülírhatná (kitörölhetné) a valódi adatokat.
+
   if (!currentUid || !_dataLoaded) return;
   backupLocal();
   clearTimeout(_saveTimer);
@@ -1372,7 +1370,7 @@ function load() {
         };
       }
       const bizKeys = ['bizIncome', 'bizExpense', 'orders', 'bizTaxRate'];
-      // Csak sikeres betöltés után engedjük a mentést (adatvédelem).
+
       if (!loadFailed) _dataLoaded = true;
       if (_dataLoaded && bizKeys.some((k) => k in state)) {
         bizKeys.forEach((k) => delete state[k]);
@@ -1691,16 +1689,16 @@ function generateFinancialReport() {
 body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#1c1c1c;margin:0;background:#eceae4;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .doc{max-width:840px;margin:0 auto;background:#fff;padding:34px 40px}
 h1{font-size:22px;margin:0 0 2px}
-.brand{color:#a9b24a;font-weight:700;letter-spacing:.5px;font-size:12px;text-transform:uppercase;margin-bottom:10px}
+.brand{color:#B8873A;font-weight:700;letter-spacing:.5px;font-size:12px;text-transform:uppercase;margin-bottom:10px}
 .meta{color:#666;font-size:11.5px;margin-bottom:6px;line-height:1.6}
-h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:#a9b24a;border-bottom:2px solid #e6e0d4;padding-bottom:6px;margin:28px 0 12px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:#B8873A;border-bottom:2px solid #e6e0d4;padding-bottom:6px;margin:28px 0 12px}
 table{width:100%;border-collapse:collapse;font-size:11.5px}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid #efefef}
 th{color:#999;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tfoot td{font-weight:700;border-top:2px solid #ddd;border-bottom:none;background:#faf7f1}
 tr.subtotal td{font-weight:700;border-top:1px solid #ddd;background:#faf9f6}
-.pos{color:#1a7f4b}.neg{color:#b23b2e}.muted{color:#999}.gold{color:#a9b24a}
+.pos{color:#1a7f4b}.neg{color:#b23b2e}.muted{color:#999}.gold{color:#B8873A}
 .summary{display:grid;grid-template-columns:repeat(2,1fr);gap:0 28px}
 .sum-item{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid #f1f1f1;font-size:12.5px}
 .sum-item .lbl{color:#555}.sum-item .val{font-weight:700;white-space:nowrap}
@@ -1709,7 +1707,7 @@ thead{display:table-header-group}
 tr{page-break-inside:avoid}
 footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;font-size:10px;line-height:1.6}
 #vm-loader{position:fixed;inset:0;z-index:9999;background:#eceae4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:15px;color:#555}
-#vm-loader .spin{width:34px;height:34px;border:3px solid #d8d2c6;border-top-color:#a9b24a;border-radius:50%;animation:vmspin 0.8s linear infinite}
+#vm-loader .spin{width:34px;height:34px;border:3px solid #d8d2c6;border-top-color:#B8873A;border-radius:50%;animation:vmspin 0.8s linear infinite}
 @keyframes vmspin{to{transform:rotate(360deg)}}
 @media print{body{background:#fff}.no-print{display:none!important}.doc{max-width:none;padding:0}@page{size:A4;margin:14mm}}
 </style>
@@ -1827,7 +1825,7 @@ function importData(input) {
       return;
     }
     state = data;
-    _dataLoaded = true; // szándékos visszatöltés — a mentés innentől engedélyezett
+    _dataLoaded = true;
     normalizeState();
     save();
     renderAll();
@@ -1868,7 +1866,7 @@ async function resetAllData() {
   ['bizIncome', 'bizExpense', 'orders', 'bizTaxRate'].forEach((k) => delete state[k]);
   Object.assign(state, reset);
   try {
-    // Szándékos, végleges törlés — a pajzsot itt engedjük (allowEmpty).
+
     try {
       localStorage.removeItem('nettli_backup_' + currentUid);
     } catch (e) {}
@@ -3741,14 +3739,14 @@ function renderCrypto() {
         '<div style="color:var(--muted);font-size:12px;padding:10px 0">Nincs nyitott pozíció</div>';
     } else {
       const palette = [
-        '#c2992e',
-        '#10a06b',
-        '#159c86',
-        '#3f8f74',
-        '#9c7a34',
-        '#a9b24a',
-        '#6ea63b',
-        '#2bbf88'
+        '#C08A2E',
+        '#3FA36C',
+        '#4FA7BD',
+        '#8B6690',
+        '#C24A3A',
+        '#B8873A',
+        '#6E8B3D',
+        '#B0703A'
       ];
       const n = coinStats.length;
       const cols = n > 5 ? 2 : n > 1 ? 3 : 1;
@@ -5540,8 +5538,6 @@ function computeCashTimeline(year) {
     expItems[i].push({ label, amount: amt });
   };
 
-  // --- BEVÉTEL ---
-  // Alkalmazotti nettó fizetés + havi korrekciók
   const salary = salaryNetMonthly();
   for (let i = 0; i < 12; i++) {
     if (salary > 0) addInc(i, 'Nettó fizetés', salary);
@@ -5556,7 +5552,6 @@ function computeCashTimeline(year) {
     if (income[i] < 0) income[i] = 0;
   }
 
-  // Osztalék (nettó, a fizető hónapokban)
   if (on('stocks') && fxReady()) {
     const groups = {};
     state.stocks.forEach((s) => {
@@ -5580,7 +5575,6 @@ function computeCashTimeline(year) {
     });
   }
 
-  // Kripto eladás bevétele (az eladás hónapjában)
   if (on('crypto')) {
     state.crypto.forEach((t) => {
       if (t.type !== 'sell') return;
@@ -5590,15 +5584,13 @@ function computeCashTimeline(year) {
     });
   }
 
-  // --- KIADÁS ---
-  // Aranyvétel
   if (on('gold')) {
     (state.goldItems || []).forEach((g) => {
       const mo = monthOf(g.date);
       if (mo !== null) addExp(mo, 'Aranyvétel · ' + (g.name || g.code || 'arany'), g.cost || 0);
     });
   }
-  // Részvényvétel (avg HUF-ban tárolva)
+
   if (on('stocks')) {
     state.stocks.forEach((s) => {
       const mo = monthOf(s.buyDate);
@@ -5606,7 +5598,7 @@ function computeCashTimeline(year) {
         addExp(mo, 'Részvényvétel · ' + (s.ticker || '').toUpperCase(), (s.qty || 0) * (s.avg || 0));
     });
   }
-  // Kriptovétel
+
   if (on('crypto')) {
     state.crypto.forEach((t) => {
       if (t.type !== 'buy') return;
@@ -5615,7 +5607,7 @@ function computeCashTimeline(year) {
         addExp(mo, 'Kriptovétel · ' + (t.coin || '').toUpperCase(), t.qty * t.price + (t.fee || 0));
     });
   }
-  // Hiteltörlesztő (a törlesztési időszakon belüli hónapokban)
+
   if (on('loans')) {
     (state.loans || []).forEach((l) => {
       const monthly = l.monthly || 0;
@@ -5631,7 +5623,7 @@ function computeCashTimeline(year) {
       }
     });
   }
-  // Előfizetések (havi szintre vetítve, tételesen)
+
   if (on('services')) {
     (state.services || [])
       .filter((s) => s.active)
@@ -5674,7 +5666,6 @@ function renderCashTimeline() {
   const totOut = expense.reduce((a, b) => a + b, 0);
   const totNet = totIn - totOut;
 
-  // Múlt / jövő a mai naphoz képest
   const today = new Date();
   let curIdx;
   if (today.getFullYear() < YEAR) curIdx = -1;
@@ -5684,7 +5675,6 @@ function renderCashTimeline() {
     curIdx >= 0 && curIdx < 12 ? (today.getDate() - 1) / new Date(YEAR, curIdx + 1, 0).getDate() : 0;
   const todayPct = curIdx < 0 ? 0 : curIdx >= 12 ? 100 : ((curIdx + dayFrac) / 12) * 100;
 
-  // Kiválasztott hónap (alap: az aktuális)
   if (_cashTLsel == null || _cashTLsel < 0 || _cashTLsel > 11)
     _cashTLsel = curIdx < 0 ? 0 : curIdx > 11 ? 11 : curIdx;
   const sel = _cashTLsel;
@@ -5937,31 +5927,31 @@ function renderDashboard() {
     donutSegs.push({
       label: L('Arany', 'Gold'),
       value: goldVal,
-      color: '#c2992e'
+      color: '#C08A2E'
     });
   if (useStocks)
     donutSegs.push({
       label: L('Részvény', 'Stocks'),
       value: stockVal,
-      color: '#10a06b'
+      color: '#3FA36C'
     });
   if (useCrypto)
     donutSegs.push({
       label: L('Kripto', 'Crypto'),
       value: cryptoOpen,
-      color: '#159c86'
+      color: '#4FA7BD'
     });
   if (usePledge)
     donutSegs.push({
       label: L('Zálog (−)', 'Pledge (−)'),
       value: totalPledge,
-      color: '#3f8f74'
+      color: '#8B6690'
     });
   if (useLoans)
     donutSegs.push({
       label: L('Hitel (−)', 'Loans (−)'),
       value: totalLoan,
-      color: '#9c7a34'
+      color: '#C24A3A'
     });
   drawDonut(donutSegs, {
     label: L('Teljes vagyon', 'Net worth'),
@@ -6512,7 +6502,7 @@ function donutHover(i) {
     el.style.background = i === idx ? 'var(--surface2)' : 'transparent';
   });
 }
-// ===== KIADÁS: Revolut bankszámlakivonat feldolgozása =====
+
 let _xlsxLoading = null;
 function loadXLSX() {
   if (window.XLSX) return Promise.resolve(window.XLSX);
@@ -6539,7 +6529,7 @@ function _normHeader(h) {
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '');
 }
-// A neveket prioritási sorrendben nézi: az első név első találata nyer.
+
 function _pickCol(header, names) {
   const H = header.map(_normHeader);
   for (const n of names) {
@@ -6593,7 +6583,7 @@ function _excelDate(v) {
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : toLocalDateStr(d);
 }
-// Kizárt (nem teljesült) státuszok — ékezet nélküli, kisbetűs formában
+
 const BAD_STATES = [
   'reverted',
   'declined',
@@ -6608,7 +6598,7 @@ const BAD_STATES = [
   'folyamatban',
   'torolve'
 ];
-// A kivonat forrásbankjának felismerése a fejléc alapján.
+
 function detectBank(header) {
   const H = (header || []).map(_normHeader).join('|');
   if (
@@ -6641,7 +6631,7 @@ function parseRevolutSheet(aoa) {
   const header = aoa[hIdx];
   const bank = detectBank(header);
   const cType = _pickCol(header, ['forgalom', 'type', 'tipus']);
-  // Elsődleges leírás: kereskedő / ellenoldali név; tartalék: közlemény
+
   const cDesc = _pickCol(header, [
     'ellenoldali nev',
     'ellenoldali',
@@ -6651,8 +6641,7 @@ function parseRevolutSheet(aoa) {
     'partner'
   ]);
   const cMemo = _pickCol(header, ['kozlemeny', 'reference', 'narrative', 'megjegyzes']);
-  // Dátum: a tényleges tranzakció napja (nem a könyvelésé, ami átcsúszhat a
-  // következő hónapba). Revolutnál a „Teljesítés dátuma”, OTP-nél a „Tranzakció időpontja”.
+
   const cDate = _pickCol(header, [
     'teljesites',
     'completed',
@@ -6688,21 +6677,18 @@ function parseRevolutSheet(aoa) {
     const a = isNaN(amount) ? 0 : amount;
     const f = isNaN(fee) ? 0 : fee;
     if (isNaN(amount) && isNaN(fee)) continue;
-    // A valós pénzmozgás: összeg − díj. Előjeles: negatív = kiadás, pozitív = bevétel.
-    // (Így a díj-soroknál, ahol az összeg 0 és a díj a terhelés, is helyes.)
+
     const netFlow = a - f;
-    if (netFlow === 0) continue; // nincs pénzmozgás
+    if (netFlow === 0) continue;
     const date = _excelDate(row[cDate]);
     if (!date) continue;
     const type = canonType(cType >= 0 ? row[cType] : '');
-    // Leírás: kereskedő/ellenoldali név → ha üres, közlemény → ha az is üres, a típus.
+
     let desc = cDesc >= 0 ? String(row[cDesc] || '').trim() : '';
     if (!desc && cMemo >= 0) desc = String(row[cMemo] || '').trim();
     if (!desc) desc = type;
     const currency = (cCur >= 0 ? String(row[cCur] || '').trim().toUpperCase() : '') || 'HUF';
-    // Stabil kulcs a duplikátumok kiszűréséhez ismételt feltöltésnél.
-    // Ha van banki tranzakció-azonosító (OTP), az egyedi és tökéletes kulcs.
-    // Egyébként a tranzakció időpontja (másodpercre pontos) + összeg + leírás.
+
     const refRaw = cRef >= 0 ? String(row[cRef] || '').trim() : '';
     const startedRaw = String((cStart >= 0 ? row[cStart] : row[cDate]) || '').trim();
     const k = refRaw
@@ -6712,7 +6698,7 @@ function parseRevolutSheet(aoa) {
   }
   return txns;
 }
-// Előjeles összeg egy tételhez (kcompatibilitás a régi, csak-kiadás formátummal)
+
 function _txnSigned(t) {
   if (typeof t.amt === 'number') return t.amt;
   return -(t.amount || 0);
@@ -6730,8 +6716,7 @@ function handleRevolutUpload(input) {
         try {
           let wb;
           if (isCsv) {
-            // CSV: UTF-8 szövegként olvassuk, hogy az ékezetes fejlécek (Összeg, Díj…)
-            // helyesen dekódolódjanak, ne Latin-1-ként.
+
             wb = XLSX.read(e.target.result, { type: 'string' });
           } else {
             wb = XLSX.read(new Uint8Array(e.target.result), {
@@ -6754,7 +6739,7 @@ function handleRevolutUpload(input) {
             expMsg('Nem találtam feldolgozható tételt a fájlban.', true);
             return;
           }
-          // Hozzáfűzés a korábbi tételekhez, duplikátum-szűréssel.
+
           const prev =
             state.expenseReport && Array.isArray(state.expenseReport.txns)
               ? state.expenseReport
@@ -6770,7 +6755,7 @@ function handleRevolutUpload(input) {
               return;
             }
             if (t.k) seen.add(t.k);
-            t.imp = importId; // melyik importhoz tartozik (törléshez)
+            t.imp = importId;
             merged.push(t);
             added++;
           });
@@ -6922,7 +6907,6 @@ function renderExpenseReport() {
   const curList = Object.keys(byCur).sort();
   const months = Object.keys(monthsSet).sort();
 
-  // Havi bontás — bevétel (zöld) és kiadás (piros) sávok
   const maxM = Math.max(1, ...months.map((k) => Math.max(inByMonth[k] || 0, outByMonth[k] || 0)));
   const monthlyRows = months
     .map((k) => {
@@ -7007,7 +6991,6 @@ function renderExpenseReport() {
       </div>`
     : '';
 
-  // Szűrő-vezérlők a részletezőhöz
   if (_expFilter.month !== 'all' && !monthsSet[_expFilter.month]) _expFilter.month = 'all';
   if (_expFilter.type !== 'all' && !typesSet[_expFilter.type]) _expFilter.type = 'all';
   if (_expFilter.bank !== 'all' && !banksSet[_expFilter.bank]) _expFilter.bank = 'all';

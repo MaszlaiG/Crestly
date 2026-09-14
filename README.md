@@ -8,7 +8,7 @@
 
 ## English
 
-**Crestly** is an account-based **personal-finance & net-worth tracker** — stocks, crypto, gold, loans, pledges, subscriptions and income/expenses, plus a watchlist, all summed up on one overview dashboard. Data is stored per account in **Firebase** (Auth + Firestore via REST, `vaults/<uid>`). No build step, no framework: plain HTML/CSS/JS. Hungarian UI, light/dark/auto "Studio" design with a green primary and gold accent.
+**Crestly** is an account-based **personal-finance & net-worth tracker** — stocks, crypto, gold, loans, pledges, subscriptions and income/expenses, plus a watchlist, all summed up on one overview dashboard. Data is stored per account in **Firebase** (Auth + Firestore via REST, `vaults/<uid>`). No build step, no framework: plain HTML/CSS/JS. Hungarian UI, light/dark/auto "Studio" design with a warm gold accent on a cream base.
 
 **Highlights**
 - **Net-worth dashboard** — total assets vs. liabilities, allocation donut, asset breakdown, monthly cash-flow and upcoming expenses at a glance.
@@ -20,7 +20,7 @@
 
 **Tech:** vanilla HTML/CSS/JS · Firebase (Auth + Firestore via REST) · html2canvas + jsPDF · custom canvas charts · live market-price lookups.
 
-**Structure:** `index.html` · `css/style.css` · `js/` (`script.js`, `firebase-store.js`, `fit-text.js`) · `firebase/` (`firebase.json`, `firestore.rules`, `firestore.indexes.json`) · `dokumentumok/` (design doc PDF, HU + EN).
+**Structure:** `index.html` · `css/style.css` · `js/` (`script.js`, `firebase-store.js`, `fit-text.js`) · `img/` (logó, favicon) · `firebase/` (`firebase.json`, `firestore.rules`, `firestore.indexes.json`) · `dokumentumok/` (design doc PDF, HU + EN).
 
 **Deploy:** enable Firebase Auth, fill the config in `index.html`, publish to any static host (e.g. GitHub Pages). Full details: the **design document PDF** in `dokumentumok/`.
 
@@ -28,7 +28,7 @@
 
 ## Magyar
 
-A **Crestly** fiók-alapú **személyes pénzügy- és vagyonkövető** — részvény, kripto, arany, hitelek, zálog, előfizetések és bevétel/kiadás, plusz egy figyelőlista, egyetlen áttekintő irányítópulton összegezve. Az adat fiókonként a **Firebase**-ben tárolódik (Auth + Firestore REST, `vaults/<uid>`). Nincs build lépés, nincs keretrendszer: tiszta HTML/CSS/JS. Magyar felület, világos/sötét/auto „Stúdió" dizájn zöld alapszínnel és arany akcentussal.
+A **Crestly** fiók-alapú **személyes pénzügy- és vagyonkövető** — részvény, kripto, arany, hitelek, zálog, előfizetések és bevétel/kiadás, plusz egy figyelőlista, egyetlen áttekintő irányítópulton összegezve. Az adat fiókonként a **Firebase**-ben tárolódik (Auth + Firestore REST, `vaults/<uid>`). Nincs build lépés, nincs keretrendszer: tiszta HTML/CSS/JS. Magyar felület, világos/sötét/auto „Stúdió" dizájn meleg arany-krém akcentussal.
 
 **Kiemelt funkciók**
 - **Vagyon-irányítópult** — teljes vagyon a kötelezettségekkel szemben, vagyonmegoszlás-diagram, eszközbontás, havi pénzáramlás és közelgő kiadások egy pillantásra.
@@ -40,6 +40,6 @@ A **Crestly** fiók-alapú **személyes pénzügy- és vagyonkövető** — rés
 
 **Technológia:** vanilla HTML/CSS/JS · Firebase (Auth + Firestore REST-en) · html2canvas + jsPDF · egyedi canvas diagramok · élő piaci árfolyam-lekérés.
 
-**Szerkezet:** `index.html` · `css/style.css` · `js/` (`script.js`, `firebase-store.js`, `fit-text.js`) · `firebase/` (`firebase.json`, `firestore.rules`, `firestore.indexes.json`) · `dokumentumok/` (tervdokumentáció PDF, HU + EN).
+**Szerkezet:** `index.html` · `css/style.css` · `js/` (`script.js`, `firebase-store.js`, `fit-text.js`) · `img/` (logó, favicon) · `firebase/` (`firebase.json`, `firestore.rules`, `firestore.indexes.json`) · `dokumentumok/` (tervdokumentáció PDF, HU + EN).
 
 **Közzététel:** kapcsold be a Firebase Autht, töltsd ki a konfigurációt az `index.html`-ben, publikáld bármely statikus tárhelyre (pl. GitHub Pages). Teljes leírás: a **tervdokumentáció PDF** a `dokumentumok/` mappában.

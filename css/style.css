@@ -1,20 +1,20 @@
 :root {
-  --bg: #eef2ec;
-  --surface: #f8faf6;
-  --surface2: #eef3ea;
-  --surface3: #e1ebdd;
-  --border: #d9e4d3;
-  --border2: #c1d1b8;
-  --text: #18211a;
-  --muted: #5d6b60;
-  --primary: #10a06b;
-  --primary-strong: #0c7f54;
-  --on-primary: #ffffff;
-  --accent: #10a06b;
-  --accent2: #c2992e;
-  --accent3: #2fbd83;
+  --bg: #efe5d3;
+  --surface: #fbf5ea;
+  --surface2: #f4ead9;
+  --surface3: #e9dbc4;
+  --border: #e1d2b8;
+  --border2: #cfbb98;
+  --text: #241c10;
+  --muted: #7c6f58;
+  --primary: #b8912f;
+  --primary-strong: #9a7724;
+  --on-primary: #2a2008;
+  --accent: #c99a3b;
+  --accent2: #3e6b54;
+  --accent3: #b0862a;
   --red: #b3402e;
-  --purple: #4f8f78;
+  --purple: #7a6650;
   --shadow: 0 1px 2px rgba(28, 42, 31, 0.07), 0 3px 10px rgba(28, 42, 31, 0.05);
   --mono: "IBM Plex Mono", ui-monospace, monospace;
   --display: "Fraunces", Georgia, "Times New Roman", serif;
@@ -27,31 +27,31 @@
 }
 
 html.dark {
-  --bg: #121814;
-  --surface: #19211b;
-  --surface2: #202a22;
-  --surface3: #2b382d;
-  --border: #2c3a2f;
-  --border2: #3f5343;
-  --text: #eaf1e7;
-  --muted: #9aab9c;
-  --primary: #45dd9a;
-  --primary-strong: #6fe8b3;
-  --on-primary: #0c2018;
-  --accent: #45dd9a;
-  --accent2: #e0c060;
-  --accent3: #45dd9a;
+  --bg: #16120b;
+  --surface: #221a10;
+  --surface2: #2a2113;
+  --surface3: #362a17;
+  --border: #3a2f1c;
+  --border2: #55452a;
+  --text: #f1e8d6;
+  --muted: #a89877;
+  --primary: #e4b860;
+  --primary-strong: #efcb82;
+  --on-primary: #241c10;
+  --accent: #e4b860;
+  --accent2: #6fb08c;
+  --accent3: #e0b15c;
   --red: #e08575;
-  --purple: #8fceb0;
+  --purple: #c7b48c;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 3px 12px rgba(0, 0, 0, 0.3);
 }
 html.dark header {
   background: rgba(14, 21, 18, 0.85);
 }
 html.dark .alert {
-  background: #262013;
-  border-color: #4d431f;
-  color: #e0c060;
+  background: #2b2410;
+  border-color: #5a4a1e;
+  color: #e3c47c;
 }
 html.dark input::placeholder {
   color: #5c6d62;
@@ -59,8 +59,7 @@ html.dark input::placeholder {
 html.dark ::-webkit-scrollbar-track {
   background: var(--surface2);
 }
-html.dark img,
-html.dark svg.logo-mark {
+html.dark img {
   filter: none;
 }
 html {
@@ -600,12 +599,12 @@ tbody tr:hover td {
   color: #7a5410;
 }
 .badge-cyan {
-  background: #dcefe8;
-  color: #16775c;
+  background: #e1eef1;
+  color: #2e5f6d;
 }
 .badge-purple {
-  background: #e7ecd9;
-  color: #59692f;
+  background: #efe6ef;
+  color: #5a3f60;
 }
 .badge-gray {
   background: var(--surface3);
@@ -653,7 +652,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(16, 160, 107, 0.22);
+  box-shadow: 0 0 0 3px rgba(200, 154, 59, 0.22);
 }
 select option {
   background: var(--surface);
@@ -773,7 +772,7 @@ html.dark .seg button.active {
 }
 .pl-gold-dd[open] > summary {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(16, 160, 107, 0.22);
+  box-shadow: 0 0 0 3px rgba(200, 154, 59, 0.22);
 }
 .pl-gold-dd[open] > summary::after {
   transform: rotate(180deg);
@@ -822,7 +821,7 @@ html.dark .seg button.active {
   outline: none;
 }
 .status-select:focus {
-  box-shadow: 0 0 0 3px rgba(16, 160, 107, 0.24);
+  box-shadow: 0 0 0 3px rgba(200, 154, 59, 0.24);
 }
 .status-select.s-yellow {
   background: #f5ecd9;
@@ -1601,41 +1600,41 @@ textarea {
 }
 
 html[data-theme="sunset"] {
-  --bg: #eef2ec;
-  --surface: #f8faf6;
-  --surface2: #eef3ea;
-  --surface3: #e1ebdd;
-  --border: #d9e4d3;
-  --border2: #c1d1b8;
-  --text: #18211a;
-  --muted: #5d6b60;
-  --primary: #10a06b;
-  --primary-strong: #0c7f54;
-  --accent: #10a06b;
-  --accent2: #c2992e;
-  --accent3: #2fbd83;
+  --bg: #efe5d3;
+  --surface: #fbf5ea;
+  --surface2: #f4ead9;
+  --surface3: #e9dbc4;
+  --border: #e1d2b8;
+  --border2: #cfbb98;
+  --text: #241c10;
+  --muted: #7c6f58;
+  --primary: #b8912f;
+  --primary-strong: #9a7724;
+  --accent: #c99a3b;
+  --accent2: #3e6b54;
+  --accent3: #b0862a;
   --red: #b3402e;
-  --purple: #4f8f78;
+  --purple: #7a6650;
   --shadow: 0 1px 2px rgba(40, 30, 10, 0.07), 0 3px 10px rgba(40, 30, 10, 0.05);
 }
 html[data-theme="sunset"].dark {
-  --bg: #121814;
-  --surface: #19211b;
-  --surface2: #202a22;
-  --surface3: #2b382d;
-  --border: #2c3a2f;
-  --border2: #3f5343;
-  --text: #eaf1e7;
-  --muted: #9aab9c;
-  --primary: #45dd9a;
-  --primary-strong: #6fe8b3;
-  --accent: #45dd9a;
-  --accent2: #e0c060;
-  --accent3: #45dd9a;
+  --bg: #16120b;
+  --surface: #221a10;
+  --surface2: #2a2113;
+  --surface3: #362a17;
+  --border: #3a2f1c;
+  --border2: #55452a;
+  --text: #f1e8d6;
+  --muted: #a89877;
+  --primary: #e4b860;
+  --primary-strong: #efcb82;
+  --accent: #e4b860;
+  --accent2: #6fb08c;
+  --accent3: #e0b15c;
   --red: #e08575;
-  --purple: #8fceb0;
+  --purple: #c7b48c;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 3px 12px rgba(0, 0, 0, 0.32);
-  --header-dark-bg: rgba(18, 24, 20, 0.97);
+  --header-dark-bg: rgba(34, 26, 16, 0.97);
 }
 
 html[data-theme="sunset"] .card {
@@ -1757,7 +1756,6 @@ body.modal-open {
   overflow: hidden;
 }
 
-/* ===== Crestly belépő intró ===== */
 .cr-intro {
   position: fixed;
   inset: 0;
@@ -1773,7 +1771,7 @@ body.modal-open {
   inset: 0;
   background:
     radial-gradient(58% 52% at 50% 42%, color-mix(in srgb, var(--primary) 22%, transparent), transparent 70%),
-    radial-gradient(48% 44% at 50% 60%, color-mix(in srgb, var(--accent2) 16%, transparent), transparent 72%);
+    radial-gradient(48% 44% at 50% 60%, color-mix(in srgb, var(--accent3) 16%, transparent), transparent 72%);
 }
 .cr-intro__inner {
   position: relative;
@@ -1806,7 +1804,7 @@ body.modal-open {
   font-size: clamp(34px, 9vw, 56px);
   letter-spacing: -0.01em;
   line-height: 1;
-  background: linear-gradient(95deg, var(--primary), var(--accent2));
+  background: linear-gradient(95deg, var(--accent), var(--primary-strong));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1844,7 +1842,7 @@ body.modal-open {
   width: 100%;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--primary), var(--accent2));
+  background: linear-gradient(90deg, var(--accent), var(--primary-strong));
   transform: scaleX(0);
   transform-origin: left center;
   animation: crBar 2.25s cubic-bezier(0.4, 0, 0.2, 1) 0.15s forwards;

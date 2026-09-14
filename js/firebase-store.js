@@ -1,16 +1,12 @@
 (function () {
   var auth = firebase.auth();
 
-  // Firestore elérése a REST API-n keresztül (nem a valós idejű SDK-channel-en).
-  // A Safari blokkolja a Firestore streaming/long-polling channel kéréseit
-  // ("access control checks"), a sima REST viszont mindenhol működik.
   var PROJECT_ID = (firebase.app().options && firebase.app().options.projectId) || '';
   var FS_BASE =
     'https://firestore.googleapis.com/v1/projects/' +
     PROJECT_ID +
     '/databases/(default)/documents';
 
-  // JS érték -> Firestore tipizált érték
   function fsEncode(v) {
     if (v === null || v === undefined) return { nullValue: null };
     if (typeof v === 'boolean') return { booleanValue: v };
@@ -30,7 +26,6 @@
     return { nullValue: null };
   }
 
-  // Firestore tipizált érték -> JS érték
   function fsDecode(val) {
     if (!val || typeof val !== 'object') return null;
     if ('nullValue' in val) return null;
@@ -51,7 +46,6 @@
     return null;
   }
 
-  // Van-e érdemi adat az állapotban? (pajzs az üres felülíráshoz)
   function vaultIsEmpty(s) {
     if (!s || typeof s !== 'object') return true;
     var arr = function (k) {
@@ -175,7 +169,7 @@
         return fetch(FS_BASE + '/vaults/' + u.uid, {
           headers: { Authorization: 'Bearer ' + token }
         }).then(function (r) {
-          if (r.status === 404) return null; // még nincs dokumentum (új fiók)
+          if (r.status === 404) return null;
           if (!r.ok) throw new Error('Firestore betöltés HTTP ' + r.status);
           return r.json().then(function (doc) {
             return doc && doc.fields ? fieldsToObj(doc.fields) : {};
@@ -214,8 +208,7 @@
       return u
         .getIdToken()
         .then(function (token) {
-          // PAJZS: ha üres állapotot mentenénk (nincs érdemi adat), előbb
-          // megnézzük a felhőt — ha ott VAN adat, NEM írjuk felül üressel.
+
           if (!allowEmpty && vaultIsEmpty(clean)) {
             return fetch(FS_BASE + '/vaults/' + u.uid, {
               headers: { Authorization: 'Bearer ' + token }
@@ -229,9 +222,9 @@
                   console.warn(
                     '[Crestly] PAJZS: üres állapot mentése kihagyva — a felhőben van adat, nem írjuk felül.'
                   );
-                  return; // NE írjuk felül
+                  return;
                 }
-                return writeDoc(token); // új/üres fiók — biztonságos írni
+                return writeDoc(token);
               });
           }
           return writeDoc(token);
