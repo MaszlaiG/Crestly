@@ -8,6 +8,8 @@
 
 ## English
 
+**🌐 Live site:** <https://maszlaig.github.io/Crestly/>
+
 **Crestly** is an account-based **personal-finance & net-worth tracker** — stocks, crypto, gold, loans, pledges, subscriptions and income/expenses, plus a watchlist, all summed up on one overview dashboard. Data is stored per account in **Firebase** (Auth + Firestore via REST, `vaults/<uid>`). No build step, no framework: plain HTML/CSS/JS. Hungarian UI, light/dark/auto "Studio" design with a warm gold accent on a cream base.
 
 **Highlights**
@@ -27,6 +29,8 @@
 ---
 
 ## Magyar
+
+**🌐 Élő oldal:** <https://maszlaig.github.io/Crestly/>
 
 A **Crestly** fiók-alapú **személyes pénzügy- és vagyonkövető** — részvény, kripto, arany, hitelek, zálog, előfizetések és bevétel/kiadás, plusz egy figyelőlista, egyetlen áttekintő irányítópulton összegezve. Az adat fiókonként a **Firebase**-ben tárolódik (Auth + Firestore REST, `vaults/<uid>`). Nincs build lépés, nincs keretrendszer: tiszta HTML/CSS/JS. Magyar felület, világos/sötét/auto „Stúdió" dizájn meleg arany-krém akcentussal.
 
