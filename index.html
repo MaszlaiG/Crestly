@@ -433,34 +433,6 @@
                 </div>
               </div>
 
-              <div class="card" style="margin-bottom: 16px">
-                <div class="card-title">ByBit szinkronizálás</div>
-                <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
-                  Kösd össze a ByBit fiókodat, hogy a Spot fiókodban kötött kereskedéseid — kézi és a Trading Bot
-                  által kötöttek egyaránt — automatikusan bekerüljenek ide. Csak
-                  <strong>„Read-Only"</strong> jogosultságú API-kulcsot adj meg (Trade/Withdraw jogosultság
-                  nélkül) a ByBit oldalán. A ByBit API a közelmúlt kötéseit adja vissza egy-egy szinkronizáláskor,
-                  ezért érdemes rendszeresen (pl. hetente) újra lefuttatni.
-                </p>
-                <div class="form-grid fg2" style="margin-bottom: 12px">
-                  <div>
-                    <label>API Key</label>
-                    <input type="text" id="bb-api-key" placeholder="ByBit API key" autocomplete="off" />
-                  </div>
-                  <div>
-                    <label>API Secret</label>
-                    <input type="password" id="bb-api-secret" placeholder="ByBit API secret" autocomplete="off" />
-                  </div>
-                </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px">
-                  <button class="btn btn-secondary btn-sm" onclick="saveBybitCreds()">Kulcs mentése</button>
-                  <button class="btn btn-sm" id="bb-sync-btn" onclick="syncBybitTrades()">
-                    Szinkronizálás most
-                  </button>
-                </div>
-                <div id="bb-status" style="font-size: 11.5px; color: var(--muted); line-height: 1.5"></div>
-              </div>
-
               <div class="card">
                 <div class="card-title">Portfólió</div>
                 <div id="crypto-refresh-bar"></div>
@@ -1510,6 +1482,13 @@
               </div>
               <button class="btn btn-secondary btn-sm" onclick="openModal('data-modal')">Megnyitás</button>
             </div>
+            <div class="account-row">
+              <div>
+                <div class="account-email">Kripto tételek kezelése</div>
+                <div class="account-sub">Egyedi tételek törlése (pl. hibás import)</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="openCryptoItemsModal()">Megnyitás</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1775,6 +1754,43 @@
           A visszatöltés a jelenlegi adatokat felülírja. A nullázás minden adatot véglegesen töröl ezen az eszközön.
           Mindkét művelet előtt megerősítést kérek.
         </p>
+      </div>
+    </div>
+
+    <div class="modal" id="crypto-items-modal" onclick="if(event.target===this)closeModal('crypto-items-modal')">
+      <div class="modal-card" style="max-width: 720px">
+        <div class="modal-head">
+          <div class="section-title" style="font-size: 18px">Kripto tételek kezelése</div>
+          <button class="btn btn-secondary btn-sm" onclick="closeModal('crypto-items-modal')">✕</button>
+        </div>
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px; line-height: 1.6">
+          Minden egyes rögzített kripto tétel (vétel/eladás) itt egyenként törölhető, coinra való tekintet nélkül —
+          hasznos pl. hibásan importált tételek gyors kitakarításához.
+        </p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px">
+          <button class="btn btn-secondary btn-sm" onclick="toggleAllCryptoItems(true)">Összes kijelölése</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleAllCryptoItems(false)">Kijelölés törlése</button>
+          <button class="btn btn-secondary btn-sm" onclick="selectBybitCryptoItems()">
+            Hibás/importált tételek kijelölése
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSelectedCryptoItems()">Kijelöltek törlése</button>
+        </div>
+        <div class="scroll-table" style="max-height: 420px; overflow-y: auto">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Dátum</th>
+                <th>Coin</th>
+                <th>Típus</th>
+                <th>Mennyiség</th>
+                <th>Forrás</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="crypto-items-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
