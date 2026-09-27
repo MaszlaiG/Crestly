@@ -1220,7 +1220,13 @@ let state = {
   },
   paidInstallments: {},
   salaryAdjustments: [],
-  expenseReport: null
+  expenseReport: null,
+  bybit: {
+    apiKey: '',
+    apiSecret: '',
+    lastSync: null,
+    importedIds: []
+  }
 };
 let priceCache = {};
 let goldSpotLive = false;
@@ -1319,6 +1325,9 @@ function normalizeState() {
   ['gold', 'stocks', 'crypto', 'pledge', 'loans', 'services'].forEach((k) => {
     if (state.modules[k] === undefined) state.modules[k] = true;
   });
+  if (!state.bybit || typeof state.bybit !== 'object')
+    state.bybit = { apiKey: '', apiSecret: '', lastSync: null, importedIds: [] };
+  if (!Array.isArray(state.bybit.importedIds)) state.bybit.importedIds = [];
   if (!state.ui || typeof state.ui !== 'object') state.ui = {};
   if (state.ui.editBtns === undefined) state.ui.editBtns = true;
   if (state.ui.delBtns === undefined) state.ui.delBtns = true;
@@ -3341,6 +3350,158 @@ async function resolveCryptoName(coin) {
     return '';
   }
 }
+function renderBybitPanel() {
+  const b = state.bybit || {};
+  const keyEl = document.getElementById('bb-api-key');
+  const secEl = document.getElementById('bb-api-secret');
+  if (keyEl && document.activeElement !== keyEl) keyEl.value = b.apiKey || '';
+  if (secEl && document.activeElement !== secEl) secEl.value = b.apiSecret || '';
+  const statusEl = document.getElementById('bb-status');
+  if (!statusEl) return;
+  if (!b.apiKey || !b.apiSecret) {
+    statusEl.textContent = L(
+      'Nincs beállítva ByBit API-kulcs.',
+      'No ByBit API key configured.'
+    );
+    return;
+  }
+  const when = b.lastSync ? new Date(b.lastSync).toLocaleString(LOC()) : L('még soha', 'never');
+  statusEl.textContent = L(
+    `Utolsó szinkronizálás: ${when} · ${(b.importedIds || []).length} importált kötés.`,
+    `Last sync: ${when} · ${(b.importedIds || []).length} imported trade(s).`
+  );
+}
+function saveBybitCreds() {
+  if (!state.bybit) state.bybit = { apiKey: '', apiSecret: '', lastSync: null, importedIds: [] };
+  state.bybit.apiKey = (document.getElementById('bb-api-key').value || '').trim();
+  state.bybit.apiSecret = (document.getElementById('bb-api-secret').value || '').trim();
+  save();
+  renderBybitPanel();
+}
+async function bybitSignedFetch(path, params) {
+  const b = state.bybit;
+  const timestamp = Date.now().toString();
+  const recvWindow = '5000';
+  const query = new URLSearchParams(params).toString();
+  const payload = timestamp + b.apiKey + recvWindow + query;
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(b.apiSecret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const sigBuf = await crypto.subtle.sign('HMAC', keyMaterial, new TextEncoder().encode(payload));
+  const signature = Array.from(new Uint8Array(sigBuf))
+    .map((x) => x.toString(16).padStart(2, '0'))
+    .join('');
+  const r = await fetch(`https://api.bybit.com/v5/${path}?${query}`, {
+    headers: {
+      'X-BAPI-API-KEY': b.apiKey,
+      'X-BAPI-SIGN': signature,
+      'X-BAPI-SIGN-TYPE': '2',
+      'X-BAPI-TIMESTAMP': timestamp,
+      'X-BAPI-RECV-WINDOW': recvWindow
+    }
+  });
+  const data = await r.json();
+  if (!r.ok || (data && data.retCode !== 0)) {
+    throw new Error((data && data.retMsg) || 'ByBit API HTTP ' + r.status);
+  }
+  return data;
+}
+const BYBIT_QUOTES = ['USDT', 'USDC', 'FDUSD', 'DAI', 'USD', 'EUR', 'BTC', 'ETH'];
+const BYBIT_HUF_QUOTES = ['USDT', 'USDC', 'FDUSD', 'DAI', 'USD'];
+function splitBybitSymbol(symbol) {
+  const s = (symbol || '').toUpperCase();
+  const quote = BYBIT_QUOTES.find((q) => s.endsWith(q) && s.length > q.length);
+  if (!quote) return null;
+  return { base: s.slice(0, s.length - quote.length), quote };
+}
+async function syncBybitTrades() {
+  const b = state.bybit;
+  const statusEl = document.getElementById('bb-status');
+  if (!b || !b.apiKey || !b.apiSecret) {
+    uiAlert(L('Előbb add meg és mentsd a ByBit API-kulcsot.', 'Save a ByBit API key first.'));
+    return;
+  }
+  const btn = document.getElementById('bb-sync-btn');
+  if (btn) btn.disabled = true;
+  if (statusEl) statusEl.textContent = L('Szinkronizálás...', 'Syncing...');
+  try {
+    if (!Array.isArray(b.importedIds)) b.importedIds = [];
+    const seen = new Set(b.importedIds);
+    const nameCache = {};
+    let cursor = '';
+    let imported = 0;
+    const skippedPairs = new Set();
+    for (let page = 0; page < 5; page++) {
+      const params = { category: 'spot', limit: '50' };
+      if (cursor) params.cursor = cursor;
+      const data = await bybitSignedFetch('execution/list', params);
+      const list = (data.result && data.result.list) || [];
+      for (const ex of list) {
+        if (!ex.execId || seen.has(ex.execId)) continue;
+        seen.add(ex.execId);
+        const split = splitBybitSymbol(ex.symbol);
+        if (!split || !BYBIT_HUF_QUOTES.concat('EUR').includes(split.quote)) {
+          skippedPairs.add(ex.symbol);
+          continue;
+        }
+        const qty = parseFloat(ex.execQty);
+        const priceNative = parseFloat(ex.execPrice);
+        const feeNative = parseFloat(ex.execFee) || 0;
+        if (!qty || !priceNative) continue;
+        const currency = split.quote === 'EUR' ? 'EUR' : 'USD';
+        const date = toLocalDateStr(new Date(Number(ex.execTime)));
+        const fxRate = await fxRateForDate(currency, date);
+        if (nameCache[split.base] === undefined) {
+          const existing = state.crypto.find((c) => (c.coin || '').toUpperCase() === split.base);
+          nameCache[split.base] = existing ? existing.name || '' : '';
+        }
+        state.crypto.push({
+          id: uid(),
+          coin: split.base,
+          name: nameCache[split.base],
+          type: ex.side === 'Sell' ? 'sell' : 'buy',
+          qty,
+          price: priceNative * (fxRate || 1),
+          priceNative,
+          fee: feeNative * (fxRate || 1),
+          feeNative,
+          date,
+          currency,
+          source: 'bybit',
+          execId: ex.execId
+        });
+        imported++;
+      }
+      cursor = (data.result && data.result.nextPageCursor) || '';
+      if (!cursor || !list.length) break;
+    }
+    b.importedIds = Array.from(seen).slice(-5000);
+    b.lastSync = new Date().toISOString();
+    save();
+    renderAll();
+    refreshAllPrices();
+    const skippedNote = skippedPairs.size
+      ? L(
+          ` (${skippedPairs.size} nem támogatott pár kihagyva: ${[...skippedPairs].join(', ')})`,
+          ` (${skippedPairs.size} unsupported pair(s) skipped: ${[...skippedPairs].join(', ')})`
+        )
+      : '';
+    if (statusEl)
+      statusEl.textContent = L(
+        `${imported} új kereskedés importálva.${skippedNote}`,
+        `${imported} new trade(s) imported.${skippedNote}`
+      );
+  } catch (e) {
+    console.error('[Crestly] ByBit sync hiba:', e);
+    if (statusEl) statusEl.textContent = L('Hiba: ', 'Error: ') + (e.message || e);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
 let cryptoEditId = null;
 function openCryptoAdd() {
   cryptoEditId = null;
@@ -3572,6 +3733,7 @@ function calcCryptoPL() {
 }
 function renderCrypto() {
   document.getElementById('crypto-refresh-bar').innerHTML = '';
+  renderBybitPanel();
   updateCryptoLabels();
   const coins = calcCryptoPL();
   let totalRealized = 0,

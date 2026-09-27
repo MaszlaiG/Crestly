@@ -433,6 +433,34 @@
                 </div>
               </div>
 
+              <div class="card" style="margin-bottom: 16px">
+                <div class="card-title">ByBit szinkronizálás</div>
+                <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
+                  Kösd össze a ByBit fiókodat, hogy a Spot fiókodban kötött kereskedéseid — kézi és a Trading Bot
+                  által kötöttek egyaránt — automatikusan bekerüljenek ide. Csak
+                  <strong>„Read-Only"</strong> jogosultságú API-kulcsot adj meg (Trade/Withdraw jogosultság
+                  nélkül) a ByBit oldalán. A ByBit API a közelmúlt kötéseit adja vissza egy-egy szinkronizáláskor,
+                  ezért érdemes rendszeresen (pl. hetente) újra lefuttatni.
+                </p>
+                <div class="form-grid fg2" style="margin-bottom: 12px">
+                  <div>
+                    <label>API Key</label>
+                    <input type="text" id="bb-api-key" placeholder="ByBit API key" autocomplete="off" />
+                  </div>
+                  <div>
+                    <label>API Secret</label>
+                    <input type="password" id="bb-api-secret" placeholder="ByBit API secret" autocomplete="off" />
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px">
+                  <button class="btn btn-secondary btn-sm" onclick="saveBybitCreds()">Kulcs mentése</button>
+                  <button class="btn btn-sm" id="bb-sync-btn" onclick="syncBybitTrades()">
+                    Szinkronizálás most
+                  </button>
+                </div>
+                <div id="bb-status" style="font-size: 11.5px; color: var(--muted); line-height: 1.5"></div>
+              </div>
+
               <div class="card">
                 <div class="card-title">Portfólió</div>
                 <div id="crypto-refresh-bar"></div>
