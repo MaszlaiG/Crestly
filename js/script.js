@@ -51,11 +51,7 @@ const I18N_HU_EN = {
   'Összes Kötelezettség': 'Total Liabilities',
   'Közelgő Kiadások': 'Upcoming Expenses',
   'Nincs közelgő kiadás a következő napokban': 'No upcoming expenses in the coming days',
-  'Havi Kiadás': 'Monthly Spend',
-  'Havi törlesztő + fix kiadások': 'Monthly instalment + fixed costs',
-  'Hitelek száma': 'Number of loans',
   'Havi törlesztő': 'Monthly instalment',
-  'Szolgáltatások összege': 'Subscriptions total',
   Vagyonmegoszlás: 'Asset Allocation',
   'Nincs adat': 'No data',
   Eszközbontás: 'Asset Breakdown',
@@ -85,6 +81,8 @@ const I18N_HU_EN = {
   'Osztalék adózása (becsült)': 'Dividend taxation (estimated)',
   'Nincs becsült osztalék (nincs osztalékfizető részvény).':
     'No estimated dividend (no dividend-paying stock).',
+  'Fizetés adózása (becsült)': 'Salary taxation (estimated)',
+  'Nincs rögzített alkalmazotti fizetés.': 'No employee salary recorded.',
   'Befektetett eszközök értéke': 'Invested assets value',
   'Havi fix kiadás (törlesztő + előfizetés)': 'Monthly fixed cost (instalment + subscriptions)',
   'Havi osztalék – nettó (becsült)': 'Monthly dividend – net (estimated)',
@@ -5902,11 +5900,11 @@ function renderDashboard() {
   showCard('d-unreal-card', anyOn('gold', 'stocks', 'crypto'));
   showCard('d-liab-card', anyOn('loans', 'pledge'));
   showCard('d-upcoming-card', anyOn('pledge', 'loans', 'services'));
-  showCard('d-monthly-card', anyOn('loans', 'services'));
   showCard('d-donut-card', anyOn('gold', 'stocks', 'crypto', 'loans', 'pledge'));
   showCard('d-breakdown-card', anyOn('gold', 'stocks', 'crypto'));
   showCard('d-cashflow-card', anyOn('stocks', 'loans', 'services') || salaryNetMonthly() > 0);
   showCard('d-div-tax-card', on('stocks'));
+  showCard('d-salary-tax-card', !!(state.salary && state.salary.gross > 0));
   showCard('d-div-cal-card', on('stocks'));
   showCard('d-top-card', anyOn('gold', 'stocks', 'crypto'));
   const fillGrid = (id, autoCols) => {
@@ -5916,8 +5914,8 @@ function renderDashboard() {
     g.style.gridTemplateColumns = hiddenAny ? autoCols : '';
   };
   fillGrid('d-stat-grid', 'repeat(auto-fit, minmax(180px, 1fr))');
-  fillGrid('d-mid-grid', 'repeat(auto-fit, minmax(280px, 1fr))');
-  fillGrid('d-bottom-grid', 'repeat(auto-fit, minmax(280px, 1fr))');
+  fillGrid('d-breakdown-grid', 'repeat(auto-fit, minmax(280px, 1fr))');
+  fillGrid('d-tax-grid', 'repeat(auto-fit, minmax(280px, 1fr))');
   const spanGrid = document.getElementById('d-span-grid');
   const donutCard = document.getElementById('d-donut-card');
   if (spanGrid) {
@@ -5973,7 +5971,6 @@ function renderDashboard() {
   nwEl.className = 'stat-value ' + (nwRound > 0 ? 'green' : nwRound < 0 ? 'red' : '');
   const qs = document.getElementById('quick-status');
   qs.innerHTML = buildUpcomingDatesHTML();
-  const dm = document.getElementById('dash-monthly');
   const monthlyLoan = useLoans ? state.loans.reduce((a, l) => a + l.monthly, 0) : 0;
   const svcMonthly = useServices ? servicesMonthlyTotal() : 0;
   const svcCount = useServices ? state.services.filter((s) => s.active).length : 0;
@@ -6018,22 +6015,37 @@ function renderDashboard() {
       dtxEl.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:8px 0">Nincs becsült osztalék (nincs osztalékfizető részvény).</div>`;
     }
   }
-  dm.innerHTML = `
-    <div class="stat-value yellow" style="font-size:24px">${fmtAgg(totalMonthly)}</div>
-    <div class="stat-sub" style="margin-bottom:12px">Havi törlesztő + fix kiadások</div>
-    ${
-      useLoans
-        ? `<div class="tax-row"><span style="color:var(--muted)">Hitelek száma</span><span>${state.loans.length} db</span></div>
-    <div class="tax-row"><span style="color:var(--muted)">Havi törlesztő</span><span class="red">${fmtAgg(monthlyLoan)}</span></div>`
-        : ''
+  const stxEl = document.getElementById('d-salary-tax');
+  if (stxEl) {
+    const sal = state.salary || salaryDefaults();
+    if (sal.gross > 0) {
+      const szjaAmt = (sal.gross * (sal.szja || 0)) / 100;
+      const szochoAmt = (sal.gross * (sal.szocho || 0)) / 100;
+      const tbAmt = (sal.gross * (sal.tb || 0)) / 100;
+      const net = sal.gross - szjaAmt - szochoAmt - tbAmt;
+      const ded = (a) =>
+        a > 0.5
+          ? `<span class="red">−${fmtAgg(a)}</span>`
+          : `<span style="color:var(--muted)">—</span>`;
+      const dash = `<span style="color:var(--muted)">—</span>`;
+      stxEl.innerHTML = `
+        <div class="scroll-table">
+        <table>
+          <thead><tr><th>Tétel</th><th class="num">Adókulcs</th><th class="num">Levont adó</th><th class="num">Összeg</th></tr></thead>
+          <tbody>
+            <tr><td>Bruttó fizetés / hó</td><td class="num">${dash}</td><td class="num">${dash}</td><td class="num">${fmtAgg(sal.gross)}</td></tr>
+            <tr><td>SZJA</td><td class="num">${sal.szja || 0}%</td><td class="num">${ded(szjaAmt)}</td><td class="num">${dash}</td></tr>
+            <tr><td>SZOCHO</td><td class="num">${sal.szocho || 0}%</td><td class="num">${ded(szochoAmt)}</td><td class="num">${dash}</td></tr>
+            <tr><td>TB</td><td class="num">${sal.tb || 0}%</td><td class="num">${ded(tbAmt)}</td><td class="num">${dash}</td></tr>
+            <tr><td><strong>Nettó fizetés / hó</strong></td><td class="num"></td><td class="num">${ded(szjaAmt + szochoAmt + tbAmt)}</td><td class="num green"><strong>${fmtAgg(net)}</strong></td></tr>
+            <tr style="border-top:2px solid var(--border2)"><td><strong>Nettó fizetés / év</strong></td><td class="num"></td><td class="num"></td><td class="num green"><strong>${fmtAgg(net * 12)}</strong></td></tr>
+          </tbody>
+        </table>
+        </div>`;
+    } else {
+      stxEl.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:8px 0">Nincs rögzített alkalmazotti fizetés.</div>`;
     }
-    ${
-      useServices
-        ? `<div class="tax-row"><span style="color:var(--muted)">Szolgáltatások</span><span>${svcCount} db</span></div>
-    <div class="tax-row"><span style="color:var(--muted)">Szolgáltatások összege</span><span class="red">${fmtAgg(svcMonthly)}</span></div>`
-        : ''
-    }
-  `;
+  }
   const donutSegs = [];
   if (useGold)
     donutSegs.push({

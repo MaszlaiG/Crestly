@@ -136,13 +136,9 @@
             <div class="card-title">Közelgő Kiadások</div>
             <div id="quick-status" class="scroll-y-fade" style="max-height: 260px; overflow-y: auto"></div>
           </div>
-          <div
-            class="card"
-            id="d-monthly-card"
-            style="border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.15)"
-          >
-            <div class="card-title" style="color: var(--accent3)">Havi Kiadás</div>
-            <div id="dash-monthly"></div>
+          <div class="card" id="d-cashflow-card">
+            <div class="card-title">Havi Pénzáramlás</div>
+            <div id="d-cashflow"></div>
           </div>
           <div class="card dash-donut-span" id="d-donut-card">
             <div class="card-title">Vagyonmegoszlás</div>
@@ -153,7 +149,7 @@
           </div>
         </div>
 
-        <div class="grid g2" id="d-mid-grid" style="margin-bottom: 16px">
+        <div class="grid g21" id="d-breakdown-grid" style="margin-bottom: 16px">
           <div class="card" id="d-breakdown-card">
             <div class="card-title">Eszközbontás</div>
             <div class="scroll-table">
@@ -171,26 +167,26 @@
               </table>
             </div>
           </div>
-          <div class="card" id="d-cashflow-card">
-            <div class="card-title">Havi Pénzáramlás</div>
-            <div id="d-cashflow"></div>
-          </div>
-        </div>
-
-        <div class="grid g21" id="d-bottom-grid" style="margin-bottom: 16px">
-          <div class="card" id="d-div-cal-card">
-            <div class="card-title">Osztalék Naptár</div>
-            <div id="div-calendar-dash"></div>
-          </div>
           <div class="card" id="d-top-card">
             <div class="card-title">Legnagyobb Pozíciók</div>
             <div id="d-top-holdings"></div>
           </div>
         </div>
 
-        <div class="card" id="d-div-tax-card" style="margin-bottom: 24px">
-          <div class="card-title">Osztalék adózása (becsült)</div>
-          <div id="d-div-tax"></div>
+        <div class="card" id="d-div-cal-card" style="margin-bottom: 16px">
+          <div class="card-title">Osztalék Naptár</div>
+          <div id="div-calendar-dash"></div>
+        </div>
+
+        <div class="grid g2" id="d-tax-grid" style="margin-bottom: 24px">
+          <div class="card" id="d-div-tax-card">
+            <div class="card-title">Osztalék adózása (becsült)</div>
+            <div id="d-div-tax"></div>
+          </div>
+          <div class="card" id="d-salary-tax-card">
+            <div class="card-title">Fizetés adózása (becsült)</div>
+            <div id="d-salary-tax"></div>
+          </div>
         </div>
 
         <div class="card" id="d-timeline-card" style="margin-bottom: 24px">
