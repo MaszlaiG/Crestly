@@ -69,7 +69,14 @@ const I18N_HU_EN = {
   'Hiteltörlesztő / hó': 'Loan instalment / mo',
   'Szolgáltatások / hó': 'Subscriptions / mo',
   'Nettó havi egyenleg': 'Net monthly balance',
-  'Osztalékfedezet a fix kiadásokra:': 'Dividend coverage of fixed costs:',
+  'Kiadás-arány riasztás': 'Spend-ratio Alert',
+  'Állítsd be, hogy a nettó fizetésedhez (alkalmazotti bevétel) viszonyítva mekkora szolgáltatás- és hitelarány számítson még biztonságosnak (zöld), figyelmeztetőnek (sárga) vagy kockázatosnak (piros) a Havi Pénzáramlásnál.':
+    'Set how much of a subscription and loan ratio, relative to your net salary (employee income), counts as safe (green), a warning (yellow) or risky (red) in Monthly Cash Flow.',
+  'Szolgáltatás — sárga küszöb (%)': 'Subscriptions — yellow threshold (%)',
+  'Szolgáltatás — piros küszöb (%)': 'Subscriptions — red threshold (%)',
+  'Hitel — sárga küszöb (%)': 'Loans — yellow threshold (%)',
+  'Hitel — piros küszöb (%)': 'Loans — red threshold (%)',
+  'Küszöbök mentése': 'Save thresholds',
   'Osztalék Naptár': 'Dividend Calendar',
   'Még nincs ismert osztalék-ütemezés. Frissíts (élő árfolyam), hogy a rendszer lehúzza az osztalékfizető részvények fizetési hónapjait.':
     'No known dividend schedule yet. Refresh (live prices) so the system pulls the payout months of dividend-paying stocks.',
@@ -843,6 +850,43 @@ function updateTaxSettings() {
   renderAll();
   accMsg('acc-tax-msg', '✓ Adókulcsok elmentve.', false);
 }
+function ratioAlertDefaults() {
+  return { svcYellow: 20, svcRed: 35, loanYellow: 30, loanRed: 50 };
+}
+function ratioColor(pct, yellow, red) {
+  if (pct >= red) return 'red';
+  if (pct >= yellow) return 'yellow';
+  return 'green';
+}
+function renderRatioAlertSettings() {
+  const r = state.ratioAlert || ratioAlertDefaults();
+  const svcY = document.getElementById('acc-ratio-svc-yellow');
+  const svcR = document.getElementById('acc-ratio-svc-red');
+  const loanY = document.getElementById('acc-ratio-loan-yellow');
+  const loanR = document.getElementById('acc-ratio-loan-red');
+  if (svcY) svcY.value = r.svcYellow;
+  if (svcR) svcR.value = r.svcRed;
+  if (loanY) loanY.value = r.loanYellow;
+  if (loanR) loanR.value = r.loanRed;
+}
+function updateRatioAlertSettings() {
+  const svcYellow = parseFloat(document.getElementById('acc-ratio-svc-yellow').value) || 0;
+  const svcRed = parseFloat(document.getElementById('acc-ratio-svc-red').value) || 0;
+  const loanYellow = parseFloat(document.getElementById('acc-ratio-loan-yellow').value) || 0;
+  const loanRed = parseFloat(document.getElementById('acc-ratio-loan-red').value) || 0;
+  if (svcYellow < 0 || svcRed < 0 || loanYellow < 0 || loanRed < 0) {
+    accMsg('acc-ratio-msg', 'A küszöbök nem lehetnek negatívak.', true);
+    return;
+  }
+  if (svcYellow > svcRed || loanYellow > loanRed) {
+    accMsg('acc-ratio-msg', 'A sárga küszöb nem lehet nagyobb a piros küszöbnél.', true);
+    return;
+  }
+  state.ratioAlert = { svcYellow, svcRed, loanYellow, loanRed };
+  save();
+  renderAll();
+  accMsg('acc-ratio-msg', '✓ Küszöbök elmentve.', false);
+}
 function salaryDefaults() {
   return { gross: 0, szja: 15, szocho: 0, tb: 18.5, day: 0 };
 }
@@ -1209,6 +1253,12 @@ let state = {
     us: 0,
     szja: 0,
     szocho: 0
+  },
+  ratioAlert: {
+    svcYellow: 20,
+    svcRed: 35,
+    loanYellow: 30,
+    loanRed: 50
   },
   modules: {
     gold: true,
@@ -6116,13 +6166,24 @@ function renderDashboard() {
   if (cf) {
     const salaryNet = salaryNetMonthly();
     const netMonthly = monthlyDiv + salaryNet - totalMonthly;
+    const ra = state.ratioAlert || ratioAlertDefaults();
+    const pctOf = (amount) => (salaryNet > 0 ? (amount / salaryNet) * 100 : null);
+    const cfRow = (label, amount, amountCls, amountStyle, pctCls, rowCls, amountText) => {
+      const pct = pctOf(amount);
+      const pctHtml = pct === null ? '' : `${pct.toFixed(1)}%`;
+      return `<div class="cf-row${rowCls ? ' ' + rowCls : ''}">
+        <span class="cf-label">${label}</span>
+        <span class="cf-pct ${pctCls || ''}">${pctHtml}</span>
+        <span class="cf-amount ${amountCls || ''}" style="${amountStyle || ''}">${amountText || fmtAgg(amount)}</span>
+      </div>`;
+    };
+    cf.className = 'cf-grid';
     cf.innerHTML = `
-      ${salaryNet > 0 ? `<div class="tax-row"><span style="color:var(--muted)">Bevétel — nettó fizetés / hó</span><span class="green">${fmtAgg(salaryNet)}</span></div>` : ''}
-      ${useStocks ? `<div class="tax-row"><span style="color:var(--muted)">Bevétel — osztalék / hó</span><span class="green">${fmtAgg(monthlyDiv)}</span></div>` : ''}
-      ${useLoans ? `<div class="tax-row"><span style="color:var(--muted)">Hiteltörlesztő / hó</span><span style="color:var(--accent3);font-weight:600">${fmtAgg(monthlyLoan)}</span></div>` : ''}
-      ${useServices ? `<div class="tax-row"><span style="color:var(--muted)">Szolgáltatások / hó</span><span style="color:var(--accent3);font-weight:600">${fmtAgg(svcMonthly)}</span></div>` : ''}
-      <div class="tax-row" style="border-top:2px solid var(--border2)"><span><strong>Nettó havi egyenleg</strong></span><span class="${netMonthly >= 0 ? 'green' : 'red'}"><strong>${netMonthly >= 0 ? '+' : ''}${fmtAgg(netMonthly)}</strong></span></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:10px">Osztalékfedezet a fix kiadásokra: <strong>${totalMonthly > 0 ? divRate.toFixed(1) + '%' : '—'}</strong></div>
+      ${salaryNet > 0 ? cfRow('Bevétel — nettó fizetés / hó', salaryNet, 'green', '', 'green') : ''}
+      ${useStocks ? cfRow('Bevétel — osztalék / hó', monthlyDiv, 'green', '', 'green') : ''}
+      ${useLoans ? cfRow('Hiteltörlesztő / hó', monthlyLoan, ratioColor(pctOf(monthlyLoan) || 0, ra.loanYellow, ra.loanRed), 'font-weight:600', ratioColor(pctOf(monthlyLoan) || 0, ra.loanYellow, ra.loanRed)) : ''}
+      ${useServices ? cfRow('Szolgáltatások / hó', svcMonthly, ratioColor(pctOf(svcMonthly) || 0, ra.svcYellow, ra.svcRed), 'font-weight:600', ratioColor(pctOf(svcMonthly) || 0, ra.svcYellow, ra.svcRed)) : ''}
+      ${cfRow('Nettó havi egyenleg', netMonthly, netMonthly >= 0 ? 'green' : 'red', '', netMonthly >= 0 ? 'green' : 'red', 'cf-total', (netMonthly >= 0 ? '+' : '') + fmtAgg(netMonthly))}
     `;
   }
   const ps = document.getElementById('d-portfolio-stats');
@@ -7239,6 +7300,7 @@ function renderAll() {
   renderDashboard();
   renderWatch();
   renderTaxSettings();
+  renderRatioAlertSettings();
   renderSalary();
   renderExpenseReport();
 }

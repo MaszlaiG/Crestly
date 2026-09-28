@@ -1453,6 +1453,35 @@
               <div id="acc-tax-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
               <button class="btn" onclick="updateTaxSettings()">Adókulcsok mentése</button>
             </div>
+
+            <div class="card">
+              <div class="card-title">Kiadás-arány riasztás</div>
+              <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
+                Állítsd be, hogy a nettó fizetésedhez (alkalmazotti bevétel) viszonyítva mekkora szolgáltatás- és
+                hitelarány számítson még biztonságosnak (zöld), figyelmeztetőnek (sárga) vagy kockázatosnak (piros) a
+                Havi Pénzáramlásnál.
+              </p>
+              <div class="form-grid fg2" style="margin-bottom: 16px">
+                <div>
+                  <label>Szolgáltatás — sárga küszöb (%)</label>
+                  <input type="number" id="acc-ratio-svc-yellow" placeholder="20" step="1" min="0" />
+                </div>
+                <div>
+                  <label>Szolgáltatás — piros küszöb (%)</label>
+                  <input type="number" id="acc-ratio-svc-red" placeholder="35" step="1" min="0" />
+                </div>
+                <div>
+                  <label>Hitel — sárga küszöb (%)</label>
+                  <input type="number" id="acc-ratio-loan-yellow" placeholder="30" step="1" min="0" />
+                </div>
+                <div>
+                  <label>Hitel — piros küszöb (%)</label>
+                  <input type="number" id="acc-ratio-loan-red" placeholder="50" step="1" min="0" />
+                </div>
+              </div>
+              <div id="acc-ratio-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
+              <button class="btn" onclick="updateRatioAlertSettings()">Küszöbök mentése</button>
+            </div>
           </div>
 
           <div class="card" style="margin-bottom: 16px">

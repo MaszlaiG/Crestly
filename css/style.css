@@ -954,6 +954,40 @@ html.dark .seg button.active {
   font-weight: 700;
 }
 
+.cf-grid {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  column-gap: 14px;
+  align-items: baseline;
+}
+.cf-grid .cf-row {
+  display: contents;
+}
+.cf-grid .cf-row > * {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--surface3);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.cf-grid .cf-row.cf-total > * {
+  border-top: 2px solid var(--border2);
+  border-bottom: none;
+  font-weight: 700;
+}
+.cf-grid .cf-label {
+  color: var(--muted);
+}
+.cf-grid .cf-pct {
+  text-align: right;
+  font-weight: 700;
+  font-size: 11px;
+  min-width: 40px;
+}
+.cf-grid .cf-amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
 .sparkline {
   height: 40px;
 }
