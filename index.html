@@ -80,12 +80,9 @@
       <button data-tab="watch" onclick="showTab('watch')">Figyelő</button>
       <button data-tab="gold" onclick="showTab('gold')">Arany</button>
       <button data-tab="portfolio" onclick="showTab('portfolio')">Részvény</button>
-      <button data-tab="crypto" onclick="showTab('crypto')">Kripto</button>
       <button data-tab="pledge" onclick="showTab('pledge')">Zálog</button>
       <button data-tab="loan" onclick="showTab('loan')">Hitel</button>
       <button data-tab="services" onclick="showTab('services')">Szolgáltatások</button>
-      <button data-tab="salary" onclick="showTab('salary')">Bevétel</button>
-      <button data-tab="expense" onclick="showTab('expense')">Kiadás</button>
       <button data-tab="account" onclick="showTab('account')">Fiók</button>
     </nav>
 
@@ -136,10 +133,7 @@
             <div class="card-title">Közelgő Kiadások</div>
             <div id="quick-status" class="scroll-y-fade" style="max-height: 260px; overflow-y: auto"></div>
           </div>
-          <div class="card" id="d-cashflow-card">
-            <div class="card-title">Havi Pénzáramlás</div>
-            <div id="d-cashflow"></div>
-          </div>
+          <div id="d-cashflow-wrap"></div>
           <div class="card dash-donut-span" id="d-donut-card">
             <div class="card-title">Vagyonmegoszlás</div>
             <div class="donut-wrap">
@@ -192,7 +186,7 @@
         <div class="card" id="d-timeline-card" style="margin-bottom: 24px">
           <div class="card-title">Pénzügyi idővonal — 2026</div>
           <div style="color: var(--muted); font-size: 12px; margin-bottom: 8px">
-            Havi összes bevétel és kiadás (az arany-, részvény- és kriptovétel is kiadás)
+            Havi összes bevétel és kiadás (az arany- és részvényvétel is kiadás)
           </div>
           <div id="d-timeline"></div>
         </div>
@@ -201,13 +195,9 @@
       <div class="tab-content" id="tab-watch">
         <div style="margin-bottom: 16px">
           <div class="section-title" style="font-size: 22px; margin-bottom: 4px">Interaktív Figyelő</div>
-          <div style="color: var(--muted); font-size: 12px">Élő követés: kripto, részvények és befektetési arany</div>
+          <div style="color: var(--muted); font-size: 12px">Élő követés: részvények és befektetési arany</div>
         </div>
 
-        <div class="watch-section" data-watch-module="crypto">
-          <div class="section-title" style="font-size: 14px; margin-bottom: 12px">Kripto</div>
-          <div id="dash-crypto" class="grid watch-grid" style="margin-bottom: 24px"></div>
-        </div>
 
         <div class="watch-section" data-watch-module="stocks">
           <div class="section-title" style="font-size: 14px; margin-bottom: 12px">Részvények</div>
@@ -384,142 +374,6 @@
         </div>
       </div>
 
-      <div class="tab-content" id="tab-crypto">
-        <div class="section-header">
-          <div class="section-title">Kriptovaluta Kereskedés</div>
-          <button class="btn" id="crypto-add-btn" onclick="openCryptoAdd()">+ Vétel rögzítése</button>
-        </div>
-
-        <div>
-          <div>
-            <div id="crypto-list-view">
-              <div class="grid g4" style="margin-bottom: 16px">
-                <div class="card card-stat-cyan">
-                  <div class="card-title">Bekerülési érték (nyitott)</div>
-                  <div class="stat-value cyan" id="cr-open">0 Ft</div>
-                  <div class="stat-sub" id="cr-open-usd"></div>
-                </div>
-                <div class="card card-stat-cyan">
-                  <div class="card-title">Aktuális eladási érték</div>
-                  <div id="cr-live-open">
-                    <div class="stat-value" style="color: var(--muted)">—</div>
-                    <div class="stat-sub">Nyomj frissítést</div>
-                  </div>
-                </div>
-                <div class="card card-stat-dark" id="cr-pl-card">
-                  <div class="card-title">P&amp;L</div>
-                  <div class="stat-value" id="cr-pl">0 Ft</div>
-                  <div class="stat-sub" id="cr-pl-usd"></div>
-                </div>
-                <div class="card card-stat-dark" id="cr-yield-card">
-                  <div class="card-title">Hozam</div>
-                  <div class="stat-value" id="cr-yield">—</div>
-                  <div class="stat-sub">a nyitott pozíción</div>
-                </div>
-              </div>
-
-              <div class="grid g2" style="margin-bottom: 16px">
-                <div class="card">
-                  <div class="card-title">Kripto Megoszlás</div>
-                  <div id="crypto-allocation"></div>
-                </div>
-                <div class="card">
-                  <div class="card-title">Statisztika</div>
-                  <div id="crypto-stats"></div>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-title">Portfólió</div>
-                <div id="crypto-refresh-bar"></div>
-                <div class="scroll-table">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Coin</th>
-                        <th>Db</th>
-                        <th>Átlag vételár</th>
-                        <th>Jelenlegi ár</th>
-                        <th>Befektetett</th>
-                        <th>Jelenlegi érték</th>
-                        <th>P&amp;L</th>
-                      </tr>
-                    </thead>
-                    <tbody id="crypto-holdings-tbody"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div id="crypto-detail-view" style="display: none">
-              <div
-                style="
-                  margin-bottom: 16px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                  gap: 12px;
-                  flex-wrap: wrap;
-                "
-              >
-                <button class="btn btn-secondary" onclick="closeCryptoDetail()">← Vissza a kriptókhoz</button>
-                <button class="btn" onclick="sellCurrentCrypto()">Eladás</button>
-              </div>
-              <div id="crypto-detail-content"></div>
-            </div>
-          </div>
-
-          <div class="modal" id="crypto-modal" onclick="if(event.target===this)closeModal('crypto-modal')">
-            <div class="modal-card">
-              <div class="modal-head">
-                <div class="section-title" style="font-size: 18px" id="crypto-modal-title">Vétel rögzítése</div>
-                <button class="btn btn-secondary btn-sm" onclick="closeModal('crypto-modal')">✕</button>
-              </div>
-              <div class="form-grid fg2" style="margin-bottom: 12px">
-                <div style="grid-column: 1 / -1">
-                  <label>Coin</label>
-                  <input type="text" id="cr-coin" placeholder="BTC, ETH, ..." />
-                </div>
-                <div>
-                  <label>Deviza</label>
-                  <select id="cr-currency" onchange="updateCryptoLabels()">
-                    <option value="HUF">HUF</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Mennyiség</label>
-                  <input type="number" id="cr-qty" placeholder="0" step="any" />
-                </div>
-                <div>
-                  <label id="cr-price-label">Ár (Ft)</label>
-                  <input type="number" id="cr-price" placeholder="0" step="any" />
-                </div>
-                <div>
-                  <label>Dátum</label>
-                  <input type="date" id="cr-date" />
-                </div>
-                <div>
-                  <label id="cr-fee-label">Díj (Ft)</label>
-                  <input type="number" id="cr-fee" placeholder="0" step="any" />
-                </div>
-              </div>
-              <div id="cr-fx-info" style="font-size: 11px; color: var(--muted); margin-bottom: 12px; display: none">
-                Az ár és a díj a <strong>vétel dátumához</strong> tartozó (történeti) árfolyammal lesz HUF-ra váltva.
-                Mai árfolyam: 1 <span id="cr-fx-cur">USD</span> ≈ <span id="cr-fx-rate">—</span> Ft
-              </div>
-              <div style="font-size: 11px; color: var(--muted); margin-bottom: 10px">
-                A teljes nevet és az élő árfolyamot a rendszer a coin szimbóluma alapján automatikusan lekéri
-                (CoinGecko).
-              </div>
-              <button class="btn" id="crypto-submit-btn" onclick="addCryptoTrade()" style="width: 100%">
-                + Vétel rögzítése
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div class="tab-content" id="tab-gold">
         <div class="section-header">
@@ -891,6 +745,10 @@
                   <input type="number" id="ln-thm" placeholder="0" step="0.01" />
                 </div>
                 <div>
+                  <label>Fizetési számla</label>
+                  <select id="ln-account"></select>
+                </div>
+                <div>
                   <label>Havi törlesztő (Ft)</label>
                   <input
                     type="text"
@@ -922,6 +780,7 @@
           <div class="card card-stat-red">
             <div class="card-title">Havi összköltség</div>
             <div class="stat-value red" id="sv-monthly">0 Ft</div>
+            <div class="stat-sub" id="sv-split"></div>
           </div>
           <div class="card card-stat-yellow">
             <div class="card-title">Éves összköltség</div>
@@ -945,7 +804,9 @@
                 <table>
                   <thead>
                     <tr>
+                      <th>#</th>
                       <th>Szolgáltatás</th>
+                      <th>Számla</th>
                       <th>Díj</th>
                       <th>Ciklus</th>
                       <th>Terhelés napja</th>
@@ -1213,6 +1074,10 @@
                   <label>Terhelés napja (hónapban)</label>
                   <input type="number" id="sv-day" placeholder="pl. 5" min="1" max="31" />
                 </div>
+                <div style="grid-column: 1/-1">
+                  <label>Fizetési számla</label>
+                  <select id="sv-account"></select>
+                </div>
               </div>
               <button class="btn" id="service-submit-btn" onclick="addService()" style="width: 100%">
                 + Hozzáadás
@@ -1289,7 +1154,7 @@
           <div class="card" style="margin-bottom: 16px">
             <div class="card-title">Élő árfolyam</div>
             <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
-              Frissítsd a kripto-, részvény- és aranyárfolyamokat, valamint a HUF átváltási árfolyamot.
+              Frissítsd a részvény- és aranyárfolyamokat, valamint a HUF átváltási árfolyamot.
             </p>
             <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
               <button class="btn btn-secondary btn-sm" onclick="refreshAllPrices()">Élő árfolyam frissítés</button>
@@ -1356,9 +1221,6 @@
                   ><input type="checkbox" id="mod-stocks" onchange="updateModules()" /><span>Részvény</span></label
                 >
                 <label class="mod-toggle"
-                  ><input type="checkbox" id="mod-crypto" onchange="updateModules()" /><span>Kripto</span></label
-                >
-                <label class="mod-toggle"
                   ><input type="checkbox" id="mod-pledge" onchange="updateModules()" /><span>Zálog</span></label
                 >
                 <label class="mod-toggle"
@@ -1405,29 +1267,35 @@
               </div>
               <div id="acc-theme-msg" style="min-height: 18px; font-size: 12px; margin-top: 10px"></div>
             </div>
+          </div>
 
-            <div class="card">
-              <div class="card-title">Műveleti gombok</div>
-              <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
-                Kapcsold ki a szerkesztés vagy a törlés gombokat, ha védeni szeretnéd az adataidat a véletlen
-                módosítástól vagy törléstől. A gombok bármikor visszakapcsolhatók.
-              </p>
-              <div class="form-grid fg2" style="gap: 10px">
-                <label class="mod-toggle"
-                  ><input type="checkbox" id="ui-edit-btns" onchange="updateActionButtons()" /><span
-                    >Szerkesztés gombok</span
-                  ></label
-                >
-                <label class="mod-toggle"
-                  ><input type="checkbox" id="ui-del-btns" onchange="updateActionButtons()" /><span
-                    >Törlés gombok</span
-                  ></label
-                >
-              </div>
-              <div id="acc-ui-msg" style="min-height: 18px; font-size: 12px; margin-top: 10px"></div>
+          <div class="card" style="margin-bottom: 16px">
+            <div class="card-title">Bankszámlák</div>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 14px; line-height: 1.5">
+              Add meg, milyen bankszámláid vannak. A szolgáltatásoknál és a hiteleknél kiválaszthatod, melyik számláról
+              fizetődnek, itt pedig azt, hogy a fizetésed és az osztalékod melyikre érkezik.
+            </p>
+            <div id="acc-banks-list" style="margin-bottom: 12px"></div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px">
+              <input type="text" id="acc-bank-new" placeholder="Új számla neve, pl. K&amp;H" style="flex: 1; min-width: 160px" />
+              <button class="btn btn-secondary" onclick="addBankAccount()">+ Számla hozzáadása</button>
             </div>
+            <div class="form-grid fg2" style="margin-bottom: 12px; gap: 10px">
+              <div>
+                <label>Fizetés erre a számlára érkezik</label>
+                <select id="acc-salary-account" onchange="setIncomeAccounts()"></select>
+              </div>
+              <div>
+                <label>Osztalék erre a számlára érkezik</label>
+                <select id="acc-div-account" onchange="setIncomeAccounts()"></select>
+              </div>
+            </div>
+            <div id="acc-banks-msg" style="min-height: 18px; font-size: 12px"></div>
+          </div>
 
-            <div class="card">
+          <div class="grid g2" style="margin-bottom: 16px">
+            <div style="display: flex; flex-direction: column; gap: 16px">
+            <div class="card" style="margin-bottom: 0; flex: 1; display: flex; flex-direction: column">
               <div class="card-title">Adózási adatok</div>
               <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
                 Add meg az adókulcsokat százalékban. Ezeket a rendszer a későbbi adószámításokhoz használja majd.
@@ -1447,15 +1315,15 @@
                 </div>
               </div>
               <div id="acc-tax-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
-              <button class="btn" onclick="updateTaxSettings()">Adókulcsok mentése</button>
+              <button class="btn" style="margin-top: auto; align-self: flex-start" onclick="updateTaxSettings()">Adókulcsok mentése</button>
             </div>
-
-            <div class="card">
+            <div class="card" style="flex: 1; display: flex; flex-direction: column">
               <div class="card-title">Kiadás-arány riasztás</div>
               <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
                 Állítsd be, hogy a nettó fizetésedhez (alkalmazotti bevétel) viszonyítva mekkora szolgáltatás- és
                 hitelarány számítson még biztonságosnak (zöld), figyelmeztetőnek (sárga) vagy kockázatosnak (piros) a
-                Havi Pénzáramlásnál.
+                Havi Pénzáramlásnál. Csak arra a számlára vonatkozik, ahová a fizetésed érkezik — a többi számla
+                kiadásai külön szerepelnek.
               </p>
               <div class="form-grid fg2" style="margin-bottom: 16px">
                 <div>
@@ -1476,20 +1344,110 @@
                 </div>
               </div>
               <div id="acc-ratio-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
-              <button class="btn" onclick="updateRatioAlertSettings()">Küszöbök mentése</button>
+              <button class="btn" style="margin-top: auto; align-self: flex-start" onclick="updateRatioAlertSettings()">Küszöbök mentése</button>
             </div>
+            </div>
+          <div class="card" style="display: flex; flex-direction: column">
+            <div class="card-title">Alkalmazotti fizetés</div>
+            <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px; line-height: 1.5">Bruttó fizetés és levonások → nettó bevétel.</p>
+            <div class="form-grid fg2" style="margin-bottom: 12px; gap: 10px">
+              <div>
+                <label>Bruttó fizetés (Ft)</label>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="acc-sal-gross"
+                  placeholder="0"
+                  oninput="formatThousands(this); renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>Kifizetés napja</label>
+                <input
+                  type="number"
+                  id="acc-sal-day"
+                  placeholder="pl. 10"
+                  min="1"
+                  max="31"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>TB (%)</label>
+                <input
+                  type="number"
+                  id="acc-sal-tb"
+                  placeholder="18.5"
+                  step="0.01"
+                  min="0"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>SZJA (%)</label>
+                <input
+                  type="number"
+                  id="acc-sal-szja"
+                  placeholder="15"
+                  step="0.01"
+                  min="0"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+              <div>
+                <label>SZOCHO (%)</label>
+                <input
+                  type="number"
+                  id="acc-sal-szocho"
+                  placeholder="0"
+                  step="0.01"
+                  min="0"
+                  oninput="renderSalaryBreakdown()"
+                />
+              </div>
+            </div>
+            <div id="salary-breakdown"></div>
+            <div id="acc-cc-wrap" style="display: none; border-top: 1px solid var(--border); margin: 6px 0 14px; padding-top: 14px">
+              <div id="acc-cc-breakdown"></div>
+            </div>
+            <div id="acc-sal-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
+            <button class="btn" style="margin-top: auto; align-self: flex-start" onclick="updateSalarySettings()">Fizetés mentése</button>
+          </div>
           </div>
 
-          <div class="card" style="margin-bottom: 16px">
+
+          <div class="grid g2" style="margin-bottom: 16px">
+            <div class="card">
+              <div class="card-title">Műveleti gombok</div>
+              <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
+                Kapcsold ki a szerkesztés vagy a törlés gombokat, ha védeni szeretnéd az adataidat a véletlen
+                módosítástól vagy törléstől. A gombok bármikor visszakapcsolhatók.
+              </p>
+              <div class="form-grid fg2" style="gap: 10px">
+                <label class="mod-toggle"
+                  ><input type="checkbox" id="ui-edit-btns" onchange="updateActionButtons()" /><span
+                    >Szerkesztés gombok</span
+                  ></label
+                >
+                <label class="mod-toggle"
+                  ><input type="checkbox" id="ui-del-btns" onchange="updateActionButtons()" /><span
+                    >Törlés gombok</span
+                  ></label
+                >
+              </div>
+              <div id="acc-ui-msg" style="min-height: 18px; font-size: 12px; margin-top: 10px"></div>
+            </div>
+          <div class="card" style="display: flex; flex-direction: column">
             <div class="card-title">Pénzügyi kimutatás</div>
             <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
               Részletes kimutatás a teljes vagyonodról — nettó vagyon, eszközmegoszlás, valamint arany, részvény,
-              kripto, hitel, zálog és előfizetés bontás, eredménnyel (P&amp;L). A megnyíló nyomtatási ablakban válaszd
+              hitel, zálog és előfizetés bontás, eredménnyel (P&amp;L). A megnyíló nyomtatási ablakban válaszd
               célként a „PDF mentése" opciót. Tipp: előtte frissítsd az élő árfolyamokat a pontos értékekért.
             </p>
-            <button class="btn" onclick="generateFinancialReport()" style="width: 100%">
+            <button class="btn" onclick="generateFinancialReport()" style="width: 100%; margin-top: auto">
               📄 Kimutatás generálása (PDF)
             </button>
+          </div>
           </div>
 
           <div class="card" style="padding: 4px 20px; margin-bottom: 16px">
@@ -1507,251 +1465,11 @@
               </div>
               <button class="btn btn-secondary btn-sm" onclick="openModal('data-modal')">Megnyitás</button>
             </div>
-            <div class="account-row">
-              <div>
-                <div class="account-email">Kripto tételek kezelése</div>
-                <div class="account-sub">Egyedi tételek törlése (pl. hibás import)</div>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="openCryptoItemsModal()">Megnyitás</button>
-            </div>
           </div>
-        </div>
-      </div>
-
-      <div class="tab-content" id="tab-salary">
-        <div style="max-width: 1000px; margin: 0 auto">
-          <div class="section-title" style="font-size: 22px; margin-bottom: 4px">Alkalmazotti bevétel</div>
-          <div style="color: var(--muted); font-size: 12px; margin-bottom: 24px">
-            A munkabéred nettó összege — beszámít a havi pénzáramlásba és a pénzügyi idővonalba
-          </div>
-
-          <div class="card" style="margin-bottom: 16px">
-            <div class="card-title">Alkalmazotti fizetés</div>
-            <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
-              Add meg a bruttó fizetésed és a levonások kulcsait. A rendszer kiszámolja a nettó bevételed, valamint
-              azt, hogy a hónap hányadik napján várható a kifizetés.
-            </p>
-            <div class="form-grid fg2" style="margin-bottom: 16px">
-              <div style="grid-column: 1 / -1">
-                <label>Bruttó fizetés (Ft)</label>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  id="acc-sal-gross"
-                  placeholder="0"
-                  oninput="formatThousands(this); renderSalaryBreakdown()"
-                />
-              </div>
-              <div>
-                <label>Személyi jövedelemadó – SZJA (%)</label>
-                <input
-                  type="number"
-                  id="acc-sal-szja"
-                  placeholder="15"
-                  step="0.01"
-                  min="0"
-                  oninput="renderSalaryBreakdown()"
-                />
-              </div>
-              <div>
-                <label>Szociális hozzájárulási adó – SZOCHO (%)</label>
-                <input
-                  type="number"
-                  id="acc-sal-szocho"
-                  placeholder="0"
-                  step="0.01"
-                  min="0"
-                  oninput="renderSalaryBreakdown()"
-                />
-              </div>
-              <div>
-                <label>Társadalombiztosítás – TB (%)</label>
-                <input
-                  type="number"
-                  id="acc-sal-tb"
-                  placeholder="18.5"
-                  step="0.01"
-                  min="0"
-                  oninput="renderSalaryBreakdown()"
-                />
-              </div>
-              <div>
-                <label>Kifizetés napja (hónapban)</label>
-                <input
-                  type="number"
-                  id="acc-sal-day"
-                  placeholder="pl. 10"
-                  min="1"
-                  max="31"
-                  oninput="renderSalaryBreakdown()"
-                />
-              </div>
-            </div>
-            <div id="salary-breakdown"></div>
-            <div id="acc-sal-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 12px"></div>
-            <button class="btn" onclick="updateSalarySettings()">Fizetés mentése</button>
-          </div>
-
-          <div class="card" style="margin-bottom: 16px">
-            <div class="card-title">Bevételi korrekciók</div>
-            <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
-              Havi eltérések az alapfizetéshez képest: prémium, 13. havi, túlóra (+), vagy táppénz, fizetés nélküli
-              szabadság (−). A korrekciók beszámítanak a bevételi idővonalba és a havi pénzáramlásba.
-            </p>
-            <div class="form-grid fg2" style="margin-bottom: 12px">
-              <div>
-                <label>Hónap</label>
-                <select id="sal-adj-month">
-                  <option value="1">Január</option>
-                  <option value="2">Február</option>
-                  <option value="3">Március</option>
-                  <option value="4">Április</option>
-                  <option value="5">Május</option>
-                  <option value="6">Június</option>
-                  <option value="7">Július</option>
-                  <option value="8">Augusztus</option>
-                  <option value="9">Szeptember</option>
-                  <option value="10">Október</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
-              </div>
-              <div>
-                <label>Típus</label>
-                <select id="sal-adj-type">
-                  <option value="add">Hozzáadás (+)</option>
-                  <option value="sub">Levonás (−)</option>
-                </select>
-              </div>
-              <div>
-                <label>Összeg (Ft)</label>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  id="sal-adj-amount"
-                  placeholder="0"
-                  oninput="formatThousands(this)"
-                />
-              </div>
-              <div>
-                <label>Megnevezés</label>
-                <input type="text" id="sal-adj-note" placeholder="pl. Prémium, 13. havi" />
-              </div>
-            </div>
-            <div id="sal-adj-msg" style="min-height: 18px; font-size: 12px; margin-bottom: 10px"></div>
-            <button class="btn" onclick="addSalaryAdjustment()">+ Korrekció hozzáadása</button>
-            <div id="salary-adjust-list" style="margin-top: 16px"></div>
-          </div>
-
-          <div class="card" style="margin-bottom: 16px">
-            <div class="card-title">Bevételi idővonal — 2026</div>
-            <div style="color: var(--muted); font-size: 12px; margin-bottom: 12px">
-              Havi összes bevétel (alap fizetés + korrekciók), 2026 januárjától
-            </div>
-            <div id="salary-timeline"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-content" id="tab-expense">
-        <div style="max-width: 1000px; margin: 0 auto">
-          <div class="section-title" style="font-size: 22px; margin-bottom: 4px">Kiadás</div>
-          <div style="color: var(--muted); font-size: 12px; margin-bottom: 24px">
-            Töltsd fel a Revolut bankszámlakivonatot (Excel/CSV) — bevétel, kiadás és minden mozgás egy helyen, havi
-            bontással és szűrhető részletezővel
-          </div>
-
-          <div class="card" style="margin-bottom: 16px">
-            <div class="card-title">Bankszámlakivonat feltöltése</div>
-            <p style="color: var(--muted); font-size: 12px; margin-bottom: 16px; line-height: 1.6">
-              Támogatott: <strong>Revolut</strong> (Excel/CSV) és <strong>OTP Bank</strong> (Excel) kivonat. A feldolgozás a
-              böngésződben, helyben történik — az adat nem kerül fel sehova. A <strong>teljes kivonat</strong>
-              feldolgozódik: bevétel, kiadás, készpénzfelvétel és feltöltés is. A részletezőben hónapra és típusra
-              szűrhetsz. Több hónapot is feltölthetsz egymás után — az adatok összeadódnak (a duplikátumok kimaradnak).
-            </p>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
-              <label
-                class="btn"
-                style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px"
-              >
-                <span>📄 Fájl kiválasztása</span>
-                <input
-                  type="file"
-                  id="exp-file"
-                  accept=".xlsx,.xls,.csv"
-                  style="display: none"
-                  onchange="handleRevolutUpload(this)"
-                />
-              </label>
-              <button
-                id="exp-clear-btn"
-                class="btn btn-secondary"
-                style="display: none"
-                onclick="clearExpenseReport()"
-              >
-                Összes törlése
-              </button>
-            </div>
-            <div id="exp-upload-msg" style="min-height: 18px; font-size: 12px; margin-top: 12px"></div>
-          </div>
-
-          <div id="exp-report"></div>
         </div>
       </div>
     </main>
 
-    <div
-      id="sell-modal"
-      style="
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.65);
-        backdrop-filter: blur(4px);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-      "
-      onclick="if(event.target===this)closeSellModal()"
-    >
-      <div class="card" style="max-width: 440px; width: 100%; margin: 0">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px">
-          <div class="section-title" style="font-size: 18px">Kripto eladása</div>
-          <button class="btn btn-secondary btn-sm" onclick="closeSellModal()">✕</button>
-        </div>
-        <div id="sell-coin-info" style="font-size: 12px; color: var(--muted); margin-bottom: 16px"></div>
-        <div class="form-grid fg2" style="margin-bottom: 12px">
-          <div>
-            <label>Eladás dátuma</label>
-            <input type="date" id="sell-date" />
-          </div>
-          <div>
-            <label>Deviza</label>
-            <select id="sell-currency" onchange="updateSellLabels()">
-              <option value="HUF">HUF</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-            </select>
-          </div>
-          <div>
-            <label>Mennyiség (db)</label>
-            <input type="number" id="sell-qty" placeholder="0" step="any" />
-          </div>
-          <div>
-            <label id="sell-price-label">Eladási ár / db (Ft)</label>
-            <input type="number" id="sell-price" placeholder="0" step="any" />
-          </div>
-          <div>
-            <label id="sell-fee-label">Díj (Ft)</label>
-            <input type="number" id="sell-fee" placeholder="0" step="any" />
-          </div>
-        </div>
-        <div id="sell-fx-info" style="font-size: 11px; color: var(--muted); margin-bottom: 12px; display: none"></div>
-        <div id="sell-error" style="color: var(--red); font-size: 11px; margin-bottom: 12px; display: none"></div>
-        <button class="btn" onclick="confirmSell()" style="width: 100%">Eladás rögzítése</button>
-      </div>
-    </div>
 
     <div class="modal" id="data-modal" onclick="if(event.target===this)closeModal('data-modal')">
       <div class="modal-card" style="max-width: 440px">
@@ -1782,42 +1500,6 @@
       </div>
     </div>
 
-    <div class="modal" id="crypto-items-modal" onclick="if(event.target===this)closeModal('crypto-items-modal')">
-      <div class="modal-card" style="max-width: 720px">
-        <div class="modal-head">
-          <div class="section-title" style="font-size: 18px">Kripto tételek kezelése</div>
-          <button class="btn btn-secondary btn-sm" onclick="closeModal('crypto-items-modal')">✕</button>
-        </div>
-        <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px; line-height: 1.6">
-          Minden egyes rögzített kripto tétel (vétel/eladás) itt egyenként törölhető, coinra való tekintet nélkül —
-          hasznos pl. hibásan importált tételek gyors kitakarításához.
-        </p>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px">
-          <button class="btn btn-secondary btn-sm" onclick="toggleAllCryptoItems(true)">Összes kijelölése</button>
-          <button class="btn btn-secondary btn-sm" onclick="toggleAllCryptoItems(false)">Kijelölés törlése</button>
-          <button class="btn btn-secondary btn-sm" onclick="selectBybitCryptoItems()">
-            Hibás/importált tételek kijelölése
-          </button>
-          <button class="btn btn-danger btn-sm" onclick="deleteSelectedCryptoItems()">Kijelöltek törlése</button>
-        </div>
-        <div class="scroll-table" style="max-height: 420px; overflow-y: auto">
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>Dátum</th>
-                <th>Coin</th>
-                <th>Típus</th>
-                <th>Mennyiség</th>
-                <th>Forrás</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="crypto-items-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
     <div class="modal open" id="login-modal">
       <div class="auth-card">

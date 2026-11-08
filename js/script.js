@@ -33,7 +33,6 @@ const I18N_HU_EN = {
   Figyelő: 'Watchlist',
   Arany: 'Gold',
   Részvény: 'Stocks',
-  Kripto: 'Crypto',
   Zálog: 'Pledge',
   Hitel: 'Loans',
   Szolgáltatások: 'Subscriptions',
@@ -64,10 +63,19 @@ const I18N_HU_EN = {
   'Bevétel — osztalék / hó': 'Income — dividend / mo',
   'Hiteltörlesztő / hó': 'Loan instalment / mo',
   'Szolgáltatások / hó': 'Subscriptions / mo',
+  Hitelkártya: 'Credit card',
+  Bankszámlák: 'Bank accounts',
+  '+ Számla hozzáadása': '+ Add account',
+  'Fizetés erre a számlára érkezik': 'Salary arrives on this account',
+  'Osztalék erre a számlára érkezik': 'Dividends arrive on this account',
+  'A hitelkártya kerete automatikusan generálódik: nettó fizetés − maximális hitel − maximális szolgáltatási díj (a Kiadás-arány riasztás piros küszöbei szerint). Ami marad, az a hitelkeret.':
+    'The credit card limit is generated automatically: net salary − maximum loan − maximum subscription fees (per the red thresholds of the Spend-ratio Alert). What remains is the limit.',
+  'Fizetési számla': 'Paid from account',
+  Számla: 'Account',
   'Nettó havi egyenleg': 'Net monthly balance',
   'Kiadás-arány riasztás': 'Spend-ratio Alert',
-  'Állítsd be, hogy a nettó fizetésedhez (alkalmazotti bevétel) viszonyítva mekkora szolgáltatás- és hitelarány számítson még biztonságosnak (zöld), figyelmeztetőnek (sárga) vagy kockázatosnak (piros) a Havi Pénzáramlásnál.':
-    'Set how much of a subscription and loan ratio, relative to your net salary (employee income), counts as safe (green), a warning (yellow) or risky (red) in Monthly Cash Flow.',
+  'Állítsd be, hogy a nettó fizetésedhez (alkalmazotti bevétel) viszonyítva mekkora szolgáltatás- és hitelarány számítson még biztonságosnak (zöld), figyelmeztetőnek (sárga) vagy kockázatosnak (piros) a Havi Pénzáramlásnál. Csak arra a számlára vonatkozik, ahová a fizetésed érkezik — a többi számla kiadásai külön szerepelnek.':
+    'Set how much of a subscription and loan ratio, relative to your net salary (employee income), counts as safe (green), a warning (yellow) or risky (red) in Monthly Cash Flow. Applies only to the account your salary arrives on — the expenses of other accounts are shown separately.',
   'Szolgáltatás — sárga küszöb (%)': 'Subscriptions — yellow threshold (%)',
   'Szolgáltatás — piros küszöb (%)': 'Subscriptions — red threshold (%)',
   'Hitel — sárga küszöb (%)': 'Loans — yellow threshold (%)',
@@ -93,10 +101,9 @@ const I18N_HU_EN = {
   'Bekerülési (befektetett) költség': 'Cost basis (invested)',
   'Zálog (−)': 'Pledge (−)',
   'Interaktív Figyelő': 'Interactive Watchlist',
-  'Élő követés: kripto, részvények és befektetési arany':
-    'Live tracking: crypto, stocks and investment gold',
+  'Élő követés: részvények és befektetési arany':
+    'Live tracking: stocks and investment gold',
   'Élő árfolyam frissítés': 'Live price refresh',
-  'Nincs kripto': 'No crypto',
   Részvények: 'Stocks',
   'Nincs részvény': 'No stocks',
   'Befektetési arany': 'Investment gold',
@@ -138,27 +145,19 @@ const I18N_HU_EN = {
   'Osztalék automatikusan követve (Yahoo)': 'Dividend tracked automatically (Yahoo)',
   'A Részvény modul ki van kapcsolva.': 'The Stocks module is turned off.',
   'Nincs nyitott vétel': 'No open buys',
-  'Kriptovaluta Kereskedés': 'Cryptocurrency Trading',
   '+ Vétel rögzítése': '+ Record buy',
   'Bekerülési érték (nyitott)': 'Cost basis (open)',
   'Aktuális eladási érték': 'Current sale value',
   Hozam: 'Return',
   'a nyitott pozíción': 'on the open position',
-  'Kripto Megoszlás': 'Crypto Allocation',
   'Nincs nyitott pozíció': 'No open position',
   Statisztika: 'Statistics',
-  Coin: 'Coin',
-  'Nincs kriptó pozíció': 'No crypto position',
-  '← Vissza a kriptókhoz': '← Back to crypto',
   'Vétel rögzítése': 'Record buy',
   Mennyiség: 'Quantity',
   'Ár (Ft)': 'Price (HUF)',
   Dátum: 'Date',
   'Díj (Ft)': 'Fee (HUF)',
-  'A teljes nevet és az élő árfolyamot a rendszer a coin szimbóluma alapján automatikusan lekéri (CoinGecko).':
-    'The full name and live price are fetched automatically by coin symbol (CoinGecko).',
   'Vétel szerkesztése': 'Edit buy',
-  'Kripto eladása': 'Sell crypto',
   'Mennyiség (db)': 'Quantity (units)',
   'Eladási ár / db (Ft)': 'Sale price / unit (HUF)',
   'Összes mennyiség': 'Total quantity',
@@ -321,11 +320,16 @@ const I18N_HU_EN = {
     'Enter your gross salary and the deduction rates. The system calculates your net income and which day of the month the payment is expected.',
   'Bruttó fizetés (Ft)': 'Gross salary (HUF)',
   'Társadalombiztosítás – TB (%)': 'Social security – SS (%)',
+  'SZJA (%)': 'PIT (%)',
+  'SZOCHO (%)': 'SCT (%)',
+  'TB (%)': 'SS (%)',
+  'Kifizetés napja': 'Payment day',
+  'Bruttó fizetés és levonások → nettó bevétel.': 'Gross salary and deductions → net income.',
   'Kifizetés napja (hónapban)': 'Payday (day of month)',
   'Fizetés mentése': 'Save salary',
   'Pénzügyi kimutatás': 'Financial statement',
-  'Részletes kimutatás a teljes vagyonodról — nettó vagyon, eszközmegoszlás, valamint arany, részvény, kripto, hitel, zálog és előfizetés bontás, eredménnyel (P&L). A megnyíló nyomtatási ablakban válaszd célként a „PDF mentése" opciót. Tipp: előtte frissítsd az élő árfolyamokat a pontos értékekért.':
-    'A detailed statement of your entire net worth — net worth, asset allocation, plus gold, stock, crypto, loan, pledge and subscription breakdowns, with profit/loss (P&L). In the print dialog that opens, choose “Save as PDF” as the destination. Tip: refresh live prices first for accurate values.',
+  'Részletes kimutatás a teljes vagyonodról — nettó vagyon, eszközmegoszlás, valamint arany, részvény, hitel, zálog és előfizetés bontás, eredménnyel (P&L). A megnyíló nyomtatási ablakban válaszd célként a „PDF mentése" opciót. Tipp: előtte frissítsd az élő árfolyamokat a pontos értékekért.':
+    'A detailed statement of your entire net worth — net worth, asset allocation, plus gold, stock, loan, pledge and subscription breakdowns, with profit/loss (P&L). In the print dialog that opens, choose “Save as PDF” as the destination. Tip: refresh live prices first for accurate values.',
   '📄 Kimutatás generálása (PDF)': '📄 Generate statement (PDF)',
   Adatok: 'Data',
   '⬇ Adatok letöltése (JSON biztonsági mentés)': '⬇ Download data (JSON backup)',
@@ -335,8 +339,8 @@ const I18N_HU_EN = {
   Kijelentkezés: 'Sign out',
   Fiókváltás: 'Switch account',
   Veszélyzóna: 'Danger zone',
-  'Az összes pénzügyi adat (arany, zálog, részvény, kripto, hitel, szolgáltatások) törlése a felhőből — nem visszavonható. Előtte töltsd le a biztonsági mentést!':
-    'Delete all financial data (gold, pledge, stock, crypto, loan, subscriptions) — this cannot be undone. Download the backup first!',
+  'Az összes pénzügyi adat (arany, zálog, részvény, hitel, szolgáltatások) törlése a felhőből — nem visszavonható. Előtte töltsd le a biztonsági mentést!':
+    'Delete all financial data (gold, pledge, stock, loan, subscriptions) — this cannot be undone. Download the backup first!',
   '🗑 Összes adat törlése': '🗑 Delete all data',
   'Adatok mentése és visszatöltése': 'Save and restore data',
   'Az adataid ebben a böngészőben (localStorage) tárolódnak a bejelentkezett fiókodhoz kötve — nem hagyják el az eszközt, és a böngészőadatok törlésével elveszhetnek.\n      Épp ezért érdemes időnként fájlba menteni: ez a saját biztonsági másolatod, ha véletlenül törölnél valamit, vagy exportálni szeretnéd az adataidat.':
@@ -885,6 +889,75 @@ function updateRatioAlertSettings() {
   renderAll();
   accMsg('acc-ratio-msg', '✓ Küszöbök elmentve.', false);
 }
+function creditCardInfo(card) {
+  const ra = state.ratioAlert || ratioAlertDefaults();
+  const net = salaryNetMonthly();
+  const useLoan = !card || card.useLoan !== false;
+  const useSvc = !card || card.useSvc !== false;
+  const loanMax = useLoan ? (net * (Number(ra.loanRed) || 0)) / 100 : 0;
+  const svcMax = useSvc ? (net * (Number(ra.svcRed) || 0)) / 100 : 0;
+  const limit = Math.max(0, net - loanMax - svcMax);
+  return { net, useLoan, useSvc, loanMax, svcMax, limit, loanPct: Number(ra.loanRed) || 0, svcPct: Number(ra.svcRed) || 0 };
+}
+function accountCard(acc) {
+  const c = acc && acc.card;
+  return c && c.on
+    ? { mode: c.mode || 'auto', value: Number(c.value) || 0, useLoan: c.useLoan !== false, useSvc: c.useSvc !== false }
+    : null;
+}
+function accountCardLimit(acc) {
+  const card = accountCard(acc);
+  if (!card) return 0;
+  if (card.mode === 'amount') return card.value;
+  if (card.mode === 'percent') return (salaryNetMonthly() * card.value) / 100;
+  return creditCardInfo(card).limit;
+}
+function renderCreditCardSettings() {
+  const wrap = document.getElementById('acc-cc-wrap');
+  const box = document.getElementById('acc-cc-breakdown');
+  if (!wrap || !box) return;
+  const cards = accountsList().filter((a) => accountCard(a));
+  wrap.style.display = cards.length ? '' : 'none';
+  if (!cards.length) {
+    box.innerHTML = '';
+    return;
+  }
+  const row = (label, val, cls) =>
+    `<div style="display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:13px"><span style="color:var(--muted)">${label}</span><span class="${cls || ''}" style="font-weight:600;white-space:nowrap">${val}</span></div>`;
+  const sep = '<div style="border-top:1px solid var(--border);margin:6px 0"></div>';
+  box.innerHTML = cards
+    .map((acc, i) => {
+      const card = accountCard(acc);
+      const limit = accountCardLimit(acc);
+      const c = creditCardInfo(card);
+      let desc, rows;
+      if (card.mode === 'amount') {
+        desc = 'A hitelkártya kerete fix összeg.';
+        rows = row('Hitelkártya keret', fmt(limit), 'green');
+      } else if (card.mode === 'percent') {
+        desc = 'A hitelkártya kerete a nettó fizetés megadott százaléka.';
+        rows = c.net > 0
+          ? row('Nettó fizetés', fmt(c.net)) + sep + row(`Hitelkártya keret (${card.value}%)`, fmt(limit), 'green')
+          : '<div style="color:var(--muted);font-size:12px">Add meg az alkalmazotti fizetést a keret kiszámításához.</div>';
+      } else {
+        const parts = [c.useLoan ? 'maximális hitel' : '', c.useSvc ? 'maximális szolgáltatási díj' : ''].filter(Boolean);
+        desc = `A hitelkártya kerete automatikusan generálódik: nettó fizetés${parts.map((x) => ' − ' + x).join('')} (a Kiadás-arány riasztás piros küszöbei szerint). Ami marad, az a hitelkeret.`;
+        rows = c.net > 0
+          ? row('Nettó fizetés', fmt(c.net)) +
+            (c.useLoan ? row(`Maximális hitel (${c.loanPct}%)`, '− ' + fmt(c.loanMax), 'red') : '') +
+            (c.useSvc ? row(`Maximális szolgáltatási díj (${c.svcPct}%)`, '− ' + fmt(c.svcMax), 'red') : '') +
+            sep +
+            row('Hitelkártya keret', fmt(c.limit), 'green')
+          : '<div style="color:var(--muted);font-size:12px">Add meg az alkalmazotti fizetést a keret kiszámításához.</div>';
+      }
+      return `<div style="${i ? 'margin-top:16px' : ''}">
+        <div class="card-title">${escHtml(acc.name)} ${L('hitelkártya', 'credit card')}</div>
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px; line-height: 1.5">${desc}</p>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">${rows}</div>
+      </div>`;
+    })
+    .join('');
+}
 function salaryDefaults() {
   return { gross: 0, szja: 15, szocho: 0, tb: 18.5, day: 0 };
 }
@@ -913,8 +986,6 @@ function renderSalary() {
   if (tb) tb.value = s.tb || s.tb === 0 ? s.tb : '';
   if (day) day.value = s.day || '';
   renderSalaryBreakdown();
-  renderSalaryAdjustments();
-  renderIncomeTimeline();
 }
 
 function readSalaryInputs() {
@@ -970,208 +1041,6 @@ function updateSalarySettings() {
   save();
   renderAll();
   accMsg('acc-sal-msg', '✓ Fizetési adatok elmentve.', false);
-}
-
-const INCOME_YEAR = 2026;
-const MONTHS_HU = [
-  'Január',
-  'Február',
-  'Március',
-  'Április',
-  'Május',
-  'Június',
-  'Július',
-  'Augusztus',
-  'Szeptember',
-  'Október',
-  'November',
-  'December'
-];
-const MONTHS_HU_SHORT = [
-  'Jan',
-  'Feb',
-  'Már',
-  'Ápr',
-  'Máj',
-  'Jún',
-  'Júl',
-  'Aug',
-  'Szep',
-  'Okt',
-  'Nov',
-  'Dec'
-];
-function incomeAdjustmentsForMonth(monthIdx0, year) {
-  return (state.salaryAdjustments || []).filter(
-    (a) => (a.year || INCOME_YEAR) === year && a.month - 1 === monthIdx0
-  );
-}
-
-function monthlyIncomeSeries(year) {
-  const base = salaryNetMonthly();
-  const totals = new Array(12).fill(0);
-  const items = Array.from({ length: 12 }, () => []);
-  for (let i = 0; i < 12; i++) {
-    if (base > 0) {
-      items[i].push({ label: 'Nettó alapfizetés', amount: base });
-      totals[i] += base;
-    }
-    incomeAdjustmentsForMonth(i, year).forEach((a) => {
-      const amt = Number(a.amount) || 0;
-      if (amt !== 0) {
-        items[i].push({ label: a.note || (amt >= 0 ? 'Korrekció (+)' : 'Korrekció (−)'), amount: amt });
-        totals[i] += amt;
-      }
-    });
-    if (totals[i] < 0) totals[i] = 0;
-  }
-  return { base, totals, items };
-}
-
-function addSalaryAdjustment() {
-  const month = parseInt(document.getElementById('sal-adj-month').value) || 0;
-  const type = document.getElementById('sal-adj-type').value;
-  const amountRaw = parseAmount('sal-adj-amount');
-  const note = (document.getElementById('sal-adj-note').value || '').trim();
-  if (month < 1 || month > 12) {
-    accMsg('sal-adj-msg', 'Válassz hónapot.', true);
-    return;
-  }
-  if (!amountRaw || amountRaw <= 0) {
-    accMsg('sal-adj-msg', 'Adj meg egy pozitív összeget.', true);
-    return;
-  }
-  const amount = type === 'sub' ? -amountRaw : amountRaw;
-  if (!Array.isArray(state.salaryAdjustments)) state.salaryAdjustments = [];
-  state.salaryAdjustments.push({ id: uid(), year: INCOME_YEAR, month, amount, note });
-  save();
-  document.getElementById('sal-adj-amount').value = '';
-  document.getElementById('sal-adj-note').value = '';
-  renderAll();
-  accMsg('sal-adj-msg', '✓ Korrekció hozzáadva.', false);
-}
-
-function deleteSalaryAdjustment(id) {
-  state.salaryAdjustments = (state.salaryAdjustments || []).filter((a) => a.id !== id);
-  save();
-  renderAll();
-}
-
-function renderSalaryAdjustments() {
-  const box = document.getElementById('salary-adjust-list');
-  if (!box) return;
-  const list = (state.salaryAdjustments || [])
-    .filter((a) => (a.year || INCOME_YEAR) === INCOME_YEAR)
-    .slice()
-    .sort((a, b) => a.month - b.month);
-  if (!list.length) {
-    box.innerHTML =
-      '<div style="color:var(--muted);font-size:12px;padding:6px 0">Még nincs korrekció. Add hozzá a prémiumot, a 13. havit, a túlórát (+) vagy a levonásokat (−).</div>';
-    return;
-  }
-  box.innerHTML = list
-    .map((a) => {
-      const amt = Number(a.amount) || 0;
-      const pos = amt >= 0;
-      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
-        <span style="min-width:74px;font-size:12px;color:var(--muted);font-weight:600">${MONTHS_HU[a.month - 1]}</span>
-        <span style="flex:1;font-size:13px;font-weight:600">${a.note ? escHtml(a.note) : pos ? 'Korrekció (+)' : 'Korrekció (−)'}</span>
-        <span class="${pos ? 'green' : 'red'}" style="font-weight:700;white-space:nowrap">${pos ? '+' : '−'} ${fmtAgg(Math.abs(amt))}</span>
-        <button class="btn btn-danger btn-sm js-del-btn" onclick="deleteSalaryAdjustment('${a.id}')" title="Törlés">×</button>
-      </div>`;
-    })
-    .join('');
-}
-
-let _incTLsel = null;
-function selectIncomeMonth(i) {
-  _incTLsel = i;
-  renderIncomeTimeline();
-}
-function renderIncomeTimeline() {
-  const box = document.getElementById('salary-timeline');
-  if (!box) return;
-  const YEAR = INCOME_YEAR;
-  const { totals, items } = monthlyIncomeSeries(YEAR);
-  const maxV = Math.max(1, ...totals);
-  const totYear = totals.reduce((a, b) => a + b, 0);
-  const avg = totYear / 12;
-
-  const today = new Date();
-  let curIdx;
-  if (today.getFullYear() < YEAR) curIdx = -1;
-  else if (today.getFullYear() > YEAR) curIdx = 12;
-  else curIdx = today.getMonth();
-  const dayFrac =
-    curIdx >= 0 && curIdx < 12 ? (today.getDate() - 1) / new Date(YEAR, curIdx + 1, 0).getDate() : 0;
-  const todayPct = curIdx < 0 ? 0 : curIdx >= 12 ? 100 : ((curIdx + dayFrac) / 12) * 100;
-
-  if (_incTLsel == null || _incTLsel < 0 || _incTLsel > 11)
-    _incTLsel = curIdx < 0 ? 0 : curIdx > 11 ? 11 : curIdx;
-  const sel = _incTLsel;
-
-  const H = 96;
-  const cols = MONTHS_HU_SHORT.map((name, i) => {
-    const v = totals[i];
-    const h = Math.max(v > 0 ? 2 : 0, Math.round((v / maxV) * H));
-    const future = i > curIdx;
-    const op = future ? 0.4 : 1;
-    const dash = future ? ';outline:1px dashed var(--border2);outline-offset:-1px' : '';
-    const selBg = i === sel ? 'background:var(--surface2);' : '';
-    return `<div onclick="selectIncomeMonth(${i})" title="${MONTHS_HU[i]}" style="flex:1 1 0;min-width:40px;cursor:pointer;display:flex;flex-direction:column;align-items:center;border-radius:8px;padding:2px 0;${selBg}">
-      <div style="height:${H}px;display:flex;align-items:flex-end;justify-content:center;width:100%">
-        <div style="width:58%;max-width:22px;height:${h}px;background:var(--accent2);border-radius:3px 3px 0 0;opacity:${op}${dash}"></div>
-      </div>
-      <div style="height:2px;width:80%;background:var(--border2)"></div>
-      <div style="font-size:10px;margin-top:4px;color:${i === curIdx ? 'var(--accent)' : 'var(--muted)'};font-weight:${i === sel || i === curIdx ? 700 : 600}">${name}</div>
-    </div>`;
-  }).join('');
-
-  const chart = `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-    <div style="position:relative;min-width:360px">
-      ${curIdx > 0 ? `<div style="position:absolute;top:0;bottom:20px;left:0;width:${todayPct}%;background:var(--surface2);opacity:0.4;border-radius:6px;pointer-events:none"></div>` : ''}
-      <div style="display:flex;align-items:stretch;gap:2px;position:relative">${cols}</div>
-      ${
-        curIdx >= 0 && curIdx < 12
-          ? `<div style="position:absolute;top:0;bottom:20px;left:${todayPct}%;border-left:2px dashed var(--accent);pointer-events:none"></div>
-      <div style="position:absolute;top:-4px;left:${todayPct}%;transform:translateX(-50%);font-size:9px;font-weight:700;background:var(--accent);color:#1a1206;padding:1px 6px;border-radius:7px;pointer-events:none">Ma</div>`
-          : ''
-      }
-    </div>
-  </div>`;
-
-  const status = sel < curIdx ? 'Elmúlt' : sel === curIdx ? 'Aktuális' : 'Hátravan';
-  const statusCol =
-    sel === curIdx ? 'background:var(--accent);color:#1a1206' : 'background:var(--surface2);color:var(--muted)';
-  const listHtml = items[sel].length
-    ? items[sel]
-        .slice()
-        .sort((a, b) => b.amount - a.amount)
-        .map((it) => {
-          const pos = it.amount >= 0;
-          return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0"><span style="color:var(--muted)">${escHtml(it.label)}</span><span class="${pos ? 'green' : 'red'}" style="font-weight:600;white-space:nowrap">${pos ? '+' : '−'} ${fmtAgg(Math.abs(it.amount))}</span></div>`;
-        })
-        .join('')
-    : '<div style="font-size:12px;color:var(--muted);padding:3px 0">Nincs rögzített bevétel erre a hónapra.</div>';
-
-  box.innerHTML = `
-    <div style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;font-size:12px;align-items:center">
-      <span>Éves bevétel: <strong class="green">${fmtAgg(totYear)}</strong></span>
-      <span style="margin-left:auto">Havi átlag: <strong>${fmtAgg(avg)}</strong></span>
-    </div>
-    ${chart}
-    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:8px">
-      <span>Tömör = elmúlt · halvány = még hátra van</span>
-      <span>Kattints egy hónapra a bontásért</span>
-    </div>
-    <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-        <strong style="font-size:14px">${MONTHS_HU[sel]} ${YEAR}</strong>
-        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;${statusCol}">${status}</span>
-        <span style="margin-left:auto;font-weight:700" class="green">${fmtAgg(totals[sel])}</span>
-      </div>
-      ${listHtml}
-    </div>`;
 }
 
 function sendAccountPasswordReset() {
@@ -1236,7 +1105,12 @@ function migrateLocalDataIfNeeded() {
 }
 let state = {
   stocks: [],
-  crypto: [],
+  accounts: [
+    { id: 'otp', name: 'OTP Bank' },
+    { id: 'revolut', name: 'Revolut' }
+  ],
+  salaryAccount: 'otp',
+  dividendAccount: 'revolut',
   loans: [],
   pledges: [],
   gold: {
@@ -1261,14 +1135,11 @@ let state = {
   modules: {
     gold: true,
     stocks: true,
-    crypto: true,
     pledge: true,
     loans: true,
     services: true
   },
-  paidInstallments: {},
-  salaryAdjustments: [],
-  expenseReport: null
+  paidInstallments: {}
 };
 let priceCache = {};
 let goldSpotLive = false;
@@ -1279,15 +1150,11 @@ function vaultHasData(s) {
   const arr = (k) => Array.isArray(s[k]) && s[k].length > 0;
   if (
     arr('stocks') ||
-    arr('crypto') ||
     arr('goldItems') ||
     arr('loans') ||
     arr('pledges') ||
-    arr('services') ||
-    arr('salaryAdjustments')
+    arr('services')
   )
-    return true;
-  if (s.expenseReport && Array.isArray(s.expenseReport.txns) && s.expenseReport.txns.length > 0)
     return true;
   if (s.salary && Number(s.salary.gross) > 0) return true;
   return false;
@@ -1329,8 +1196,10 @@ function normalizeState() {
   if (!state.pledges) state.pledges = [];
   if (!state.goldItems) state.goldItems = [];
   if (!state.stocks) state.stocks = [];
-  if (!state.crypto) state.crypto = [];
   if (!state.loans) state.loans = [];
+  if (!Array.isArray(state.accounts) || !state.accounts.length) state.accounts = defaultAccounts();
+  if (!state.salaryAccount) state.salaryAccount = state.accounts[0].id;
+  if (!state.dividendAccount) state.dividendAccount = (state.accounts[1] || state.accounts[0]).id;
   if (!state.goldSpot) state.goldSpot = (state.gold && state.gold.pricePerGram) || 28000;
   if (!state.services) state.services = [];
   if (!state.taxSettings || typeof state.taxSettings !== 'object')
@@ -1359,12 +1228,11 @@ function normalizeState() {
     state.modules = {
       gold: true,
       stocks: true,
-      crypto: true,
       pledge: true,
       loans: true,
       services: true
     };
-  ['gold', 'stocks', 'crypto', 'pledge', 'loans', 'services'].forEach((k) => {
+  ['gold', 'stocks', 'pledge', 'loans', 'services'].forEach((k) => {
     if (state.modules[k] === undefined) state.modules[k] = true;
   });
   if (!state.ui || typeof state.ui !== 'object') state.ui = {};
@@ -1451,8 +1319,7 @@ function exportData() {
 function generateFinancialReport() {
   const mod = state.modules || {};
   const useGold = mod.gold !== false,
-    useStocks = mod.stocks !== false,
-    useCrypto = mod.crypto !== false;
+    useStocks = mod.stocks !== false;
   const usePledge = mod.pledge !== false,
     useLoans = mod.loans !== false,
     useServices = mod.services !== false;
@@ -1526,30 +1393,6 @@ function generateFinancialReport() {
   const divSzjaAmt = _dtb.szjaAmt,
     divSzochoAmt = _dtb.szochoAmt,
     divNet = _dtb.net;
-  const coins = calcCryptoPL();
-  const cryptoRows = Object.entries(coins)
-    .map(([coin, c]) => {
-      const openQty = c.buys.reduce((a, b) => a + b.qty, 0);
-      if (openQty <= 0) return null;
-      const openCost = c.buys.reduce((a, b) => a + b.qty * b.price, 0);
-      const live = getLivePrice(coin);
-      const curVal = live ? openQty * live : openCost;
-      return {
-        coin,
-        qty: openQty,
-        avgHuf: openCost / openQty,
-        priceHuf: live || openCost / openQty,
-        invHuf: openCost,
-        curHuf: curVal,
-        pl: curVal - openCost,
-        plPct: openCost ? ((curVal - openCost) / openCost) * 100 : null
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => b.curHuf - a.curHuf);
-  const cryptoVal = useCrypto ? cryptoRows.reduce((a, r) => a + r.curHuf, 0) : 0;
-  const cryptoCost = useCrypto ? cryptoRows.reduce((a, r) => a + r.invHuf, 0) : 0;
-  const cryptoPL = cryptoVal - cryptoCost;
   const loanRows = state.loans.map((l) => ({
     l,
     remaining: calcRemaining(l)
@@ -1572,8 +1415,8 @@ function generateFinancialReport() {
       next: nextChargeDate(s.day)
     }));
   const svcMonthly = useServices ? svcRows.reduce((a, r) => a + r.monthly, 0) : 0;
-  const currentValue = stockVal + goldVal + cryptoVal;
-  const investedCost = stockCost + goldCost + cryptoCost;
+  const currentValue = stockVal + goldVal;
+  const investedCost = stockCost + goldCost;
   const unrealPL = currentValue - investedCost;
   const totalLiab = totalLoan + totalPledge;
   const netWorth = currentValue - totalLiab;
@@ -1619,7 +1462,6 @@ function generateFinancialReport() {
     `<th>Tétel</th><th class="num">Érték</th><th class="num">Arány</th>`,
     `${useGold ? `<tr><td>Arany</td><td class="num">${fmtAgg(goldVal)}</td><td class="num">${share(goldVal)}</td></tr>` : ''}
      ${useStocks ? `<tr><td>Részvény</td><td class="num">${fmtAgg(stockVal)}</td><td class="num">${share(stockVal)}</td></tr>` : ''}
-     ${useCrypto ? `<tr><td>Kripto</td><td class="num">${fmtAgg(cryptoVal)}</td><td class="num">${share(cryptoVal)}</td></tr>` : ''}
      <tr class="subtotal"><td>Befektetett eszközök összesen</td><td class="num">${fmtAgg(currentValue)}</td><td class="num">100%</td></tr>
      ${useLoans ? `<tr><td>Hitel</td><td class="num neg">${neg(totalLoan)}</td><td class="num muted">—</td></tr>` : ''}
      ${usePledge ? `<tr><td>Zálog</td><td class="num neg">${neg(totalPledge)}</td><td class="num muted">—</td></tr>` : ''}`,
@@ -1668,21 +1510,6 @@ function generateFinancialReport() {
           `<tr><td>Nettó éves osztalék</td><td class="num"></td><td class="num neg">${neg(divUsAmt + divSzjaAmt + divSzochoAmt)}</td><td class="num pos">${fmtAgg(divNet)}</td></tr>`
         )
       : '';
-  const cryptoBody = cryptoRows
-    .map(
-      (r) => `<tr>
-    <td><strong>${esc(r.coin)}</strong></td><td class="num">${fmtNum(r.qty)}</td><td class="num">${fmtAgg(r.avgHuf)}</td>
-    <td class="num">${fmtAgg(r.priceHuf)}</td><td class="num">${fmtAgg(r.invHuf)}</td><td class="num">${fmtAgg(r.curHuf)}</td><td class="num">${pl(r.pl, r.plPct)}</td>
-  </tr>`
-    )
-    .join('');
-  const cryptoHtml = tbl(
-    `<th>Coin</th><th class="num">Db</th><th class="num">Átlag vételár</th><th class="num">Jelenlegi ár</th><th class="num">Befektetett</th><th class="num">Jelenlegi érték</th><th class="num">Eredmény</th>`,
-    cryptoBody,
-    cryptoRows.length
-      ? `<tr><td colspan="4">Összesen</td><td class="num">${fmtAgg(cryptoCost)}</td><td class="num">${fmtAgg(cryptoVal)}</td><td class="num">${pl(cryptoPL, cryptoCost ? (cryptoPL / cryptoCost) * 100 : null)}</td></tr>`
-      : ''
-  );
   const loanBody = loanRows
     .map(
       (r) => `<tr>
@@ -1768,7 +1595,7 @@ footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;fon
   <h1>Pénzügyi kimutatás</h1>
   <div class="meta">
     Készült: ${esc(genStr)}${acctName ? ` &nbsp;·&nbsp; ${esc(acctName)}` : ''}${acctEmail ? ` &nbsp;·&nbsp; ${esc(acctEmail)}` : ''}<br>
-    Minden érték HUF-ban, a ${priceNote}. A részvény- és kriptoárfolyamok HUF-ra átváltva.
+    Minden érték HUF-ban, a ${priceNote}. A részvényárfolyamok HUF-ra átváltva.
   </div>
 
   <section><h2>Összefoglaló</h2>${summaryHtml}</section>
@@ -1776,7 +1603,6 @@ footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;color:#999;fon
   ${divTaxHtml ? `<section><h2>Osztalék adózása (becsült)</h2>${divTaxHtml}</section>` : ''}
   ${useGold ? `<section><h2>Arany</h2>${goldHtml}</section>` : ''}
   ${useStocks ? `<section><h2>Részvények</h2>${stockHtml}</section>` : ''}
-  ${useCrypto ? `<section><h2>Kripto</h2>${cryptoHtml}</section>` : ''}
   ${useLoans ? `<section><h2>Hitelek</h2>${loanHtml}</section>` : ''}
   ${usePledge ? `<section><h2>Zálog</h2>${pledgeHtml}</section>` : ''}
   ${useServices ? `<section><h2>Előfizetések / szolgáltatások</h2>${svcHtml}</section>` : ''}
@@ -1886,7 +1712,7 @@ function importData(input) {
 async function resetAllData() {
   if (
     !(await uiConfirm(
-      'Biztosan törlöd az ÖSSZES adatot ebből a böngészőből (részvény, kripto, arany, hitel, zálog, szolgáltatás)? Ez a művelet nem visszavonható — előtte érdemes fájlba menteni!'
+      'Biztosan törlöd az ÖSSZES adatot ebből a böngészőből (részvény, arany, hitel, zálog, szolgáltatás)? Ez a művelet nem visszavonható — előtte érdemes fájlba menteni!'
     ))
   )
     return;
@@ -1899,7 +1725,6 @@ async function resetAllData() {
     return;
   const reset = {
     stocks: [],
-    crypto: [],
     loans: [],
     pledges: [],
     gold: {
@@ -2092,37 +1917,6 @@ function toLocalDateStr(d) {
 }
 const now = () => toLocalDateStr(new Date());
 const uid = () => Math.random().toString(36).slice(2, 9);
-const COINGECKO_ID_MAP = {
-  BTC: 'bitcoin',
-  ETH: 'ethereum',
-  BNB: 'binancecoin',
-  SOL: 'solana',
-  XRP: 'ripple',
-  ADA: 'cardano',
-  DOGE: 'dogecoin',
-  DOT: 'polkadot',
-  MATIC: 'matic-network',
-  LTC: 'litecoin',
-  LINK: 'chainlink',
-  AVAX: 'avalanche-2',
-  UNI: 'uniswap',
-  ATOM: 'cosmos',
-  XLM: 'stellar',
-  ALGO: 'algorand',
-  VET: 'vechain',
-  FIL: 'filecoin',
-  TRX: 'tron',
-  NEAR: 'near',
-  OP: 'optimism',
-  ARB: 'arbitrum',
-  SHIB: 'shiba-inu',
-  PEPE: 'pepe',
-  TON: 'the-open-network',
-  SUI: 'sui',
-  APT: 'aptos',
-  INJ: 'injective-protocol',
-  FTM: 'fantom'
-};
 let usdHuf = null;
 let eurHuf = null;
 let fxUpdatedAt = null;
@@ -2132,26 +1926,6 @@ function fxReady() {
 }
 async function fetchUsdHuf() {
   await fetchFxRates();
-}
-async function fetchCryptoPricesHuf(tickers) {
-  if (!tickers.length) return {};
-  const ids = tickers.map((t) => COINGECKO_ID_MAP[t.toUpperCase()] || t.toLowerCase()).join(',');
-  try {
-    const r = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
-    );
-    const data = await r.json();
-    const result = {};
-    tickers.forEach((t) => {
-      const id = COINGECKO_ID_MAP[t.toUpperCase()] || t.toLowerCase();
-      if (data[id] && data[id].usd) {
-        if (fxReady()) result[t.toUpperCase()] = data[id].usd * usdHuf;
-      }
-    });
-    return result;
-  } catch (e) {
-    return {};
-  }
 }
 const CORS_PROXIES = [
   {
@@ -2271,55 +2045,12 @@ setInterval(maybeRefreshPrices, 60 * 1000);
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) maybeRefreshPrices();
 });
-async function backfillCryptoNative() {
-  if (!Array.isArray(state.crypto) || !state.crypto.length) return;
-  let changed = false;
-  for (const t of state.crypto) {
-    if (t.priceNative != null) continue;
-    const cur = t.currency || 'HUF';
-    if (cur === 'HUF') {
-      t.priceNative = t.price;
-      t.feeNative = t.fee || 0;
-      changed = true;
-      continue;
-    }
-    const r = await fxRateForDate(cur, t.date);
-    if (!r) continue;
-    t.priceNative = t.price / r;
-    t.feeNative = (t.fee || 0) / r;
-    changed = true;
-  }
-  if (changed) {
-    save();
-    renderCrypto();
-  }
-}
 async function refreshAllPrices() {
   if (refreshing) return;
   refreshing = true;
   lastPriceRefreshAt = Date.now();
   setRefreshStatus('Frissítés…');
   await fetchUsdHuf();
-  const cryptoTickers = [...new Set(state.crypto.map((c) => c.coin.toUpperCase()))];
-  if (cryptoTickers.length) {
-    const prices = await fetchCryptoPricesHuf(cryptoTickers);
-    Object.entries(prices).forEach(([ticker, price]) => {
-      priceCache[ticker] = {
-        price,
-        updatedAt: new Date().toLocaleTimeString(LOC())
-      };
-    });
-    for (const sym of cryptoTickers) {
-      const hasName = state.crypto.some((c) => c.coin.toUpperCase() === sym && c.name);
-      if (!hasName) {
-        const nm = await resolveCryptoName(sym);
-        if (nm)
-          state.crypto.forEach((c) => {
-            if (c.coin.toUpperCase() === sym && !c.name) c.name = nm;
-          });
-      }
-    }
-  }
   const failedTickers = [];
   const divInfoCache = {};
   const nameCache = {};
@@ -2376,7 +2107,6 @@ function getLivePrice(ticker) {
 const MODULE_TABS = {
   gold: 'gold',
   stocks: 'portfolio',
-  crypto: 'crypto',
   pledge: 'pledge',
   loans: 'loan',
   services: 'services'
@@ -2405,7 +2135,6 @@ function renderModuleSettings() {
   };
   set('mod-gold', 'gold');
   set('mod-stocks', 'stocks');
-  set('mod-crypto', 'crypto');
   set('mod-pledge', 'pledge');
   set('mod-loans', 'loans');
   set('mod-services', 'services');
@@ -2484,7 +2213,6 @@ function updateModules() {
   state.modules = {
     gold: val('mod-gold'),
     stocks: val('mod-stocks'),
-    crypto: val('mod-crypto'),
     pledge: val('mod-pledge'),
     loans: val('mod-loans'),
     services: val('mod-services')
@@ -2508,7 +2236,6 @@ function showTab(id) {
   closeNav();
   if (typeof closeLoanDetail === 'function') closeLoanDetail();
   if (typeof closeStockDetail === 'function') closeStockDetail();
-  if (typeof closeCryptoDetail === 'function') closeCryptoDetail();
   if (typeof closePledgeDetail === 'function') closePledgeDetail();
   renderAll();
 }
@@ -2574,21 +2301,6 @@ function updateStockLabels() {
     info.innerHTML = rate
       ? `Az árak a vétel dátumához tartozó (történeti) árfolyammal lesznek HUF-ra váltva. Mai árfolyam: 1 ${cur} ≈ <span id="st-fx-rate">${Math.round(rate)}</span> Ft`
       : `<span style="color:var(--red)">Az árfolyam még nem érhető el — a rögzítés előtt frissítsd az árfolyamot.</span>`;
-  } else {
-    info.style.display = 'none';
-  }
-}
-function updateCryptoLabels() {
-  const cur = document.getElementById('cr-currency').value;
-  const sym = cur === 'HUF' ? 'Ft' : cur;
-  document.getElementById('cr-price-label').textContent = `Ár (${sym})`;
-  document.getElementById('cr-fee-label').textContent = `Díj (${sym})`;
-  const info = document.getElementById('cr-fx-info');
-  if (cur !== 'HUF') {
-    const rate = rateForCurrency(cur);
-    info.style.display = 'block';
-    document.getElementById('cr-fx-cur').textContent = cur;
-    document.getElementById('cr-fx-rate').textContent = rate ? Math.round(rate) : '—';
   } else {
     info.style.display = 'none';
   }
@@ -3371,675 +3083,6 @@ function buildStockDetailHTML(ticker) {
     </div>
   `;
 }
-async function resolveCryptoName(coin) {
-  const sym = (coin || '').trim().toUpperCase();
-  if (!sym) return '';
-  try {
-    const r = await fetch(
-      `https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(sym)}`
-    );
-    const data = await r.json();
-    const coins = (data && data.coins) || [];
-    const knownId = COINGECKO_ID_MAP[sym];
-    let best = knownId ? coins.find((c) => c.id === knownId) : null;
-    if (!best) best = coins.find((c) => (c.symbol || '').toUpperCase() === sym);
-    if (!best) best = coins[0];
-    return best ? best.name || '' : '';
-  } catch (e) {
-    return '';
-  }
-}
-let cryptoEditId = null;
-function openCryptoAdd() {
-  cryptoEditId = null;
-  ['cr-coin', 'cr-qty', 'cr-price', 'cr-fee'].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  const cur = document.getElementById('cr-currency');
-  if (cur) cur.value = 'USD';
-  const dt = document.getElementById('cr-date');
-  if (dt) dt.value = now();
-  const t = document.getElementById('crypto-modal-title');
-  if (t) t.textContent = 'Vétel rögzítése';
-  const b = document.getElementById('crypto-submit-btn');
-  if (b) b.textContent = '+ Vétel rögzítése';
-  openModal('crypto-modal');
-}
-function openCryptoEdit(id) {
-  const tr = state.crypto.find((x) => x.id === id);
-  if (!tr) return;
-  if (tr.type && tr.type !== 'buy') return;
-  cryptoEditId = id;
-  const rate = rateForCurrency(tr.currency || 'HUF');
-  const toN = (v) => (rate ? v / rate : v);
-  document.getElementById('cr-coin').value = tr.coin || '';
-  const cur = document.getElementById('cr-currency');
-  if (cur) cur.value = tr.currency || 'USD';
-  document.getElementById('cr-qty').value = tr.qty || '';
-  document.getElementById('cr-price').value = toN(tr.price) || '';
-  document.getElementById('cr-fee').value = tr.fee ? toN(tr.fee) : '';
-  const dt = document.getElementById('cr-date');
-  if (dt) dt.value = tr.date || now();
-  const t = document.getElementById('crypto-modal-title');
-  if (t) t.textContent = 'Vétel szerkesztése';
-  const b = document.getElementById('crypto-submit-btn');
-  if (b) b.textContent = 'Mentés';
-  openModal('crypto-modal');
-}
-async function addCryptoTrade() {
-  const coin = document.getElementById('cr-coin').value.trim().toUpperCase();
-  const type = 'buy';
-  const currency = document.getElementById('cr-currency').value;
-  const qty = parseFloat(document.getElementById('cr-qty').value) || 0;
-  const priceNative = parseFloat(document.getElementById('cr-price').value) || 0;
-  const feeNative = parseFloat(document.getElementById('cr-fee').value) || 0;
-  const date = document.getElementById('cr-date').value || now();
-  if (!coin || !qty || !priceNative) return;
-  const name = await resolveCryptoName(coin);
-  const fxRate = await fxRateForDate(currency, date);
-  if (!fxRate) {
-    uiAlert(
-      'Az árfolyam nem érhető el, ezért a rögzítés most nem lehetséges. Próbáld újra kicsit később.'
-    );
-    return;
-  }
-  const price = priceNative * fxRate;
-  const fee = feeNative * fxRate;
-  if (cryptoEditId) {
-    const tr = state.crypto.find((x) => x.id === cryptoEditId);
-    if (tr)
-      Object.assign(tr, {
-        coin,
-        name: name || tr.name,
-        type,
-        qty,
-        price,
-        date,
-        fee,
-        currency
-      });
-  } else {
-    state.crypto.push({
-      id: uid(),
-      coin,
-      name,
-      type,
-      qty,
-      price,
-      priceNative,
-      fee,
-      feeNative,
-      date,
-      currency
-    });
-  }
-  save();
-  cryptoEditId = null;
-  ['cr-coin', 'cr-qty', 'cr-price', 'cr-fee'].forEach(
-    (id) => (document.getElementById(id).value = '')
-  );
-  const b = document.getElementById('crypto-submit-btn');
-  if (b) b.textContent = '+ Vétel rögzítése';
-  const t = document.getElementById('crypto-modal-title');
-  if (t) t.textContent = 'Vétel rögzítése';
-  closeModal('crypto-modal');
-  renderAll();
-  refreshAllPrices();
-}
-async function deleteCryptoTrade(id) {
-  const t = state.crypto.find((x) => x.id === id);
-  if (!t) return;
-  const kind = t.type === 'sell' ? 'eladás' : 'vétel';
-  const label = `${t.coin} — ${kind}, ${fmtNum(t.qty)} db${t.date ? ' (' + t.date + ')' : ''}`;
-  if (!(await uiConfirm(`Biztosan törlöd ezt a tételt?\n\n${label}`))) return;
-  state.crypto = state.crypto.filter((c) => c.id !== id);
-  save();
-  renderAll();
-}
-function openCryptoItemsModal() {
-  renderCryptoItemsModal();
-  openModal('crypto-items-modal');
-}
-function renderCryptoItemsModal() {
-  const tbody = document.getElementById('crypto-items-tbody');
-  if (!tbody) return;
-  const rows = state.crypto.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  if (!rows.length) {
-    tbody.innerHTML =
-      '<tr><td colspan="7" style="color:var(--muted)">Nincs rögzített kripto tétel.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = rows
-    .map((t) => {
-      const kind = t.type === 'sell' ? 'Eladás' : 'Vétel';
-      const src = t.source === 'bybit' ? 'ByBit' : 'Kézi';
-      return `<tr>
-        <td><input type="checkbox" class="ci-check" data-id="${escHtml(t.id)}" data-source="${escHtml(
-        t.source || ''
-      )}"></td>
-        <td>${escHtml(t.date || '')}</td>
-        <td>${escHtml(t.coin || '')}</td>
-        <td>${kind}</td>
-        <td>${fmtNum(t.qty)}</td>
-        <td>${src}</td>
-        <td><button class="btn btn-sm btn-danger" onclick="deleteCryptoTrade('${escHtml(
-          t.id
-        )}').then(renderCryptoItemsModal)">✕</button></td>
-      </tr>`;
-    })
-    .join('');
-}
-function toggleAllCryptoItems(checked) {
-  document.querySelectorAll('#crypto-items-tbody .ci-check').forEach((cb) => (cb.checked = checked));
-}
-function selectBybitCryptoItems() {
-  document.querySelectorAll('#crypto-items-tbody .ci-check').forEach((cb) => {
-    cb.checked = cb.dataset.source === 'bybit';
-  });
-}
-async function deleteSelectedCryptoItems() {
-  const ids = Array.from(document.querySelectorAll('#crypto-items-tbody .ci-check:checked')).map(
-    (cb) => cb.dataset.id
-  );
-  if (!ids.length) {
-    uiAlert(L('Nincs kijelölt tétel.', 'No items selected.'));
-    return;
-  }
-  if (
-    !(await uiConfirm(
-      `Biztosan törlöd a kijelölt ${ids.length} tételt? Ez nem visszavonható.`,
-      { title: 'Tételek törlése', confirmText: 'Törlés' }
-    ))
-  )
-    return;
-  const idSet = new Set(ids);
-  state.crypto = state.crypto.filter((c) => !idSet.has(c.id));
-  save();
-  renderAll();
-  renderCryptoItemsModal();
-}
-let sellCoin = null;
-let sellMaxQty = 0;
-function openSellModal(coin) {
-  const coins = calcCryptoPL();
-  const c = coins[coin];
-  const openQty = c ? c.buys.reduce((a, b) => a + b.qty, 0) : 0;
-  if (openQty <= 0) return;
-  sellCoin = coin;
-  sellMaxQty = openQty;
-  document.getElementById('sell-coin-info').innerHTML =
-    `<strong style="color:var(--text);font-size:14px">${coin}</strong> — elérhető mennyiség: <strong style="color:var(--accent2)">${fmtNum(openQty)}</strong> db`;
-  document.getElementById('sell-date').value = now();
-  ['sell-qty', 'sell-price', 'sell-fee'].forEach((id) => (document.getElementById(id).value = ''));
-  document.getElementById('sell-currency').value = 'HUF';
-  document.getElementById('sell-error').style.display = 'none';
-  updateSellLabels();
-  document.getElementById('sell-modal').style.display = 'flex';
-}
-function closeSellModal() {
-  document.getElementById('sell-modal').style.display = 'none';
-  sellCoin = null;
-}
-function updateSellLabels() {
-  const cur = document.getElementById('sell-currency').value;
-  const sym = cur === 'HUF' ? 'Ft' : cur;
-  document.getElementById('sell-price-label').textContent = `Eladási ár / db (${sym})`;
-  document.getElementById('sell-fee-label').textContent = `Díj (${sym})`;
-  const info = document.getElementById('sell-fx-info');
-  if (cur !== 'HUF') {
-    const rate = rateForCurrency(cur);
-    info.style.display = 'block';
-    info.innerHTML = rate
-      ? `Az ár és a díj az eladás dátumához tartozó (történeti) árfolyammal lesz HUF-ra váltva. Mai árfolyam: 1 ${cur} ≈ ${Math.round(rate)} Ft`
-      : `<span style="color:var(--red)">Az árfolyam még nem érhető el — az eladás előtt frissítsd az árfolyamot.</span>`;
-  } else {
-    info.style.display = 'none';
-  }
-}
-async function confirmSell() {
-  if (!sellCoin) return;
-  const currency = document.getElementById('sell-currency').value;
-  const qty = parseFloat(document.getElementById('sell-qty').value) || 0;
-  const priceNative = parseFloat(document.getElementById('sell-price').value) || 0;
-  const feeNative = parseFloat(document.getElementById('sell-fee').value) || 0;
-  const date = document.getElementById('sell-date').value || now();
-  const errEl = document.getElementById('sell-error');
-  if (!qty || !priceNative) {
-    errEl.textContent = 'Adj meg eladott mennyiséget és eladási árat.';
-    errEl.style.display = 'block';
-    return;
-  }
-  if (qty > sellMaxQty + 1e-9) {
-    errEl.textContent = `Legfeljebb ${fmtNum(sellMaxQty)} db ${sellCoin} adható el.`;
-    errEl.style.display = 'block';
-    return;
-  }
-  const fxRate = await fxRateForDate(currency, date);
-  if (!fxRate) {
-    errEl.textContent =
-      'Az árfolyam nem érhető el, ezért az eladás most nem rögzíthető. Próbáld újra kicsit később.';
-    errEl.style.display = 'block';
-    return;
-  }
-  const price = priceNative * fxRate;
-  const fee = feeNative * fxRate;
-  state.crypto.push({
-    id: uid(),
-    coin: sellCoin,
-    type: 'sell',
-    qty,
-    price,
-    priceNative,
-    fee,
-    feeNative,
-    date,
-    currency
-  });
-  save();
-  closeSellModal();
-  renderAll();
-}
-function calcCryptoPL() {
-  const coins = {};
-  state.crypto.forEach((t) => {
-    if (!coins[t.coin])
-      coins[t.coin] = {
-        buys: [],
-        realized: 0,
-        realizedN: 0,
-        fees: 0,
-        cur: t.currency || 'HUF',
-        nativeOk: true
-      };
-    coins[t.coin].fees += t.fee;
-    const pN = t.priceNative != null ? t.priceNative : null;
-    if (pN === null) coins[t.coin].nativeOk = false;
-    if (t.type === 'buy') {
-      coins[t.coin].buys.push({
-        qty: t.qty,
-        price: t.price,
-        priceN: pN
-      });
-    } else {
-      let remaining = t.qty;
-      let costBasis = 0,
-        costBasisN = 0;
-      while (remaining > 0 && coins[t.coin].buys.length) {
-        const buy = coins[t.coin].buys[0];
-        const used = Math.min(remaining, buy.qty);
-        costBasis += used * buy.price;
-        costBasisN += used * (buy.priceN || 0);
-        buy.qty -= used;
-        remaining -= used;
-        if (buy.qty <= 0) coins[t.coin].buys.shift();
-      }
-      coins[t.coin].realized += t.qty * t.price - costBasis;
-      coins[t.coin].realizedN += t.qty * (pN || 0) - costBasisN;
-    }
-  });
-  return coins;
-}
-function renderCrypto() {
-  document.getElementById('crypto-refresh-bar').innerHTML = '';
-  updateCryptoLabels();
-  const coins = calcCryptoPL();
-  let totalRealized = 0,
-    totalOpen = 0,
-    totalLiveOpen = 0,
-    totalFees = 0;
-  let usdOpen = 0,
-    usdLiveOpen = 0,
-    usdRealized = 0,
-    usdOk = fxReady();
-  Object.entries(coins).forEach(([coin, c]) => {
-    const livePrice = getLivePrice(coin);
-    const openQty = c.buys.reduce((a, b) => a + b.qty, 0);
-    const openCost = c.buys.reduce((a, b) => a + b.qty * b.price, 0);
-    totalRealized += c.realized;
-    totalOpen += openCost;
-    totalLiveOpen += livePrice ? openQty * livePrice : openCost;
-    totalFees += c.fees;
-    if (usdOk) {
-      if (!c.nativeOk) {
-        usdOk = false;
-        return;
-      }
-      const openCostN = c.buys.reduce((a, b) => a + b.qty * (b.priceN || 0), 0);
-      const oUsd = nativeToUsd(openCostN, c.cur);
-      const rUsd = nativeToUsd(c.realizedN, c.cur);
-      if (oUsd === null || rUsd === null) {
-        usdOk = false;
-        return;
-      }
-      usdOpen += oUsd;
-      usdRealized += rUsd;
-      usdLiveOpen += livePrice ? (openQty * livePrice) / usdHuf : oUsd;
-    }
-  });
-  const usdPL = usdRealized + (usdLiveOpen - usdOpen);
-  const canHuf = usdOk && fxReady();
-  const setSub = (id, txt) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = txt;
-  };
-  document.getElementById('cr-open').textContent = canHuf
-    ? fmtAgg(usdOpen * usdHuf)
-    : fmtAgg(totalOpen);
-  setSub('cr-open-usd', usdOk ? fmtUsd(usdOpen) : '');
-  const totalPL = canHuf ? usdPL * usdHuf : totalRealized + (totalLiveOpen - totalOpen);
-  const plEl = document.getElementById('cr-pl');
-  plEl.textContent = (totalPL >= 0 ? '+' : '') + fmtAgg(totalPL);
-  plEl.className = 'stat-value ' + (totalPL >= 0 ? 'green' : 'red');
-  document.getElementById('cr-pl-card').className =
-    'card ' + (totalPL >= 0 ? 'card-stat-green' : 'card-stat-red');
-  setSub('cr-pl-usd', usdOk ? fmtUsd(usdPL, true) : '');
-  const liveOpenEl = document.getElementById('cr-live-open');
-  if (liveOpenEl) {
-    const liveHufShown = canHuf ? usdLiveOpen * usdHuf : totalLiveOpen;
-    liveOpenEl.innerHTML =
-      `<div class="stat-value cyan">${fmtAgg(liveHufShown)}</div>` +
-      (usdOk ? `<div class="stat-sub">${escHtml(fmtUsd(usdLiveOpen))}</div>` : '');
-  }
-  const nameMap = {},
-    coinCur = {},
-    coinLastDate = {},
-    coinBuyCount = {};
-  state.crypto.forEach((t) => {
-    if (t.name) nameMap[t.coin] = t.name;
-    if (!coinCur[t.coin]) coinCur[t.coin] = t.currency || 'HUF';
-    if (t.type === 'buy') {
-      coinBuyCount[t.coin] = (coinBuyCount[t.coin] || 0) + 1;
-      if (!coinLastDate[t.coin] || (t.date || '') > coinLastDate[t.coin])
-        coinLastDate[t.coin] = t.date || '';
-    }
-  });
-  const holdingsBody = document.getElementById('crypto-holdings-tbody');
-  if (holdingsBody) {
-    const rows = Object.entries(coins)
-      .map(([coin, c]) => {
-        const openQty = c.buys.reduce((a, b) => a + b.qty, 0);
-        if (openQty <= 0) return null;
-        const openCostHuf = c.buys.reduce((a, b) => a + b.qty * b.price, 0);
-        const liveHuf = getLivePrice(coin);
-        const curPriceHuf = liveHuf || openCostHuf / openQty;
-        const curValHuf = openQty * curPriceHuf;
-        const cur = coinCur[coin] || 'HUF';
-        const rate = rateForCurrency(cur);
-        const openCostN = rate ? openCostHuf / rate : openCostHuf;
-        const avgN = openCostN / openQty;
-        const curPriceN = rate ? curPriceHuf / rate : curPriceHuf;
-        const curValN = rate ? curValHuf / rate : curValHuf;
-        const plN = curValN - openCostN;
-        const plPct = openCostN ? (plN / openCostN) * 100 : 0;
-        return {
-          coin,
-          openQty,
-          avgN,
-          curPriceN,
-          openCostN,
-          curValN,
-          plN,
-          plPct,
-          cur,
-          curValHuf
-        };
-      })
-      .filter(Boolean)
-      .sort((a, b) => b.curValHuf - a.curValHuf);
-    holdingsBody.innerHTML =
-      rows
-        .map(
-          (r) => `<tr style="cursor:pointer" onclick="openCryptoDetail('${r.coin}')">
-        <td>
-          <strong>${r.coin}</strong>${nameMap[r.coin] ? `<div style="font-size:10px;color:var(--muted)">${escHtml(nameMap[r.coin])}</div>` : ''}
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">${coinBuyCount[r.coin] || 0} vétel ›</div>
-        </td>
-        <td>${fmtNum(r.openQty)}</td>
-        <td>${fmtCur(r.avgN, r.cur)}</td>
-        <td>${fmtCur(r.curPriceN, r.cur)}</td>
-        <td>${fmtCur(r.openCostN, r.cur)}</td>
-        <td><strong>${fmtCur(r.curValN, r.cur)}</strong></td>
-        <td class="${r.plN >= 0 ? 'green' : 'red'}" style="font-weight:500">${r.plN >= 0 ? '+' : ''}${fmtCur(r.plN, r.cur)} <span style="font-size:10px">(${r.plPct.toFixed(1)}%)</span></td>
-      </tr>`
-        )
-        .join('') ||
-      '<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Nincs kriptó pozíció</td></tr>';
-  }
-  const unrealPct = totalOpen > 0 ? ((totalLiveOpen - totalOpen) / totalOpen) * 100 : 0;
-  const yEl = document.getElementById('cr-yield');
-  if (yEl) {
-    if (totalOpen > 0) {
-      yEl.textContent = (unrealPct >= 0 ? '+' : '') + unrealPct.toFixed(1) + '%';
-      yEl.className = 'stat-value ' + (unrealPct >= 0 ? 'green' : 'red');
-      const yc = document.getElementById('cr-yield-card');
-      if (yc) yc.className = 'card ' + (unrealPct >= 0 ? 'card-stat-green' : 'card-stat-red');
-    } else {
-      yEl.textContent = '—';
-      yEl.className = 'stat-value';
-    }
-  }
-  const coinStats = [];
-  Object.entries(coins).forEach(([coin, c]) => {
-    const openQty = c.buys.reduce((a, b) => a + b.qty, 0);
-    if (openQty <= 0) return;
-    const openCost = c.buys.reduce((a, b) => a + b.qty * b.price, 0);
-    const live = getLivePrice(coin);
-    const curVal = live ? openQty * live : openCost;
-    const pl = curVal - openCost;
-    const plPct = openCost ? (pl / openCost) * 100 : 0;
-    const cur = c.cur || 'HUF';
-    const fxr = rateForCurrency(cur);
-    const curValN = cur === 'HUF' ? curVal : fxr ? curVal / fxr : null;
-    coinStats.push({
-      coin,
-      curVal,
-      openCost,
-      pl,
-      plPct,
-      cur,
-      curValN
-    });
-  });
-  const allocEl = document.getElementById('crypto-allocation');
-  if (allocEl) {
-    const totalVal = coinStats.reduce((a, s) => a + s.curVal, 0);
-    if (!coinStats.length || totalVal <= 0) {
-      allocEl.innerHTML =
-        '<div style="color:var(--muted);font-size:12px;padding:10px 0">Nincs nyitott pozíció</div>';
-    } else {
-      const palette = [
-        '#C08A2E',
-        '#3FA36C',
-        '#4FA7BD',
-        '#8B6690',
-        '#C24A3A',
-        '#B8873A',
-        '#6E8B3D',
-        '#B0703A'
-      ];
-      const n = coinStats.length;
-      const cols = n > 5 ? 2 : n > 1 ? 3 : 1;
-      const colCls = cols === 2 ? 'g2' : cols === 3 ? 'g3' : '';
-      const gridStyle = 'gap:11px 18px' + (cols === 1 ? ';grid-template-columns:1fr' : '');
-      allocEl.innerHTML =
-        `<div class="grid ${colCls}" style="${gridStyle}">` +
-        [...coinStats]
-          .sort((a, b) => b.curVal - a.curVal)
-          .map((s, i) => {
-            const color = palette[i % palette.length];
-            const share = (s.curVal / totalVal) * 100;
-            return `<div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:4px">
-            <span><strong style="color:${color}">${s.coin}</strong> <strong style="margin-left:5px">${share.toFixed(1)}%</strong></span>
-            <span style="color:var(--muted);font-size:11px;white-space:nowrap">${s.curValN === null ? '—' : fmtCur(s.curValN, s.cur)}</span>
-          </div>
-          <div class="progress-bar" style="height:6px"><div class="progress-fill" style="width:${share}%;background:${color}"></div></div>
-        </div>`;
-          })
-          .join('') +
-        `</div>`;
-    }
-  }
-  const statsEl = document.getElementById('crypto-stats');
-  if (statsEl) {
-    if (!coinStats.length) {
-      statsEl.innerHTML =
-        '<div style="color:var(--muted);font-size:12px;padding:10px 0">Nincs nyitott pozíció</div>';
-    } else {
-      let best = coinStats[0],
-        worst = coinStats[0];
-      coinStats.forEach((s) => {
-        if (s.plPct > best.plPct) best = s;
-        if (s.plPct < worst.plPct) worst = s;
-      });
-      const avgPct = coinStats.reduce((a, s) => a + s.plPct, 0) / coinStats.length;
-      const perfCell = (s) =>
-        `${s.coin} <span class="${s.plPct >= 0 ? 'green' : 'red'}">${s.plPct >= 0 ? '+' : ''}${s.plPct.toFixed(1)}%</span>`;
-      statsEl.innerHTML = `
-        <div class="tax-row"><span style="color:var(--muted)">Coinok száma</span><span>${coinStats.length} db</span></div>
-        <div class="tax-row"><span style="color:var(--muted)">Legjobb teljesítő</span><span>${perfCell(best)}</span></div>
-        <div class="tax-row"><span style="color:var(--muted)">Leggyengébb teljesítő</span><span>${perfCell(worst)}</span></div>
-        <div class="tax-row"><span style="color:var(--muted)">Átlagos hozam</span><span class="${avgPct >= 0 ? 'green' : 'red'}">${avgPct >= 0 ? '+' : ''}${avgPct.toFixed(1)}%</span></div>
-      `;
-    }
-  }
-  if (_openCryptoCoin) {
-    const dv = document.getElementById('crypto-detail-view');
-    if (dv && dv.style.display !== 'none') {
-      const stillOpen = state.crypto.some((t) => t.coin === _openCryptoCoin && t.type === 'buy');
-      if (stillOpen) {
-        const c = document.getElementById('crypto-detail-content');
-        if (c) c.innerHTML = buildCryptoDetailHTML(_openCryptoCoin);
-      } else {
-        closeCryptoDetail();
-      }
-    }
-  }
-}
-let _openCryptoCoin = null;
-function openCryptoDetail(coin) {
-  if (!state.crypto.some((t) => t.coin === coin)) return;
-  _openCryptoCoin = coin;
-  const lv = document.getElementById('crypto-list-view');
-  const dv = document.getElementById('crypto-detail-view');
-  const addBtn = document.getElementById('crypto-add-btn');
-  if (lv) lv.style.display = 'none';
-  if (dv) dv.style.display = 'block';
-  if (addBtn) addBtn.style.display = 'none';
-  const c = document.getElementById('crypto-detail-content');
-  if (c) c.innerHTML = buildCryptoDetailHTML(coin);
-}
-function closeCryptoDetail() {
-  _openCryptoCoin = null;
-  const lv = document.getElementById('crypto-list-view');
-  const dv = document.getElementById('crypto-detail-view');
-  const addBtn = document.getElementById('crypto-add-btn');
-  if (lv) lv.style.display = 'block';
-  if (dv) dv.style.display = 'none';
-  if (addBtn) addBtn.style.display = '';
-}
-function sellCurrentCrypto() {
-  if (_openCryptoCoin) openSellModal(_openCryptoCoin);
-}
-function buildCryptoDetailHTML(coin) {
-  const trades = state.crypto.filter((t) => t.coin === coin);
-  if (!trades.length) return '';
-  const c = calcCryptoPL()[coin] || {
-    buys: [],
-    realized: 0,
-    fees: 0
-  };
-  const openQty = c.buys.reduce((a, b) => a + b.qty, 0);
-  const openCostHuf = c.buys.reduce((a, b) => a + b.qty * b.price, 0);
-  const liveHuf = getLivePrice(coin);
-  const curPriceHuf = liveHuf || (openQty ? openCostHuf / openQty : 0);
-  const curValHuf = openQty * curPriceHuf;
-  const cur = (trades.find((t) => t.currency) || {}).currency || 'HUF';
-  const rate = rateForCurrency(cur);
-  const toN = (v) => (rate ? v / rate : v);
-  const openCostN = toN(openCostHuf);
-  const avgN = openQty ? openCostN / openQty : 0;
-  const curPriceN = toN(curPriceHuf);
-  const curValN = toN(curValHuf);
-  const openPLN = curValN - openCostN;
-  const openPLPct = openCostN ? (openPLN / openCostN) * 100 : 0;
-  const name = (trades.find((t) => t.name) || {}).name || '';
-  const liveBadge = liveHuf ? '<span class="badge badge-green">● élő</span>' : '';
-  const box = (label, val, cls) =>
-    `<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px">${label}</div><div class="${cls || ''}" style="font-family:var(--display);font-size:16px;font-weight:700">${val}</div></div>`;
-  const lots = [];
-  [...trades]
-    .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
-    .forEach((t) => {
-      if (t.type === 'buy') {
-        lots.push({
-          id: t.id,
-          qty: t.qty,
-          price: t.price,
-          date: t.date
-        });
-      } else {
-        let rem = t.qty;
-        while (rem > 1e-12 && lots.length) {
-          const lot = lots[0];
-          const used = Math.min(rem, lot.qty);
-          lot.qty -= used;
-          rem -= used;
-          if (lot.qty <= 1e-12) lots.shift();
-        }
-      }
-    });
-  const lotsHtml =
-    lots
-      .map((l) => {
-        const priceN = toN(l.price);
-        const invN = toN(l.qty * l.price);
-        const valN = toN(l.qty * curPriceHuf);
-        const plN = valN - invN;
-        const plPct = invN ? (plN / invN) * 100 : 0;
-        return `<tr>
-      <td style="color:var(--muted)">${l.date || '—'}</td>
-      <td>${fmtNum(l.qty)}</td>
-      <td>${fmtCur(priceN, cur)}</td>
-      <td>${fmtCur(invN, cur)}</td>
-      <td class="cyan">${fmtCur(valN, cur)}</td>
-      <td class="${plN >= 0 ? 'green' : 'red'}">${plN >= 0 ? '+' : ''}${fmtCur(plN, cur)} <span style="font-size:10px">(${plPct.toFixed(1)}%)</span></td>
-      <td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-secondary js-edit-btn" onclick="openCryptoEdit('${l.id}')" title="Szerkesztés">✎</button><button class="btn btn-sm btn-secondary js-del-btn" onclick="deleteCryptoTrade('${l.id}')">Téves rögzítés</button></div></td>
-    </tr>`;
-      })
-      .join('') ||
-    '<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:16px">Nincs nyitott vétel</td></tr>';
-  return `
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
-        <div style="font-family:var(--display);font-size:20px;font-weight:700">${coin}</div>
-        ${liveBadge}
-      </div>
-      <div style="color:var(--muted);font-size:12px;margin-bottom:18px">${name ? escHtml(name) + ' &nbsp;|&nbsp; ' : ''}${lots.length} vétel &nbsp;|&nbsp; ${cur}</div>
-
-      <div class="grid g4" style="margin-bottom:20px">
-        ${box('Összes mennyiség', fmtNum(openQty))}
-        ${box('Befektetett', fmtCur(openCostN, cur))}
-        ${box('Jelenlegi érték', fmtCur(curValN, cur), 'cyan')}
-        ${box('P&L', `${openPLN >= 0 ? '+' : ''}${fmtCur(openPLN, cur)} (${openPLPct.toFixed(1)}%)`, openPLN >= 0 ? 'green' : 'red')}
-      </div>
-
-      <div style="display:flex;flex-wrap:wrap;gap:20px;font-size:12px;margin-bottom:20px;padding-top:16px;border-top:1px solid var(--border)">
-        <div><span style="color:var(--muted)">Átlag vételár: </span><strong>${fmtCur(avgN, cur)}</strong></div>
-        <div><span style="color:var(--muted)">Jelenlegi ár: </span><strong>${fmtCur(curPriceN, cur)}</strong></div>
-      </div>
-
-      <div class="card-title" style="margin-bottom:12px">Vételek</div>
-      <div class="scroll-table">
-        <table>
-          <thead><tr><th>Vétel dátuma</th><th>Db</th><th>Vételár</th><th>Befektetett</th><th>Jelenlegi érték</th><th>P&amp;L</th><th></th></tr></thead>
-          <tbody>${lotsHtml}</tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
 function calcLoanEndDate() {
   const start = document.getElementById('ln-start').value;
   const months = parseInt(document.getElementById('ln-months').value) || 0;
@@ -4301,6 +3344,7 @@ function resetLoanForm() {
   });
   const freq = document.getElementById('ln-frequency');
   if (freq) freq.value = 'monthly';
+  fillAccountSelect('ln-account', accountsList()[0].id);
   const info = document.getElementById('ln-end-info');
   if (info) info.textContent = '';
 }
@@ -4332,6 +3376,7 @@ function openLoanEdit(id) {
   setVal('ln-thm', l.thm);
   setVal('ln-monthly', l.monthly ? l.monthly.toLocaleString('hu-HU') : '');
   setVal('ln-end', l.end);
+  fillAccountSelect('ln-account', loanAccount(l));
   const t = document.getElementById('loan-modal-title');
   if (t) t.textContent = 'Hitel szerkesztése';
   const b = document.getElementById('loan-submit-btn');
@@ -4351,6 +3396,7 @@ function saveLoan() {
   const rate = parseFloat(document.getElementById('ln-rate').value) || 0;
   const thm = parseFloat(document.getElementById('ln-thm').value) || 0;
   const monthly = parseAmount('ln-monthly');
+  const account = resolveAccount((document.getElementById('ln-account') || {}).value);
   if (!name || !orig) return;
   const tmp = {
     start,
@@ -4376,7 +3422,8 @@ function saveLoan() {
         rate,
         thm,
         monthly,
-        end
+        end,
+        account
       });
   } else {
     state.loans.push({
@@ -4391,7 +3438,8 @@ function saveLoan() {
       rate,
       thm,
       monthly,
-      end
+      end,
+      account
     });
   }
   save();
@@ -4460,6 +3508,7 @@ function renderLoans() {
             <div>
               <div style="font-family:var(--display);font-size:17px;font-weight:700;cursor:pointer;color:var(--accent2);text-decoration:underline dotted" onclick="openLoanDetail('${l.id}')" title="Részletek megtekintése">${l.name}</div>
               <div style="color:var(--muted);font-size:11px;margin-top:2px">
+                <span class="badge ${accountIndex(loanAccount(l)) === 0 ? 'badge-yellow' : 'badge-cyan'}" style="margin-right:6px">${escHtml(accountName(loanAccount(l)))}</span>
                 Folyósítva: ${l.start || '—'} &nbsp;|&nbsp; Lejárat: ${l.end || '—'} &nbsp;|&nbsp; ${paidCount}/${l.months} részlet fizetve (még ${remainCount})
               </div>
             </div>
@@ -4504,6 +3553,7 @@ function renderLoans() {
             <div><span style="color:var(--muted)">Futamidő: </span><strong>${l.months} hónap</strong></div>
             <div><span style="color:var(--muted)">Teljes visszafizetendő: </span><strong class="cyan">${fmt(totalRepay)}</strong></div>
             <div><span style="color:var(--muted)">Hitel díja: </span><strong class="red">${fmt(loanFee)}</strong></div>
+            <div><span style="color:var(--muted)">Fizetési számla: </span><strong>${escHtml(accountName(loanAccount(l)))}</strong></div>
             <div><span style="color:var(--muted)">Törlesztés: </span><strong>${FREQ_LABEL[l.freq] || 'Havi'}, minden hónap ${l.payday ? l.payday + '.' : '—'}</strong></div>
             <div><span style="color:var(--muted)">Következő törlesztés: </span><strong class="cyan">${nextPayment}</strong></div>
           </div>
@@ -5308,6 +4358,7 @@ function openServiceAdd() {
   if (cyc) cyc.value = 'monthly';
   const cur = document.getElementById('sv-currency');
   if (cur) cur.value = 'HUF';
+  fillAccountSelect('sv-account', accountsList()[0].id);
   updateServiceLabels();
   const t = document.getElementById('service-modal-title');
   if (t) t.textContent = 'Szolgáltatás rögzítése';
@@ -5329,6 +4380,7 @@ function openServiceEdit(id) {
   const cyc = document.getElementById('sv-cycle');
   if (cyc) cyc.value = s.cycle || 'monthly';
   document.getElementById('sv-day').value = s.day || '';
+  fillAccountSelect('sv-account', serviceAccount(s));
   const cats = Array.isArray(s.cat) ? s.cat : s.cat ? [s.cat] : [];
   document.querySelectorAll('#sv-cat input').forEach((i) => {
     i.checked = cats.includes(i.value);
@@ -5354,6 +4406,8 @@ function addService() {
   const currency = curSel ? curSel.value : 'HUF';
   const cycle = document.getElementById('sv-cycle').value;
   const day = parseInt(document.getElementById('sv-day').value) || 0;
+  const accSel = document.getElementById('sv-account');
+  const account = resolveAccount(accSel && accSel.value);
   if (!name || !amount) return;
   if (serviceEditId) {
     const s = state.services.find((x) => x.id === serviceEditId);
@@ -5364,7 +4418,8 @@ function addService() {
         amount,
         currency,
         cycle,
-        day
+        day,
+        account
       });
   } else {
     state.services.push({
@@ -5375,6 +4430,7 @@ function addService() {
       currency,
       cycle,
       day,
+      account,
       active: true
     });
   }
@@ -5424,12 +4480,18 @@ function renderServices() {
   tbody.innerHTML =
     [...state.services]
       .sort((a, b) => {
-        const da = a.day || 99,
-          db = b.day || 99;
-        if (da !== db) return da - db;
+        const da = a.day || Infinity,
+          db = b.day || Infinity;
+        if (da !== db) return da < db ? -1 : 1;
+        const accA = accountIndex(serviceAccount(a)),
+          accB = accountIndex(serviceAccount(b));
+        if (accA !== accB) return accA - accB;
+        const va = serviceAmountHuf(a),
+          vb = serviceAmountHuf(b);
+        if (va !== vb) return va - vb;
         return (a.name || '').localeCompare(b.name || '', 'hu');
       })
-      .map((s) => {
+      .map((s, idx) => {
         const monthly = serviceMonthlyCost(s);
         if (s.active) {
           totalMonthly += monthly;
@@ -5446,7 +4508,9 @@ function renderServices() {
           ? `<span class="badge badge-green" style="cursor:pointer" title="Kattints a szüneteltetéshez" onclick="toggleService('${s.id}')">● Aktív</span>`
           : `<span class="badge" style="background:rgba(107,114,128,0.15);color:var(--muted);cursor:pointer" title="Kattints az aktiváláshoz" onclick="toggleService('${s.id}')">⏸ Szünetel</span>`;
         return `<tr style="${s.active ? '' : 'opacity:0.5'}">
+      <td style="color:var(--muted)">${idx + 1}.</td>
       <td><strong>${s.name}</strong><br><span style="font-size:10px;color:var(--muted)">${Array.isArray(s.cat) ? s.cat.join(', ') || '—' : s.cat || '—'}</span></td>
+      <td><span class="badge ${accountIndex(serviceAccount(s)) === 0 ? 'badge-yellow' : 'badge-cyan'}">${escHtml(accountName(serviceAccount(s)))}</span></td>
       <td>${fmtCur(s.amount, s.currency || 'HUF')}${(s.currency && s.currency !== 'HUF') ? `<br><span style="font-size:10px;color:var(--muted)">≈ ${fmt(serviceAmountHuf(s))}</span>` : ''}</td>
       <td>${CYCLE_LABEL[s.cycle] || s.cycle}</td>
       <td>${s.day ? s.day + '.' : '—'}</td>
@@ -5462,8 +4526,13 @@ function renderServices() {
     </tr>`;
       })
       .join('') ||
-    '<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Nincs rögzített szolgáltatás</td></tr>';
+    '<tr><td colspan="9" style="color:var(--muted);text-align:center;padding:20px">Nincs rögzített szolgáltatás</td></tr>';
   document.getElementById('sv-monthly').textContent = fmtAgg(totalMonthly);
+  const svSplit = document.getElementById('sv-split');
+  if (svSplit)
+    svSplit.innerHTML = accountsList()
+      .map((a) => `${escHtml(a.name)}: <strong>${fmtAgg(servicesMonthlyTotal(a.id))}</strong>`)
+      .join(' · ');
   document.getElementById('sv-yearly').textContent = fmtAgg(totalMonthly * 12);
   document.getElementById('sv-count').textContent = activeCount + ' db';
   const nextEl = document.getElementById('sv-next');
@@ -5515,8 +4584,169 @@ function savePrice() {
   renderServices();
   renderDashboard();
 }
-function servicesMonthlyTotal() {
-  return state.services.filter((s) => s.active).reduce((a, s) => a + serviceMonthlyCost(s), 0);
+function defaultAccounts() {
+  return [
+    { id: 'otp', name: 'OTP Bank' },
+    { id: 'revolut', name: 'Revolut' }
+  ];
+}
+function accountsList() {
+  return Array.isArray(state.accounts) && state.accounts.length ? state.accounts : defaultAccounts();
+}
+function resolveAccount(id) {
+  const list = accountsList();
+  return list.some((a) => a.id === id) ? id : list[0].id;
+}
+function accountName(id) {
+  const a = accountsList().find((x) => x.id === id);
+  return a ? a.name : '—';
+}
+function accountIndex(id) {
+  return Math.max(0, accountsList().findIndex((a) => a.id === id));
+}
+function salaryAccountId() {
+  return resolveAccount(state.salaryAccount);
+}
+function dividendAccountId() {
+  const list = accountsList();
+  return list.some((a) => a.id === state.dividendAccount)
+    ? state.dividendAccount
+    : (list[1] || list[0]).id;
+}
+function serviceAccount(s) {
+  return resolveAccount(s && s.account);
+}
+function loanAccount(l) {
+  return resolveAccount(l && l.account);
+}
+function loansMonthlyTotal(acc) {
+  return state.loans
+    .filter((l) => !acc || loanAccount(l) === acc)
+    .reduce((a, l) => a + (l.monthly || 0), 0);
+}
+function fillAccountSelect(selId, value) {
+  const sel = document.getElementById(selId);
+  if (!sel) return;
+  sel.innerHTML = accountsList()
+    .map((a) => `<option value="${escHtml(a.id)}">${escHtml(a.name)}</option>`)
+    .join('');
+  sel.value = value;
+}
+function renderAccountsSettings() {
+  const list = document.getElementById('acc-banks-list');
+  if (!list) return;
+  const focused = document.activeElement && document.activeElement.id;
+  list.innerHTML = accountsList()
+    .map((a) => {
+      const card = accountCard(a);
+      const id = escHtml(a.id);
+      return `<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input type="text" value="${escHtml(a.name)}" style="flex:1" onchange="renameBankAccount('${id}', this.value)" />
+          <button class="btn btn-danger btn-sm js-del-btn" onclick="deleteBankAccount('${id}')" title="Törlés">×</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label class="mod-toggle"><input type="checkbox" ${card ? 'checked' : ''} onchange="setBankCard('${id}', 'on', this.checked)" /><span>Hitelkártya</span></label>
+          ${
+            card
+              ? `<select style="width:auto" onchange="setBankCard('${id}', 'mode', this.value)">
+                  <option value="auto" ${card.mode === 'auto' ? 'selected' : ''}>Keret: automatikus</option>
+                  <option value="amount" ${card.mode === 'amount' ? 'selected' : ''}>Keret: összeg (Ft)</option>
+                  <option value="percent" ${card.mode === 'percent' ? 'selected' : ''}>Keret: a nettó fizetés %-a</option>
+                </select>
+                ${card.mode === 'auto' ? `<label class="mod-toggle"><input type="checkbox" ${card.useLoan ? 'checked' : ''} onchange="setBankCard('${id}', 'useLoan', this.checked)" /><span>Hitel levonása</span></label><label class="mod-toggle"><input type="checkbox" ${card.useSvc ? 'checked' : ''} onchange="setBankCard('${id}', 'useSvc', this.checked)" /><span>Szolgáltatás levonása</span></label>` : ''}
+                ${card.mode !== 'auto' ? `<input type="number" min="0" step="any" value="${card.value || ''}" placeholder="${card.mode === 'percent' ? '%' : 'Ft'}" style="width:130px" onchange="setBankCard('${id}', 'value', this.value)" />` : ''}`
+              : ''
+          }
+        </div>
+      </div>`;
+    })
+    .join('');
+  fillAccountSelect('acc-salary-account', salaryAccountId());
+  fillAccountSelect('acc-div-account', dividendAccountId());
+  if (focused === 'acc-bank-new') {
+    const n = document.getElementById('acc-bank-new');
+    if (n) n.focus();
+  }
+}
+function addBankAccount() {
+  const inp = document.getElementById('acc-bank-new');
+  const name = (inp.value || '').trim();
+  if (!name) {
+    accMsg('acc-banks-msg', 'Add meg a számla nevét.', true);
+    return;
+  }
+  if (accountsList().some((a) => a.name.toLowerCase() === name.toLowerCase())) {
+    accMsg('acc-banks-msg', 'Már van ilyen nevű számla.', true);
+    return;
+  }
+  state.accounts = accountsList().concat([{ id: uid(), name }]);
+  inp.value = '';
+  save();
+  renderAll();
+  accMsg('acc-banks-msg', '✓ Számla hozzáadva.', false);
+}
+function renameBankAccount(id, value) {
+  const name = (value || '').trim();
+  if (!name) {
+    accMsg('acc-banks-msg', 'A számla neve nem lehet üres.', true);
+    renderAccountsSettings();
+    return;
+  }
+  state.accounts = accountsList().map((a) => (a.id === id ? { ...a, name } : a));
+  save();
+  renderAll();
+  accMsg('acc-banks-msg', '✓ Átnevezve.', false);
+}
+function deleteBankAccount(id) {
+  const list = accountsList();
+  if (list.length <= 1) {
+    accMsg('acc-banks-msg', 'Legalább egy számlának maradnia kell.', true);
+    return;
+  }
+  const used =
+    state.services.some((x) => serviceAccount(x) === id) ||
+    state.loans.some((x) => loanAccount(x) === id) ||
+    salaryAccountId() === id ||
+    dividendAccountId() === id;
+  if (used) {
+    accMsg(
+      'acc-banks-msg',
+      'Ehhez a számlához még tartozik szolgáltatás, hitel, fizetés vagy osztalék — előbb állítsd át azokat.',
+      true
+    );
+    return;
+  }
+  state.accounts = list.filter((a) => a.id !== id);
+  save();
+  renderAll();
+  accMsg('acc-banks-msg', '✓ Számla törölve.', false);
+}
+function setBankCard(id, key, val) {
+  state.accounts = accountsList().map((a) => {
+    if (a.id !== id) return a;
+    const card = { on: false, mode: 'auto', value: 0, ...(a.card || {}) };
+    if (key === 'on') card.on = !!val;
+    else if (key === 'mode') card.mode = val;
+    else if (key === 'useLoan') card.useLoan = !!val;
+    else if (key === 'useSvc') card.useSvc = !!val;
+    else if (key === 'value') card.value = Math.max(0, parseFloat(val) || 0);
+    return { ...a, card };
+  });
+  save();
+  renderAll();
+}
+function setIncomeAccounts() {
+  state.salaryAccount = document.getElementById('acc-salary-account').value;
+  state.dividendAccount = document.getElementById('acc-div-account').value;
+  save();
+  renderAll();
+  accMsg('acc-banks-msg', '✓ Elmentve.', false);
+}
+function servicesMonthlyTotal(acc) {
+  return state.services
+    .filter((s) => s.active && (!acc || serviceAccount(s) === acc))
+    .reduce((a, s) => a + serviceMonthlyCost(s), 0);
 }
 function daysUntil(dateStr) {
   const target = new Date(dateStr + 'T00:00:00');
@@ -5651,14 +4881,6 @@ function computeCashTimeline(year) {
   const salary = salaryNetMonthly();
   for (let i = 0; i < 12; i++) {
     if (salary > 0) addInc(i, 'Nettó fizetés', salary);
-    incomeAdjustmentsForMonth(i, year).forEach((a) => {
-      const amt = Number(a.amount) || 0;
-      if (amt > 0) addInc(i, a.note || 'Bevételi korrekció (+)', amt);
-      else if (amt < 0) {
-        income[i] += amt;
-        incItems[i].push({ label: a.note || 'Bevételi korrekció (−)', amount: amt });
-      }
-    });
     if (income[i] < 0) income[i] = 0;
   }
 
@@ -5685,15 +4907,6 @@ function computeCashTimeline(year) {
     });
   }
 
-  if (on('crypto')) {
-    state.crypto.forEach((t) => {
-      if (t.type !== 'sell') return;
-      const mo = monthOf(t.date);
-      if (mo !== null)
-        addInc(mo, 'Kripto eladás · ' + (t.coin || '').toUpperCase(), t.qty * t.price - (t.fee || 0));
-    });
-  }
-
   if (on('gold')) {
     (state.goldItems || []).forEach((g) => {
       const mo = monthOf(g.date);
@@ -5706,15 +4919,6 @@ function computeCashTimeline(year) {
       const mo = monthOf(s.buyDate);
       if (mo !== null)
         addExp(mo, 'Részvényvétel · ' + (s.ticker || '').toUpperCase(), (s.qty || 0) * (s.avg || 0));
-    });
-  }
-
-  if (on('crypto')) {
-    state.crypto.forEach((t) => {
-      if (t.type !== 'buy') return;
-      const mo = monthOf(t.date);
-      if (mo !== null)
-        addExp(mo, 'Kriptovétel · ' + (t.coin || '').toUpperCase(), t.qty * t.price + (t.fee || 0));
     });
   }
 
@@ -5876,14 +5080,13 @@ function renderCashTimeline() {
       <span>Kattints egy hónapra a részletekért</span>
     </div>
     ${detail}
-    <div style="font-size:10.5px;color:var(--muted);margin-top:12px;line-height:1.5">A fizetés, a hiteltörlesztő és az előfizetések minden hónapban ismétlődnek; az arany-, részvény- és kriptovétel, a kriptoeladás és az osztalék a tényleges dátumuk hónapjában jelenik meg. Az előfizetések havi szintre vetítve (az éves díjak 1/12-e) szerepelnek.</div>`;
+    <div style="font-size:10.5px;color:var(--muted);margin-top:12px;line-height:1.5">A fizetés, a hiteltörlesztő és az előfizetések minden hónapban ismétlődnek; az arany- és részvényvétel és az osztalék a tényleges dátumuk hónapjában jelenik meg. Az előfizetések havi szintre vetítve (az éves díjak 1/12-e) szerepelnek.</div>`;
 }
 
 function renderDashboard() {
   const m = state.modules || {};
   const useGold = m.gold !== false,
-    useStocks = m.stocks !== false,
-    useCrypto = m.crypto !== false;
+    useStocks = m.stocks !== false;
   const usePledge = m.pledge !== false,
     useLoans = m.loans !== false,
     useServices = m.services !== false;
@@ -5893,20 +5096,19 @@ function renderDashboard() {
     const el = document.getElementById(id);
     if (el) el.style.display = cond ? '' : 'none';
   };
-  showCard('d-networth-card', anyOn('gold', 'stocks', 'crypto', 'loans', 'pledge'));
-  showCard('d-current-card', anyOn('gold', 'stocks', 'crypto'));
+  showCard('d-networth-card', anyOn('gold', 'stocks', 'loans', 'pledge'));
+  showCard('d-current-card', anyOn('gold', 'stocks'));
   showCard('d-div-rate-card', on('stocks'));
   showCard('d-portfolio-rate-card', anyOn('loans', 'pledge'));
-  showCard('d-unreal-card', anyOn('gold', 'stocks', 'crypto'));
+  showCard('d-unreal-card', anyOn('gold', 'stocks'));
   showCard('d-liab-card', anyOn('loans', 'pledge'));
   showCard('d-upcoming-card', anyOn('pledge', 'loans', 'services'));
-  showCard('d-donut-card', anyOn('gold', 'stocks', 'crypto', 'loans', 'pledge'));
-  showCard('d-breakdown-card', anyOn('gold', 'stocks', 'crypto'));
-  showCard('d-cashflow-card', anyOn('stocks', 'loans', 'services') || salaryNetMonthly() > 0);
+  showCard('d-donut-card', anyOn('gold', 'stocks', 'loans', 'pledge'));
+  showCard('d-breakdown-card', anyOn('gold', 'stocks'));
   showCard('d-div-tax-card', on('stocks'));
   showCard('d-salary-tax-card', !!(state.salary && state.salary.gross > 0));
   showCard('d-div-cal-card', on('stocks'));
-  showCard('d-top-card', anyOn('gold', 'stocks', 'crypto'));
+  showCard('d-top-card', anyOn('gold', 'stocks'));
   const fillGrid = (id, autoCols) => {
     const g = document.getElementById(id);
     if (!g) return;
@@ -5937,23 +5139,11 @@ function renderDashboard() {
     : 0;
   const goldVal = useGold ? goldTotalValue() : 0;
   const goldCost = useGold ? goldTotalCost() : 0;
-  const coins = calcCryptoPL();
-  const cryptoOpen = useCrypto
-    ? Object.values(coins).reduce((a, c) => {
-        const openQty = c.buys.reduce((x, b) => x + b.qty, 0);
-        const livePrice = getLivePrice(Object.keys(coins).find((k) => coins[k] === c) || '');
-        const openCost = c.buys.reduce((x, b) => x + b.qty * b.price, 0);
-        return a + (livePrice ? openQty * livePrice : openCost);
-      }, 0)
-    : 0;
   const totalLoan = useLoans ? state.loans.reduce((a, l) => a + calcRemaining(l), 0) : 0;
   const totalPledge = usePledge ? pledgeTotalDebt() : 0;
   const annualDiv = useStocks ? annualStockDividendHuf() : 0;
-  const currentValue = stockVal + goldVal + cryptoOpen;
-  const cryptoOpenCost = useCrypto
-    ? Object.values(coins).reduce((a, c) => a + c.buys.reduce((x, b) => x + b.qty * b.price, 0), 0)
-    : 0;
-  const investedCost = stockCost + goldCost + cryptoOpenCost;
+  const currentValue = stockVal + goldVal;
+  const investedCost = stockCost + goldCost;
   document.getElementById('d-current-value').textContent = fmtAgg(currentValue);
   const gainPct = investedCost > 0 ? ((currentValue - investedCost) / investedCost) * 100 : 0;
   const pctEl = document.getElementById('d-invested-pct');
@@ -5964,23 +5154,24 @@ function renderDashboard() {
     pctEl.textContent = '';
     pctEl.className = '';
   }
-  const netWorth = stockVal + goldVal + cryptoOpen - totalLoan - totalPledge;
+  const netWorth = stockVal + goldVal - totalLoan - totalPledge;
   const nwEl = document.getElementById('d-networth');
   nwEl.textContent = fmtAgg(netWorth);
   const nwRound = Math.round(netWorth);
   nwEl.className = 'stat-value ' + (nwRound > 0 ? 'green' : nwRound < 0 ? 'red' : '');
   const qs = document.getElementById('quick-status');
   qs.innerHTML = buildUpcomingDatesHTML();
-  const monthlyLoan = useLoans ? state.loans.reduce((a, l) => a + l.monthly, 0) : 0;
-  const svcMonthly = useServices ? servicesMonthlyTotal() : 0;
+  const loanOn = (acc) => (useLoans ? loansMonthlyTotal(acc) : 0);
+  const svcOn = (acc) => (useServices ? servicesMonthlyTotal(acc) : 0);
   const svcCount = useServices ? state.services.filter((s) => s.active).length : 0;
-  const totalMonthly = monthlyLoan + svcMonthly;
   const netAnnualDiv = netDividend(annualDiv);
   const monthlyDiv = netAnnualDiv / 12;
-  const divRate = totalMonthly > 0 ? (monthlyDiv / totalMonthly) * 100 : 0;
+  const divAccId = dividendAccountId();
+  const divAccExpense = loanOn(divAccId) + svcOn(divAccId);
+  const divRate = divAccExpense > 0 ? (monthlyDiv / divAccExpense) * 100 : 0;
   const drEl = document.getElementById('d-div-rate');
   const drSub = document.getElementById('d-div-rate-sub');
-  if (totalMonthly > 0) {
+  if (divAccExpense > 0) {
     drEl.textContent = divRate.toFixed(1) + '%';
     drEl.className = 'stat-value ' + (divRate >= 100 ? 'green' : divRate >= 50 ? 'yellow' : 'red');
   } else {
@@ -6058,12 +5249,6 @@ function renderDashboard() {
       label: L('Részvény', 'Stocks'),
       value: stockVal,
       color: '#3FA36C'
-    });
-  if (useCrypto)
-    donutSegs.push({
-      label: L('Kripto', 'Crypto'),
-      value: cryptoOpen,
-      color: '#4FA7BD'
     });
   if (usePledge)
     donutSegs.push({
@@ -6145,12 +5330,6 @@ function renderDashboard() {
         inv: stockCost,
         val: stockVal
       });
-    if (useCrypto)
-      classes.push({
-        label: 'Kripto',
-        inv: cryptoOpenCost,
-        val: cryptoOpen
-      });
     const denom = currentValue || 1;
     bt.innerHTML =
       classes
@@ -6174,41 +5353,60 @@ function renderDashboard() {
       <td>100%</td>
     </tr>`;
   }
-  const cf = document.getElementById('d-cashflow');
-  if (cf) {
+  const cfWrap = document.getElementById('d-cashflow-wrap');
+  if (cfWrap) {
     const salaryNet = salaryNetMonthly();
-    const netMonthly = monthlyDiv + salaryNet - totalMonthly;
+    const salAcc = salaryAccountId();
     const ra = state.ratioAlert || ratioAlertDefaults();
-    const pctOf = (amount) => (salaryNet > 0 ? (amount / salaryNet) * 100 : null);
-    const cfRow = (label, amount, amountCls, amountStyle, pctCls, rowCls, amountText) => {
-      const pct = pctOf(amount);
-      const pctHtml = pct === null ? '' : `${pct.toFixed(1)}%`;
-      return `<div class="cf-row${rowCls ? ' ' + rowCls : ''}">
+    const pctOf = (amount) => (salaryNet > 0 ? (amount / salaryNet) * 100 : undefined);
+    const row = (label, amount, amountCls, o) => {
+      o = o || {};
+      const pct = o.pct;
+      return `<div class="cf-row${o.total ? ' cf-total' : ''}">
         <span class="cf-label">${label}</span>
-        <span class="cf-pct ${pctCls || ''}">${pctHtml}</span>
-        <span class="cf-amount ${amountCls || ''}" style="${amountStyle || ''}">${amountText || fmtAgg(amount)}</span>
+        <span class="cf-pct ${o.pctCls || ''}">${pct === undefined ? '' : pct.toFixed(1) + '%'}</span>
+        <span class="cf-amount ${amountCls || ''}" style="${o.style || ''}">${o.text || fmtAgg(amount)}</span>
       </div>`;
     };
-    cf.className = 'cf-grid';
-    cf.innerHTML = `
-      ${salaryNet > 0 ? cfRow('Bevétel — nettó fizetés / hó', salaryNet, 'green', '', 'green') : ''}
-      ${useStocks ? cfRow('Bevétel — osztalék / hó', monthlyDiv, 'green', '', 'green') : ''}
-      ${useLoans ? cfRow('Hiteltörlesztő / hó', monthlyLoan, ratioColor(pctOf(monthlyLoan) || 0, ra.loanYellow, ra.loanRed), 'font-weight:600', ratioColor(pctOf(monthlyLoan) || 0, ra.loanYellow, ra.loanRed)) : ''}
-      ${useServices ? cfRow('Szolgáltatások / hó', svcMonthly, ratioColor(pctOf(svcMonthly) || 0, ra.svcYellow, ra.svcRed), 'font-weight:600', ratioColor(pctOf(svcMonthly) || 0, ra.svcYellow, ra.svcRed)) : ''}
-      ${cfRow('Nettó havi egyenleg', netMonthly, netMonthly >= 0 ? 'green' : 'red', '', netMonthly >= 0 ? 'green' : 'red', 'cf-total', (netMonthly >= 0 ? '+' : '') + fmtAgg(netMonthly))}
-    `;
+    cfWrap.innerHTML = accountsList()
+      .map((acc) => {
+        const isSal = acc.id === salAcc;
+        const isDiv = useStocks && acc.id === divAccId;
+        const incSal = isSal ? salaryNet : 0;
+        const incDiv = isDiv ? monthlyDiv : 0;
+        const loans = loanOn(acc.id);
+        const svcs = svcOn(acc.id);
+        if (!(incSal > 0 || incDiv > 0 || loans > 0 || svcs > 0)) return '';
+        const balance = incSal + incDiv - loans - svcs;
+        const balCls = balance >= 0 ? 'green' : 'red';
+        const ratioRow = (label, amount, yellow, red) => {
+          if (!isSal) return row(label, amount, amount > 0 ? 'red' : '');
+          const pct = pctOf(amount);
+          const col = ratioColor(pct || 0, yellow, red);
+          return row(label, amount, col, { pct, pctCls: col, style: 'font-weight:600' });
+        };
+        const cc = accountCardLimit(acc);
+        return `<div class="card">
+          <div class="card-title">${L('Havi Pénzáramlás', 'Monthly Cash Flow')} — ${escHtml(acc.name)}</div>
+          <div class="cf-grid">
+            ${incSal > 0 ? row(L('Bevétel — nettó fizetés / hó', 'Income — net salary / mo'), incSal, 'green', { pct: 100, pctCls: 'green' }) : ''}
+            ${isDiv ? row(L('Bevétel — osztalék / hó', 'Income — dividend / mo'), incDiv, 'green', isSal ? { pct: pctOf(incDiv), pctCls: 'green' } : {}) : ''}
+            ${useLoans && (loans > 0 || isSal) ? ratioRow(L('Hiteltörlesztő / hó', 'Loan repayment / mo'), loans, ra.loanYellow, ra.loanRed) : ''}
+            ${useServices && (svcs > 0 || isSal) ? ratioRow(L('Szolgáltatások / hó', 'Subscriptions / mo'), svcs, ra.svcYellow, ra.svcRed) : ''}
+            ${row(L('Nettó havi egyenleg', 'Net monthly balance'), balance, balCls, { total: true, pct: isSal ? pctOf(balance) : undefined, pctCls: balCls, text: (balance >= 0 ? '+' : '') + fmtAgg(balance) })}
+            ${cc > 0 ? row(`${escHtml(acc.name)} ${L('hitelkártya keret', 'credit card limit')}`, cc, '', { pct: pctOf(cc) }) : ''}
+          </div>
+        </div>`;
+      })
+      .join('');
   }
   const ps = document.getElementById('d-portfolio-stats');
   if (ps) {
     const goldGrams = state.goldItems.reduce((a, g) => a + g.grams, 0);
-    const coinCount = Object.values(coins).filter(
-      (c) => c.buys.reduce((x, b) => x + b.qty, 0) > 0
-    ).length;
     const activePledges = (state.pledges || []).filter((p) => !p.redeemed).length;
     ps.innerHTML = `
       ${useGold ? `<div class="tax-row"><span style="color:var(--muted)">Aranytételek</span><span>${state.goldItems.length} db · ${fmtNum(goldGrams)} g</span></div>` : ''}
       ${useStocks ? `<div class="tax-row"><span style="color:var(--muted)">Részvénytételek</span><span>${state.stocks.length} db</span></div>` : ''}
-      ${useCrypto ? `<div class="tax-row"><span style="color:var(--muted)">Kripto pozíciók</span><span>${coinCount} db</span></div>` : ''}
       ${usePledge ? `<div class="tax-row"><span style="color:var(--muted)">Zálogok</span><span>${activePledges} db</span></div>` : ''}
       ${useLoans ? `<div class="tax-row"><span style="color:var(--muted)">Aktív hitelek</span><span>${state.loans.length} db</span></div>` : ''}
       ${useServices ? `<div class="tax-row"><span style="color:var(--muted)">Aktív szolgáltatások</span><span>${svcCount} db</span></div>` : ''}
@@ -6231,21 +5429,6 @@ function renderDashboard() {
           value: v
         })
       );
-    }
-    if (useCrypto) {
-      Object.entries(coins).forEach(([coin, c]) => {
-        const oq = c.buys.reduce((x, b) => x + b.qty, 0);
-        if (oq > 0) {
-          const lp = getLivePrice(coin);
-          const v = lp ? oq * lp : c.buys.reduce((x, b) => x + b.qty * b.price, 0);
-          holdings.push({
-            name: coin,
-            cls: 'Kripto',
-            badge: 'badge-cyan',
-            value: v
-          });
-        }
-      });
     }
     if (useGold) {
       const gAgg = {};
@@ -6295,7 +5478,6 @@ function renderDashboard() {
 }
 function renderWatch() {
   updateFxLabel();
-  const coins = calcCryptoPL();
   const stockBox = document.getElementById('dash-stocks');
   if (stockBox) {
     if (state.stocks.length) {
@@ -6340,36 +5522,6 @@ function renderWatch() {
         })
         .join('');
     } else stockBox.innerHTML = emptyTile('Nincs részvény');
-  }
-  const cryptoBox = document.getElementById('dash-crypto');
-  if (cryptoBox) {
-    const entries = Object.entries(coins);
-    if (entries.length) {
-      cryptoBox.innerHTML = entries
-        .map(([coin, c]) => {
-          const openQty = c.buys.reduce((a, b) => a + b.qty, 0);
-          const openCost = c.buys.reduce((a, b) => a + b.qty * b.price, 0);
-          const live = getLivePrice(coin);
-          const liveVal = live ? openQty * live : null;
-          const unreal = liveVal !== null ? liveVal - openCost : null;
-          const badge = live ? `<span class="badge badge-green">● élő</span>` : '';
-          const rows = [
-            ['Mennyiség', fmtNum(openQty) + ' db', ''],
-            ['Nyitott pozíció (bekerülési)', fmtAgg(openCost), '']
-          ];
-          if (liveVal !== null) {
-            rows.push(['Aktuális eladási érték', fmtAgg(liveVal), 'cyan']);
-            const unrealPct = openCost ? (unreal / openCost) * 100 : 0;
-            rows.push([
-              'Nem realizált P&L',
-              `${unreal >= 0 ? '+' : ''}${fmtAgg(unreal)} (${unreal >= 0 ? '+' : ''}${unrealPct.toFixed(1)}%)`,
-              unreal >= 0 ? 'green' : 'red'
-            ]);
-          }
-          return dashTile(coin, badge, rows, '');
-        })
-        .join('');
-    } else cryptoBox.innerHTML = emptyTile('Nincs kripto');
   }
   const goldBox = document.getElementById('dash-gold');
   const goldPledgedBox = document.getElementById('dash-gold-pledged');
@@ -6638,673 +5790,8 @@ function donutHover(i) {
   });
 }
 
-let _xlsxLoading = null;
-function loadXLSX() {
-  if (window.XLSX) return Promise.resolve(window.XLSX);
-  if (_xlsxLoading) return _xlsxLoading;
-  _xlsxLoading = new Promise((resolve, reject) => {
-    const sc = document.createElement('script');
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-    sc.onload = () => resolve(window.XLSX);
-    sc.onerror = () =>
-      reject(new Error('A táblázat-feldolgozó nem tölthető be (nincs internet?).'));
-    document.head.appendChild(sc);
-  });
-  return _xlsxLoading;
-}
-
-function expMsg(text, isError) {
-  accMsg('exp-upload-msg', text, isError);
-}
-
-function _normHeader(h) {
-  return String(h || '')
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '');
-}
-
-function _pickCol(header, names) {
-  const H = header.map(_normHeader);
-  for (const n of names) {
-    for (let i = 0; i < H.length; i++) {
-      if (H[i] && (H[i] === n || H[i].includes(n))) return i;
-    }
-  }
-  return -1;
-}
-function canonType(raw) {
-  const f = _normHeader(raw);
-  if (!f) return 'Egyéb';
-  if (f.includes('kartya') || f === 'card_payment') return 'Kártyás vásárlás';
-  if (f.includes('atm') || f.includes('keszpenz')) return 'Készpénzfelvétel (ATM)';
-  if (f.includes('atutal') || f.includes('transfer')) return 'Átutalás';
-  if (f.includes('feltolt') || f.includes('topup')) return 'Feltöltés';
-  if (f.includes('visszater') || f.includes('refund')) return 'Visszatérítés';
-  if (f.includes('terhel') || f === 'fee' || f.includes('dij') || f.includes('jutalek'))
-    return 'Díj / terhelés';
-  if (f.includes('valt') || f.includes('exchange')) return 'Devizaváltás';
-  if (f.includes('kamat') || f.includes('interest')) return 'Kamat';
-  if (f.includes('ado') || f === 'tax') return 'Adó';
-  return String(raw).trim() || 'Egyéb';
-}
-function _parseNum(v) {
-  if (typeof v === 'number') return v;
-  if (v == null) return NaN;
-  let s = String(v).trim().replace(/\s| /g, '');
-  if (!s) return NaN;
-  if (s.indexOf(',') > -1 && s.indexOf('.') > -1) {
-    if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.');
-    else s = s.replace(/,/g, '');
-  } else if (s.indexOf(',') > -1) {
-    s = s.replace(',', '.');
-  }
-  const n = parseFloat(s);
-  return isNaN(n) ? NaN : n;
-}
-function _excelDate(v) {
-  if (v instanceof Date && !isNaN(v.getTime())) return toLocalDateStr(v);
-  if (typeof v === 'number') {
-    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
-    if (!isNaN(d.getTime())) return toLocalDateStr(d);
-  }
-  const s = String(v || '').trim();
-  if (!s) return null;
-  const m1 = s.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  if (m1) return `${m1[1]}-${String(m1[2]).padStart(2, '0')}-${String(m1[3]).padStart(2, '0')}`;
-  const m2 = s.match(/(\d{1,2})[/.](\d{1,2})[/.](\d{4})/);
-  if (m2) return `${m2[3]}-${String(m2[2]).padStart(2, '0')}-${String(m2[1]).padStart(2, '0')}`;
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? null : toLocalDateStr(d);
-}
-
-const BAD_STATES = [
-  'reverted',
-  'declined',
-  'failed',
-  'pending',
-  'cancelled',
-  'visszavonva',
-  'visszateritve',
-  'elutasitva',
-  'sikertelen',
-  'fuggoben',
-  'folyamatban',
-  'torolve'
-];
-
-function detectBank(header) {
-  const H = (header || []).map(_normHeader).join('|');
-  if (
-    H.includes('banki azonosito') ||
-    H.includes('forgalom') ||
-    H.includes('ellenoldali') ||
-    H.includes('konyveles')
-  )
-    return 'OTP';
-  if (
-    H.includes('teljesites') ||
-    H.includes('state') ||
-    H.includes('termek') ||
-    H.includes('product') ||
-    H.includes('completed')
-  )
-    return 'Revolut';
-  return 'Egyéb';
-}
-function parseRevolutSheet(aoa) {
-  let hIdx = -1;
-  for (let i = 0; i < Math.min(aoa.length, 20); i++) {
-    const row = (aoa[i] || []).map(_normHeader);
-    if (row.includes('amount') || row.includes('osszeg')) {
-      hIdx = i;
-      break;
-    }
-  }
-  if (hIdx < 0) return null;
-  const header = aoa[hIdx];
-  const bank = detectBank(header);
-  const cType = _pickCol(header, ['forgalom', 'type', 'tipus']);
-
-  const cDesc = _pickCol(header, [
-    'ellenoldali nev',
-    'ellenoldali',
-    'description',
-    'megnevezes',
-    'leiras',
-    'partner'
-  ]);
-  const cMemo = _pickCol(header, ['kozlemeny', 'reference', 'narrative', 'megjegyzes']);
-
-  const cDate = _pickCol(header, [
-    'teljesites',
-    'completed',
-    'tranzakcio idopont',
-    'idopont',
-    'kezdes',
-    'started',
-    'datum',
-    'date'
-  ]);
-  const cStart = _pickCol(header, [
-    'tranzakcio idopont',
-    'idopont',
-    'kezdes',
-    'started',
-    'datum',
-    'date'
-  ]);
-  const cRef = _pickCol(header, ['banki azonosito', 'azonosito', 'reference id']);
-  const cAmount = _pickCol(header, ['amount', 'osszeg']);
-  const cFee = _pickCol(header, ['fee', 'dij']);
-  const cCur = _pickCol(header, ['currency', 'penznem', 'deviza']);
-  const cState = _pickCol(header, ['state', 'statusz', 'allapot']);
-  if (cAmount < 0 || cDate < 0) return null;
-  const txns = [];
-  for (let i = hIdx + 1; i < aoa.length; i++) {
-    const row = aoa[i];
-    if (!row || !row.length) continue;
-    const st = cState >= 0 ? _normHeader(row[cState]) : '';
-    if (st && BAD_STATES.some((b) => st.includes(b))) continue;
-    const amount = _parseNum(row[cAmount]);
-    const fee = cFee >= 0 ? _parseNum(row[cFee]) : 0;
-    const a = isNaN(amount) ? 0 : amount;
-    const f = isNaN(fee) ? 0 : fee;
-    if (isNaN(amount) && isNaN(fee)) continue;
-
-    const netFlow = a - f;
-    if (netFlow === 0) continue;
-    const date = _excelDate(row[cDate]);
-    if (!date) continue;
-    const type = canonType(cType >= 0 ? row[cType] : '');
-
-    let desc = cDesc >= 0 ? String(row[cDesc] || '').trim() : '';
-    if (!desc && cMemo >= 0) desc = String(row[cMemo] || '').trim();
-    if (!desc) desc = type;
-    const currency = (cCur >= 0 ? String(row[cCur] || '').trim().toUpperCase() : '') || 'HUF';
-
-    const refRaw = cRef >= 0 ? String(row[cRef] || '').trim() : '';
-    const startedRaw = String((cStart >= 0 ? row[cStart] : row[cDate]) || '').trim();
-    const k = refRaw
-      ? 'ref:' + refRaw
-      : startedRaw + '|' + String(row[cAmount]) + '|' + (cFee >= 0 ? String(row[cFee]) : '') + '|' + desc;
-    txns.push({ date, type, desc, amt: netFlow, currency, k, bank });
-  }
-  return txns;
-}
-
-function _txnSigned(t) {
-  if (typeof t.amt === 'number') return t.amt;
-  return -(t.amount || 0);
-}
-
-function handleRevolutUpload(input) {
-  const file = input.files && input.files[0];
-  if (!file) return;
-  const isCsv = /\.csv$/i.test(file.name) || file.type === 'text/csv';
-  expMsg('Feldolgozás…', false);
-  loadXLSX()
-    .then((XLSX) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          let wb;
-          if (isCsv) {
-
-            wb = XLSX.read(e.target.result, { type: 'string' });
-          } else {
-            wb = XLSX.read(new Uint8Array(e.target.result), {
-              type: 'array',
-              cellDates: true,
-              codepage: 65001
-            });
-          }
-          const ws = wb.Sheets[wb.SheetNames[0]];
-          const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '' });
-          const txns = parseRevolutSheet(aoa);
-          if (!txns) {
-            expMsg(
-              'Nem ismerem fel a kivonat oszlopait. Kell egy „Összeg/Amount” és egy dátum oszlop (Revolut kivonat).',
-              true
-            );
-            return;
-          }
-          if (!txns.length) {
-            expMsg('Nem találtam feldolgozható tételt a fájlban.', true);
-            return;
-          }
-
-          const prev =
-            state.expenseReport && Array.isArray(state.expenseReport.txns)
-              ? state.expenseReport
-              : { txns: [], imports: [] };
-          const merged = prev.txns.slice();
-          const seen = new Set(merged.map((t) => t.k).filter(Boolean));
-          const importId = uid();
-          let added = 0,
-            dup = 0;
-          txns.forEach((t) => {
-            if (t.k && seen.has(t.k)) {
-              dup++;
-              return;
-            }
-            if (t.k) seen.add(t.k);
-            t.imp = importId;
-            merged.push(t);
-            added++;
-          });
-          const months = {};
-          txns.forEach((t) => (months[t.date.slice(0, 7)] = true));
-          const imports = (prev.imports || []).slice();
-          imports.push({
-            id: importId,
-            fileName: file.name,
-            importedAt: new Date().toISOString(),
-            added,
-            dup,
-            months: Object.keys(months).sort()
-          });
-          state.expenseReport = { txns: merged, imports, updatedAt: new Date().toISOString() };
-          save();
-          renderExpenseReport();
-          expMsg(
-            '✓ ' +
-              added +
-              ' új tétel hozzáadva' +
-              (dup ? ', ' + dup + ' duplikátum kihagyva' : '') +
-              '. Összesen ' +
-              merged.length +
-              ' tétel.',
-            false
-          );
-        } catch (err) {
-          expMsg('Hiba a fájl feldolgozásakor: ' + (err.message || err), true);
-        }
-      };
-      reader.onerror = () => expMsg('A fájl nem olvasható.', true);
-      if (isCsv) reader.readAsText(file, 'UTF-8');
-      else reader.readAsArrayBuffer(file);
-    })
-    .catch((err) => expMsg(err.message || 'Betöltési hiba.', true));
-  input.value = '';
-}
-
-async function clearExpenseReport() {
-  if (!(await uiConfirm('Biztosan törlöd az ÖSSZES betöltött kimutatás adatát?'))) return;
-  state.expenseReport = null;
-  save();
-  renderExpenseReport();
-  expMsg('', false);
-}
-
-async function deleteExpenseImport(id) {
-  const rep = state.expenseReport;
-  if (!rep || !Array.isArray(rep.imports)) return;
-  const im = rep.imports.find((x) => x.id === id);
-  if (!im) return;
-  const label =
-    (Array.isArray(im.months) && im.months.length ? im.months.join(', ') : im.fileName || 'kimutatás');
-  if (!(await uiConfirm('Törlöd ennek a kimutatásnak az adatait?\n\n' + label))) return;
-  const remainTxns = rep.txns.filter((t) => t.imp !== id);
-  const remainImports = rep.imports.filter((x) => x.id !== id);
-  if (!remainTxns.length) {
-    state.expenseReport = null;
-  } else {
-    state.expenseReport = {
-      txns: remainTxns,
-      imports: remainImports,
-      updatedAt: new Date().toISOString()
-    };
-  }
-  save();
-  renderExpenseReport();
-  expMsg('✓ Kimutatás törölve: ' + label, false);
-}
-
-function _expToHuf(amt, cur) {
-  if (cur === 'HUF') return amt;
-  const r = rateForCurrency(cur);
-  return r ? amt * r : null;
-}
-
-function _fmtYm(ym) {
-  const [y, m] = ym.split('-');
-  return y + '. ' + (MONTHS_HU_SHORT[+m - 1] || m);
-}
-let _expFilter = { month: 'all', bank: 'all', dir: 'all', type: 'all', q: '' };
-
-function renderExpenseReport() {
-  const box = document.getElementById('exp-report');
-  const clearBtn = document.getElementById('exp-clear-btn');
-  const rep = state.expenseReport;
-  const has = !!(rep && rep.txns && rep.txns.length);
-  if (clearBtn) clearBtn.style.display = has ? '' : 'none';
-  if (!box) return;
-  if (!has) {
-    box.innerHTML = '';
-    return;
-  }
-  const txns = rep.txns;
-  let incomeHuf = 0,
-    expenseHuf = 0,
-    nonConv = 0;
-  const inByMonth = {},
-    outByMonth = {},
-    expByType = {},
-    incByType = {},
-    byMerchant = {},
-    byCur = {},
-    monthsSet = {},
-    typesSet = {},
-    banksSet = {};
-  let minDate = null,
-    maxDate = null;
-  txns.forEach((t) => {
-    const s = _txnSigned(t);
-    const ym = t.date.slice(0, 7);
-    monthsSet[ym] = true;
-    typesSet[t.type || 'Egyéb'] = true;
-    banksSet[t.bank || 'Egyéb'] = true;
-    if (!minDate || t.date < minDate) minDate = t.date;
-    if (!maxDate || t.date > maxDate) maxDate = t.date;
-    byCur[t.currency] = (byCur[t.currency] || 0) + s;
-    const mag = _expToHuf(Math.abs(s), t.currency);
-    if (mag == null) {
-      nonConv++;
-      return;
-    }
-    if (s > 0) {
-      incomeHuf += mag;
-      inByMonth[ym] = (inByMonth[ym] || 0) + mag;
-      incByType[t.type] = (incByType[t.type] || 0) + mag;
-    } else {
-      expenseHuf += mag;
-      outByMonth[ym] = (outByMonth[ym] || 0) + mag;
-      expByType[t.type] = (expByType[t.type] || 0) + mag;
-      const mk = (t.desc || '(nincs megnevezés)').slice(0, 42);
-      byMerchant[mk] = (byMerchant[mk] || 0) + mag;
-    }
-  });
-  const netHuf = incomeHuf - expenseHuf;
-
-  const imports = Array.isArray(rep.imports) ? rep.imports : [];
-  const lastImport = imports.length
-    ? imports[imports.length - 1]
-    : rep.importedAt
-      ? { importedAt: rep.importedAt, fileName: rep.fileName }
-      : null;
-  const importedStr =
-    lastImport && lastImport.importedAt
-      ? new Date(lastImport.importedAt).toLocaleDateString(LOC())
-      : '—';
-  const importCount = imports.length || (rep.fileName ? 1 : 0);
-  const curList = Object.keys(byCur).sort();
-  const months = Object.keys(monthsSet).sort();
-
-  const maxM = Math.max(1, ...months.map((k) => Math.max(inByMonth[k] || 0, outByMonth[k] || 0)));
-  const monthlyRows = months
-    .map((k) => {
-      const inc = inByMonth[k] || 0;
-      const out = outByMonth[k] || 0;
-      const net = inc - out;
-      const iw = Math.max(inc > 0 ? 2 : 0, Math.round((inc / maxM) * 100));
-      const ow = Math.max(out > 0 ? 2 : 0, Math.round((out / maxM) * 100));
-      return `<div style="display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:10px;padding:6px 0">
-        <span style="font-size:11px;color:var(--muted);font-weight:600">${_fmtYm(k)}</span>
-        <div style="display:flex;flex-direction:column;gap:3px">
-          <div style="height:8px;border-radius:4px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:${iw}%;background:var(--accent2);border-radius:4px"></div></div>
-          <div style="height:8px;border-radius:4px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:${ow}%;background:var(--red);border-radius:4px"></div></div>
-        </div>
-        <span class="${net >= 0 ? 'green' : 'red'}" style="font-size:12px;font-weight:600;white-space:nowrap;text-align:right">${net >= 0 ? '+' : ''}${fmtAgg(net)}</span>
-      </div>`;
-    })
-    .join('');
-
-  const typeList = (obj, cls) => {
-    const ks = Object.keys(obj).sort((a, b) => obj[b] - obj[a]);
-    const tot = ks.reduce((a, k) => a + obj[k], 0);
-    if (!ks.length) return '<div style="color:var(--muted);font-size:12px">Nincs adat.</div>';
-    return ks
-      .map((t) => {
-        const v = obj[t];
-        const pct = tot > 0 ? (v / tot) * 100 : 0;
-        return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t)}</span>
-          <span style="white-space:nowrap"><strong class="${cls}">${fmtAgg(v)}</strong> <span style="color:var(--muted);font-size:11px">${pct.toFixed(1)}%</span></span>
-        </div>`;
-      })
-      .join('');
-  };
-
-  const merchants = Object.keys(byMerchant)
-    .sort((a, b) => byMerchant[b] - byMerchant[a])
-    .slice(0, 10);
-  const merchantRows = merchants.length
-    ? merchants
-        .map(
-          (mkey) =>
-            `<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(mkey)}</span>
-          <span class="red" style="font-weight:600;white-space:nowrap">${fmtAgg(byMerchant[mkey])}</span>
-        </div>`
-        )
-        .join('')
-    : '<div style="color:var(--muted);font-size:12px">Nincs adat.</div>';
-
-  const curNote =
-    curList.length > 1
-      ? `<div style="font-size:11px;color:var(--muted);margin-top:6px">Devizánként (nettó): ${curList
-          .map((c) => `${c}: ${fmtCur(byCur[c], c)}`)
-          .join(' · ')}</div>`
-      : '';
-  const nonConvNote =
-    nonConv > 0
-      ? `<div style="font-size:11px;color:var(--accent3);margin-top:6px">${nonConv} tétel nem váltható HUF-ra (ismeretlen árfolyam). Frissítsd az élő árfolyamot a Fiók oldalon.</div>`
-      : '';
-
-  const importRows = imports
-    .slice()
-    .reverse()
-    .map((im) => {
-      const d = im.importedAt ? new Date(im.importedAt).toLocaleDateString(LOC()) : '—';
-      const ms = Array.isArray(im.months) && im.months.length ? im.months.join(', ') : '—';
-      const delBtn = im.id
-        ? `<button class="btn btn-danger btn-sm js-del-btn" title="Ennek a kimutatásnak a törlése" onclick="deleteExpenseImport('${im.id}')">×</button>`
-        : '';
-      return `<div style="display:flex;align-items:center;gap:10px;font-size:12.5px;padding:8px 0;border-bottom:1px solid var(--border)">
-        <span style="flex:1;min-width:0"><strong>${ms}</strong> <span style="color:var(--muted)">· ${escHtml(im.fileName || 'kivonat')}</span><br><span style="color:var(--muted);font-size:11px">+${im.added || 0} tétel${im.dup ? ` · ${im.dup} dupla` : ''} · ${d}</span></span>
-        ${delBtn}
-      </div>`;
-    })
-    .join('');
-  const importsCard = imports.length
-    ? `<div class="card" style="margin-bottom:16px">
-        <div class="card-title">Importált kimutatások (${imports.length})</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">A × gombbal egy adott kimutatás összes tételét törlöd.</div>
-        ${importRows}
-      </div>`
-    : '';
-
-  if (_expFilter.month !== 'all' && !monthsSet[_expFilter.month]) _expFilter.month = 'all';
-  if (_expFilter.type !== 'all' && !typesSet[_expFilter.type]) _expFilter.type = 'all';
-  if (_expFilter.bank !== 'all' && !banksSet[_expFilter.bank]) _expFilter.bank = 'all';
-  const bankKeys = Object.keys(banksSet).sort();
-  const bankOpts =
-    `<option value="all"${_expFilter.bank === 'all' ? ' selected' : ''}>Minden bank</option>` +
-    bankKeys
-      .map(
-        (b) =>
-          `<option value="${escHtml(b)}"${_expFilter.bank === b ? ' selected' : ''}>${escHtml(b)}</option>`
-      )
-      .join('');
-  const monthOpts =
-    `<option value="all"${_expFilter.month === 'all' ? ' selected' : ''}>Összes hónap</option>` +
-    months
-      .slice()
-      .reverse()
-      .map(
-        (m) => `<option value="${m}"${_expFilter.month === m ? ' selected' : ''}>${_fmtYm(m)}</option>`
-      )
-      .join('');
-  const dirOpts = [
-    ['all', 'Minden irány'],
-    ['out', 'Csak kiadás'],
-    ['in', 'Csak bevétel']
-  ]
-    .map(([v, l]) => `<option value="${v}"${_expFilter.dir === v ? ' selected' : ''}>${l}</option>`)
-    .join('');
-  const typeOpts =
-    `<option value="all"${_expFilter.type === 'all' ? ' selected' : ''}>Minden típus</option>` +
-    Object.keys(typesSet)
-      .sort()
-      .map(
-        (t) =>
-          `<option value="${escHtml(t)}"${_expFilter.type === t ? ' selected' : ''}>${escHtml(t)}</option>`
-      )
-      .join('');
-
-  box.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px">
-      <div class="card card-stat-green">
-        <div class="card-title" style="opacity:.8">Bevétel (HUF)</div>
-        <div class="stat-value green" style="font-size:24px">${fmtAgg(incomeHuf)}</div>
-      </div>
-      <div class="card card-stat-red">
-        <div class="card-title" style="opacity:.8">Kiadás (HUF)</div>
-        <div class="stat-value red" style="font-size:24px">${fmtAgg(expenseHuf)}</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Egyenleg</div>
-        <div class="stat-value ${netHuf >= 0 ? 'green' : 'red'}" style="font-size:24px">${netHuf >= 0 ? '+' : ''}${fmtAgg(netHuf)}</div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:16px">
-      <div style="font-size:11px;color:var(--muted)">${txns.length} tétel · ${minDate || '—'} – ${maxDate || '—'} · ${months.length} hónap · ${importCount} import · utolsó: ${importedStr}${curNote}${nonConvNote}</div>
-    </div>
-
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Havi bevétel / kiadás</div>
-      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-bottom:8px">
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--accent2);margin-right:5px;vertical-align:-1px"></span>Bevétel</span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--red);margin-right:5px;vertical-align:-1px"></span>Kiadás</span>
-        <span style="margin-left:auto">jobbra: havi egyenleg</span>
-      </div>
-      ${monthlyRows || '<div style="color:var(--muted);font-size:12px">Nincs adat.</div>'}
-    </div>
-
-    ${importsCard}
-
-    <div class="grid g2" style="margin-bottom:16px">
-      <div class="card">
-        <div class="card-title">Kiadás típus szerint</div>
-        ${typeList(expByType, 'red')}
-      </div>
-      <div class="card">
-        <div class="card-title">Bevétel forrás szerint</div>
-        ${typeList(incByType, 'green')}
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Top 10 kiadás (megnevezés)</div>
-      ${merchantRows}
-    </div>
-
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Részletező</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px">
-        <div><label>Hónap</label><select id="exp-f-month" onchange="applyExpenseFilter()">${monthOpts}</select></div>
-        <div><label>Bank</label><select id="exp-f-bank" onchange="applyExpenseFilter()">${bankOpts}</select></div>
-        <div><label>Irány</label><select id="exp-f-dir" onchange="applyExpenseFilter()">${dirOpts}</select></div>
-        <div><label>Típus</label><select id="exp-f-type" onchange="applyExpenseFilter()">${typeOpts}</select></div>
-        <div><label>Keresés</label><input type="text" id="exp-f-q" placeholder="megnevezés…" value="${escHtml(_expFilter.q)}" oninput="applyExpenseFilter()" /></div>
-      </div>
-      <div id="exp-detail-body"></div>
-    </div>`;
-  renderExpenseDetail();
-}
-
-function applyExpenseFilter() {
-  const val = (id) => {
-    const el = document.getElementById(id);
-    return el ? el.value : 'all';
-  };
-  _expFilter = {
-    month: val('exp-f-month'),
-    bank: val('exp-f-bank'),
-    dir: val('exp-f-dir'),
-    type: val('exp-f-type'),
-    q: (val('exp-f-q') || '').trim().toLowerCase()
-  };
-  renderExpenseDetail();
-}
-
-function renderExpenseDetail() {
-  const body = document.getElementById('exp-detail-body');
-  const rep = state.expenseReport;
-  if (!body || !rep || !rep.txns) return;
-  const f = _expFilter;
-  const rows = rep.txns.filter((t) => {
-    const s = _txnSigned(t);
-    if (f.month !== 'all' && t.date.slice(0, 7) !== f.month) return false;
-    if (f.bank && f.bank !== 'all' && (t.bank || 'Egyéb') !== f.bank) return false;
-    if (f.dir === 'out' && s >= 0) return false;
-    if (f.dir === 'in' && s <= 0) return false;
-    if (f.type !== 'all' && (t.type || 'Egyéb') !== f.type) return false;
-    if (
-      f.q &&
-      !(t.desc || '').toLowerCase().includes(f.q) &&
-      !(t.type || '').toLowerCase().includes(f.q)
-    )
-      return false;
-    return true;
-  });
-  rows.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-  let inSum = 0,
-    outSum = 0;
-  rows.forEach((t) => {
-    const s = _txnSigned(t);
-    const mag = _expToHuf(Math.abs(s), t.currency);
-    if (mag == null) return;
-    if (s > 0) inSum += mag;
-    else outSum += mag;
-  });
-  const net = inSum - outSum;
-  const cap = rows.slice(0, 300);
-  const trs = cap
-    .map((t) => {
-      const s = _txnSigned(t);
-      const pos = s > 0;
-      return `<tr>
-        <td style="white-space:nowrap">${t.date}</td>
-        <td style="white-space:nowrap;color:var(--muted)">${escHtml(t.bank || '—')}</td>
-        <td>${escHtml(t.desc || '—')}</td>
-        <td style="white-space:nowrap;color:var(--muted)">${escHtml(t.type)}</td>
-        <td class="num ${pos ? 'green' : 'red'}" style="white-space:nowrap;text-align:right">${pos ? '+' : '−'} ${fmtCur(Math.abs(s), t.currency)}</td>
-      </tr>`;
-    })
-    .join('');
-  body.innerHTML = `
-    <div style="display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin-bottom:10px">
-      <span>${rows.length} tétel</span>
-      <span>Bevétel: <strong class="green">${fmtAgg(inSum)}</strong></span>
-      <span>Kiadás: <strong class="red">${fmtAgg(outSum)}</strong></span>
-      <span>Egyenleg: <strong class="${net >= 0 ? 'green' : 'red'}">${net >= 0 ? '+' : ''}${fmtAgg(net)}</strong></span>
-    </div>
-    <div class="scroll-table">
-      <table style="width:100%;font-size:12.5px">
-        <thead><tr><th>Dátum</th><th>Bank</th><th>Megnevezés</th><th>Típus</th><th style="text-align:right">Összeg</th></tr></thead>
-        <tbody>${trs || '<tr><td colspan="5" style="color:var(--muted);padding:8px 0">Nincs a szűrésnek megfelelő tétel.</td></tr>'}</tbody>
-      </table>
-    </div>
-    ${rows.length > cap.length ? `<div style="font-size:11px;color:var(--muted);margin-top:8px">Csak az első ${cap.length} tétel látszik (${rows.length} összesen). Szűkíts hónappal vagy kereséssel.</div>` : ''}`;
-}
-
 function renderAll() {
   renderStocks();
-  renderCrypto();
   renderGold();
   renderServices();
   renderLoans();
@@ -7314,7 +5801,8 @@ function renderAll() {
   renderTaxSettings();
   renderRatioAlertSettings();
   renderSalary();
-  renderExpenseReport();
+  renderCreditCardSettings();
+  renderAccountsSettings();
 }
 document.addEventListener('DOMContentLoaded', () => {
   const crD = document.getElementById('cr-date');
@@ -7343,13 +5831,11 @@ function renderHeaderDate() {
   });
 }
 function afterDataLoaded() {
-  backfillCryptoNative();
-  if (state.stocks.length || state.crypto.length || state.goldItems.length) {
+  if (state.stocks.length || state.goldItems.length) {
     refreshAllPrices();
   } else {
     fetchFxRates().then(() => {
       updateStockLabels();
-      renderCrypto();
     });
   }
 }

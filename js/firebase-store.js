@@ -53,15 +53,11 @@
     };
     if (
       arr('stocks') ||
-      arr('crypto') ||
       arr('goldItems') ||
       arr('loans') ||
       arr('pledges') ||
-      arr('services') ||
-      arr('salaryAdjustments')
+      arr('services')
     )
-      return false;
-    if (s.expenseReport && Array.isArray(s.expenseReport.txns) && s.expenseReport.txns.length > 0)
       return false;
     if (s.salary && Number(s.salary.gross) > 0) return false;
     return true;

@@ -10,11 +10,11 @@
 
 **🌐 Live site:** <https://maszlaig.github.io/Crestly/>
 
-**Crestly** is an account-based **personal-finance & net-worth tracker** — stocks, crypto, gold, loans, pledges, subscriptions and income/expenses, plus a watchlist, all summed up on one overview dashboard. Data is stored per account in **Firebase** (Auth + Firestore via REST, `vaults/<uid>`). No build step, no framework: plain HTML/CSS/JS. Hungarian UI, light/dark/auto "Studio" design with a warm gold accent on a cream base.
+**Crestly** is an account-based **personal-finance & net-worth tracker** — stocks, gold, loans, pledges, subscriptions and income/expenses, plus a watchlist, all summed up on one overview dashboard. Data is stored per account in **Firebase** (Auth + Firestore via REST, `vaults/<uid>`). No build step, no framework: plain HTML/CSS/JS. Hungarian UI, light/dark/auto "Studio" design with a warm gold accent on a cream base.
 
 **Highlights**
 - **Net-worth dashboard** — total assets vs. liabilities, allocation donut, asset breakdown, monthly cash-flow and upcoming expenses at a glance.
-- **Assets with live prices** — stocks (with dividend tracking and a payout calendar), crypto and physical gold; quotes are fetched live and converted to HUF.
+- **Assets with live prices** — stocks (with dividend tracking and a payout calendar) and physical gold; quotes are fetched live and converted to HUF.
 - **Liabilities & pledges** — loans with a full **amortization schedule** and per-installment "paid" tracking; a gold **pledge** (zálog) register with ticket numbers.
 - **Recurring items** — salary, subscriptions/services and loan repayments roll over every month; a running income/expense log feeds the overview.
 - **Modular** — switch off the asset types you don't use in the settings and their tab disappears from the menu.
@@ -32,11 +32,11 @@
 
 **🌐 Élő oldal:** <https://maszlaig.github.io/Crestly/>
 
-A **Crestly** fiók-alapú **személyes pénzügy- és vagyonkövető** — részvény, kripto, arany, hitelek, zálog, előfizetések és bevétel/kiadás, plusz egy figyelőlista, egyetlen áttekintő irányítópulton összegezve. Az adat fiókonként a **Firebase**-ben tárolódik (Auth + Firestore REST, `vaults/<uid>`). Nincs build lépés, nincs keretrendszer: tiszta HTML/CSS/JS. Magyar felület, világos/sötét/auto „Stúdió" dizájn meleg arany-krém akcentussal.
+A **Crestly** fiók-alapú **személyes pénzügy- és vagyonkövető** — részvény, arany, hitelek, zálog, előfizetések és bevétel/kiadás, plusz egy figyelőlista, egyetlen áttekintő irányítópulton összegezve. Az adat fiókonként a **Firebase**-ben tárolódik (Auth + Firestore REST, `vaults/<uid>`). Nincs build lépés, nincs keretrendszer: tiszta HTML/CSS/JS. Magyar felület, világos/sötét/auto „Stúdió" dizájn meleg arany-krém akcentussal.
 
 **Kiemelt funkciók**
 - **Vagyon-irányítópult** — teljes vagyon a kötelezettségekkel szemben, vagyonmegoszlás-diagram, eszközbontás, havi pénzáramlás és közelgő kiadások egy pillantásra.
-- **Eszközök élő árfolyammal** — részvények (osztalékkövetéssel és kifizetési naptárral), kripto és fizikai arany; az árfolyamok élőben lekérve és forintra váltva.
+- **Eszközök élő árfolyammal** — részvények (osztalékkövetéssel és kifizetési naptárral) és fizikai arany; az árfolyamok élőben lekérve és forintra váltva.
 - **Kötelezettségek és zálog** — hitelek teljes **törlesztési ütemtervvel** és részletenkénti „kifizetve" követéssel; arany **zálog** nyilvántartás zálogjegy-számokkal.
 - **Ismétlődő tételek** — a fizetés, az előfizetések/szolgáltatások és a hiteltörlesztők minden hónapban ismétlődnek; a folyamatos bevétel/kiadás napló táplálja az áttekintőt.
 - **Moduláris** — a beállításokban kikapcsolhatod a nem használt eszköztípusokat, és a hozzájuk tartozó fül eltűnik a menüből.
