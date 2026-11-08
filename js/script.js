@@ -5464,6 +5464,16 @@ function renderServices() {
       .join('') ||
     '<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Nincs rögzített szolgáltatás</td></tr>';
   document.getElementById('sv-monthly').textContent = fmtAgg(totalMonthly);
+  const svBudget = document.getElementById('sv-budget');
+  if (svBudget) {
+    const net = salaryNetMonthly();
+    const limitPct = (state.ratioAlert || ratioAlertDefaults()).svcYellow;
+    if (net > 0 && limitPct > 0) {
+      svBudget.innerHTML = `${L('Max. szolgáltatásra költhető', 'Max. spendable on subscriptions')}: <strong>${fmtAgg((net * limitPct) / 100)}</strong> · ${limitPct}%`;
+    } else {
+      svBudget.textContent = '';
+    }
+  }
   document.getElementById('sv-yearly').textContent = fmtAgg(totalMonthly * 12);
   document.getElementById('sv-count').textContent = activeCount + ' db';
   const nextEl = document.getElementById('sv-next');
