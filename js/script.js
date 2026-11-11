@@ -4229,6 +4229,7 @@ function pledgeTicketForGold(goldId) {
 function renderGold() {
   const spot = state.goldSpot || 28000;
   let totalGrams = 0,
+    pledgedGrams = 0,
     totalCost = 0,
     totalValue = 0;
   const tbody = document.getElementById('gold-tbody');
@@ -4254,6 +4255,7 @@ function renderGold() {
     const value = goldItemValue(g, spot);
     const pl = value - g.cost;
     totalGrams += g.grams;
+    if (pledgedSet.has(g.id)) pledgedGrams += g.grams;
     totalCost += g.cost;
     totalValue += value;
     if (pledgedSet.has(g.id)) {
@@ -4276,6 +4278,8 @@ function renderGold() {
       '<tr><td colspan="10" style="color:var(--muted);text-align:center;padding:20px">Nincs zálogosított aranytétel</td></tr>';
   const totalPL = totalValue - totalCost;
   document.getElementById('gd-total-grams').textContent = fmtNum(totalGrams) + ' g';
+  const gsub = document.getElementById('gd-total-grams-sub');
+  if (gsub) gsub.textContent = `ebből zálogban: ${fmtNum(pledgedGrams)} g`;
   document.getElementById('gd-total-cost').textContent = fmtAgg(totalCost);
   document.getElementById('gd-total-value').textContent = fmtAgg(totalValue);
   const plEl = document.getElementById('gd-total-pl');
@@ -5167,7 +5171,7 @@ function renderDashboard() {
   const netAnnualDiv = netDividend(annualDiv);
   const monthlyDiv = netAnnualDiv / 12;
   const divAccId = dividendAccountId();
-  const divAccExpense = loanOn(divAccId) + svcOn(divAccId);
+  const divAccExpense = svcOn(divAccId);
   const divRate = divAccExpense > 0 ? (monthlyDiv / divAccExpense) * 100 : 0;
   const drEl = document.getElementById('d-div-rate');
   const drSub = document.getElementById('d-div-rate-sub');
@@ -5266,6 +5270,7 @@ function renderDashboard() {
     label: L('Teljes vagyon', 'Net worth'),
     value: fmtAggCompact(netWorth)
   });
+  renderCapacity(useLoans ? loansMonthlyTotal() : 0, useServices ? servicesMonthlyTotal() : 0);
   const spot = state.goldSpot || 28000;
   const totalLiab = totalLoan + totalPledge;
   const unrealPL = currentValue - investedCost;
@@ -5403,9 +5408,11 @@ function renderDashboard() {
   const ps = document.getElementById('d-portfolio-stats');
   if (ps) {
     const goldGrams = state.goldItems.reduce((a, g) => a + g.grams, 0);
+    const pGold = pledgedGoldIds();
+    const pledgedGrams = state.goldItems.reduce((a, g) => a + (pGold.has(g.id) ? g.grams : 0), 0);
     const activePledges = (state.pledges || []).filter((p) => !p.redeemed).length;
     ps.innerHTML = `
-      ${useGold ? `<div class="tax-row"><span style="color:var(--muted)">Aranytételek</span><span>${state.goldItems.length} db · ${fmtNum(goldGrams)} g</span></div>` : ''}
+      ${useGold ? `<div class="tax-row"><span style="color:var(--muted)">Aranytételek</span><span>${state.goldItems.length} db · ${fmtNum(goldGrams)} g (ebből zálogban: ${fmtNum(pledgedGrams)} g)</span></div>` : ''}
       ${useStocks ? `<div class="tax-row"><span style="color:var(--muted)">Részvénytételek</span><span>${state.stocks.length} db</span></div>` : ''}
       ${usePledge ? `<div class="tax-row"><span style="color:var(--muted)">Zálogok</span><span>${activePledges} db</span></div>` : ''}
       ${useLoans ? `<div class="tax-row"><span style="color:var(--muted)">Aktív hitelek</span><span>${state.loans.length} db</span></div>` : ''}
@@ -5433,14 +5440,17 @@ function renderDashboard() {
     if (useGold) {
       const gAgg = {};
       state.goldItems.forEach((g) => {
-        gAgg[g.name] = (gAgg[g.name] || 0) + goldItemValue(g, spot);
+        const k = `${g.name}|${g.grams}`;
+        const e = gAgg[k] || (gAgg[k] = { name: g.name, grams: g.grams, n: 0, v: 0 });
+        e.n++;
+        e.v += goldItemValue(g, spot);
       });
-      Object.entries(gAgg).forEach(([n, v]) =>
+      Object.values(gAgg).forEach((e) =>
         holdings.push({
-          name: n,
+          name: `${e.name} — ${fmtNum(e.grams)} g${e.n > 1 ? ' × ' + e.n : ''}`,
           cls: 'Arany',
           badge: 'badge-yellow',
-          value: v
+          value: e.v
         })
       );
     }
@@ -5758,6 +5768,28 @@ function renderDonutCanvas(hi) {
     ctx.font = '600 9px "Space Mono", ui-monospace, monospace';
     ctx.fillText(small.toUpperCase(), cx, cy + (big ? 12 : 0));
   }
+}
+function renderCapacity(curLoan, curSvc) {
+  const el = document.getElementById('d-capacity');
+  if (!el) return;
+  const c = creditCardInfo(null);
+  if (!c.net) {
+    el.innerHTML = '';
+    return;
+  }
+  const row = (label, cur, max, pct) => {
+    const ratio = max > 0 ? (cur / max) * 100 : 0;
+    const w = Math.min(100, ratio);
+    const col = ratio >= 100 ? 'var(--red, #C24A3A)' : ratio >= 75 ? '#C08A2E' : 'var(--green, #3FA36C)';
+    return `<div class="cap-row">
+      <div class="cap-head"><span>${label}</span><span class="cap-pct" style="color:${col}">${max > 0 ? ratio.toFixed(0) + '%' : '–'}</span></div>
+      <div class="cap-bar"><div style="width:${w}%;background:${col}"></div></div>
+      <div class="cap-sub"><span class="cap-cur" style="color:${col}">${fmt(cur)}</span><span class="cap-max">max <strong>${fmt(max)}</strong> (${pct}%)</span></div>
+    </div>`;
+  };
+  el.innerHTML = `<div class="cap-title">${L('Terhelhetőség (nettó fizetés alapján)', 'Capacity (of net salary)')}</div>` +
+    row(L('Hiteltörlesztés', 'Loan repayment'), curLoan, c.loanMax || (c.net * c.loanPct) / 100, c.loanPct) +
+    row(L('Szolgáltatási díj', 'Service fees'), curSvc, c.svcMax || (c.net * c.svcPct) / 100, c.svcPct);
 }
 function renderDonutLegend() {
   const legend = document.getElementById('donut-legend');
