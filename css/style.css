@@ -250,19 +250,19 @@ html.dark .header-nav button.active {
 }
 
 .watch-grid {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
-@media (max-width: 1024px) {
+@media (max-width: 1180px) {
   .watch-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-@media (max-width: 680px) {
+@media (max-width: 860px) {
   .watch-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-@media (max-width: 440px) {
+@media (max-width: 520px) {
   .watch-grid {
     grid-template-columns: 1fr;
   }
@@ -403,33 +403,40 @@ html[data-theme="sunset"] #d-cashflow-wrap {
 
 .div-cal-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
 }
-@media (max-width: 900px) {
-  .div-cal-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 560px) {
-  .div-cal-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 1024px) {
+@media (max-width: 1180px) {
   .dash-span-grid {
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
   }
-  .dash-donut-span,
-  .dash-span-grid > #d-upcoming-card,
+  .dash-span-grid > #d-upcoming-card {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+  }
   #d-cashflow-wrap {
-    grid-column: auto;
-    grid-row: auto;
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+  }
+  .dash-donut-span {
+    grid-column: 2;
+    grid-row: 2 / span 2;
   }
 }
 @media (max-width: 680px) {
   .dash-span-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+  .dash-span-grid > #d-upcoming-card,
+  #d-cashflow-wrap,
+  .dash-donut-span {
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
   }
 }
 
@@ -1292,11 +1299,13 @@ html.dark .auth-card {
   .header-meta {
     font-size: 11px;
   }
+}
+@media (max-width: 1180px) {
   .g4 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .g3 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .g12,
   .g21 {

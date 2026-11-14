@@ -4535,9 +4535,14 @@ function renderServices() {
   const svSplit = document.getElementById('sv-split');
   if (svSplit)
     svSplit.innerHTML = accountsList()
-      .map((a) => `${escHtml(a.name)}: <strong>${fmtAgg(servicesMonthlyTotal(a.id))}</strong>`)
-      .join(' · ');
+      .map((a) => `<span style="white-space:nowrap">${escHtml(a.name)}: <strong>${fmtAgg(servicesMonthlyTotal(a.id))}</strong></span>`)
+      .join('');
   document.getElementById('sv-yearly').textContent = fmtAgg(totalMonthly * 12);
+  const svSplitY = document.getElementById('sv-split-yearly');
+  if (svSplitY)
+    svSplitY.innerHTML = accountsList()
+      .map((a) => `<span style="white-space:nowrap">${escHtml(a.name)}: <strong>${fmtAgg(servicesMonthlyTotal(a.id) * 12)}</strong></span>`)
+      .join('');
   document.getElementById('sv-count').textContent = activeCount + ' db';
   const nextEl = document.getElementById('sv-next');
   if (nextEl) {
@@ -4857,236 +4862,6 @@ function buildUpcomingDatesHTML() {
     })
     .join('');
 }
-let _cashTLsel = null;
-function computeCashTimeline(year) {
-  const m = state.modules || {};
-  const on = (k) => m[k] !== false;
-  const income = new Array(12).fill(0);
-  const expense = new Array(12).fill(0);
-  const incItems = Array.from({ length: 12 }, () => []);
-  const expItems = Array.from({ length: 12 }, () => []);
-  const monthOf = (dateStr) => {
-    if (!dateStr) return null;
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return null;
-    return d.getFullYear() === year ? d.getMonth() : null;
-  };
-  const addInc = (i, label, amt) => {
-    if (!(amt > 0)) return;
-    income[i] += amt;
-    incItems[i].push({ label, amount: amt });
-  };
-  const addExp = (i, label, amt) => {
-    if (!(amt > 0)) return;
-    expense[i] += amt;
-    expItems[i].push({ label, amount: amt });
-  };
-
-  const salary = salaryNetMonthly();
-  for (let i = 0; i < 12; i++) {
-    if (salary > 0) addInc(i, 'Nettó fizetés', salary);
-    if (income[i] < 0) income[i] = 0;
-  }
-
-  if (on('stocks') && fxReady()) {
-    const groups = {};
-    state.stocks.forEach((s) => {
-      (groups[s.ticker] = groups[s.ticker] || []).push(s);
-    });
-    Object.entries(groups).forEach(([ticker, lots]) => {
-      const first = lots[0];
-      if (!stockIsCash(first)) return;
-      const qty = lots.reduce((a, l) => a + l.qty, 0);
-      const cur = first.currency || 'HUF';
-      const monthMap =
-        first.divAuto && first.divByMonthNative ? first.divByMonthNative : manualDivMonthMap(first);
-      if (!monthMap) return;
-      Object.entries(monthMap).forEach(([mo, perShareN]) => {
-        const usd = nativeToUsd(perShareN * qty, cur);
-        if (usd === null) return;
-        const net = netDividend(usd * usdHuf);
-        const idx = +mo - 1;
-        if (idx >= 0 && idx < 12) addInc(idx, 'Osztalék · ' + ticker.toUpperCase(), net);
-      });
-    });
-  }
-
-  if (on('gold')) {
-    (state.goldItems || []).forEach((g) => {
-      const mo = monthOf(g.date);
-      if (mo !== null) addExp(mo, 'Aranyvétel · ' + (g.name || g.code || 'arany'), g.cost || 0);
-    });
-  }
-
-  if (on('stocks')) {
-    state.stocks.forEach((s) => {
-      const mo = monthOf(s.buyDate);
-      if (mo !== null)
-        addExp(mo, 'Részvényvétel · ' + (s.ticker || '').toUpperCase(), (s.qty || 0) * (s.avg || 0));
-    });
-  }
-
-  if (on('loans')) {
-    (state.loans || []).forEach((l) => {
-      const monthly = l.monthly || 0;
-      if (!monthly) return;
-      const s = l.firstPayment || l.start ? new Date(l.firstPayment || l.start) : null;
-      const e = l.end ? new Date(l.end) : null;
-      for (let i = 0; i < 12; i++) {
-        const first = new Date(year, i, 1);
-        const last = new Date(year, i + 1, 0);
-        if (s && !isNaN(s.getTime()) && s > last) continue;
-        if (e && !isNaN(e.getTime()) && e < first) continue;
-        addExp(i, 'Hiteltörlesztő · ' + (l.name || 'hitel'), monthly);
-      }
-    });
-  }
-
-  if (on('services')) {
-    (state.services || [])
-      .filter((s) => s.active)
-      .forEach((s) => {
-        const c = serviceMonthlyCost(s);
-        if (c > 0) for (let i = 0; i < 12; i++) addExp(i, 'Előfizetés · ' + (s.name || 'egyéb'), c);
-      });
-  }
-
-  return { income, expense, incItems, expItems };
-}
-
-function selectTimelineMonth(i) {
-  _cashTLsel = i;
-  renderCashTimeline();
-}
-
-function renderCashTimeline() {
-  const box = document.getElementById('d-timeline');
-  if (!box) return;
-  const YEAR = 2026;
-  const MONTHS = ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec'];
-  const FULL = [
-    'Január',
-    'Február',
-    'Március',
-    'Április',
-    'Május',
-    'Június',
-    'Július',
-    'Augusztus',
-    'Szeptember',
-    'Október',
-    'November',
-    'December'
-  ];
-  const { income, expense, incItems, expItems } = computeCashTimeline(YEAR);
-  const maxV = Math.max(1, ...income, ...expense);
-  const totIn = income.reduce((a, b) => a + b, 0);
-  const totOut = expense.reduce((a, b) => a + b, 0);
-  const totNet = totIn - totOut;
-
-  const today = new Date();
-  let curIdx;
-  if (today.getFullYear() < YEAR) curIdx = -1;
-  else if (today.getFullYear() > YEAR) curIdx = 12;
-  else curIdx = today.getMonth();
-  const dayFrac =
-    curIdx >= 0 && curIdx < 12 ? (today.getDate() - 1) / new Date(YEAR, curIdx + 1, 0).getDate() : 0;
-  const todayPct = curIdx < 0 ? 0 : curIdx >= 12 ? 100 : ((curIdx + dayFrac) / 12) * 100;
-
-  if (_cashTLsel == null || _cashTLsel < 0 || _cashTLsel > 11)
-    _cashTLsel = curIdx < 0 ? 0 : curIdx > 11 ? 11 : curIdx;
-  const sel = _cashTLsel;
-
-  const H = 62;
-  const cols = MONTHS.map((name, i) => {
-    const inc = income[i];
-    const exp = expense[i];
-    const incH = Math.round((inc / maxV) * H);
-    const expH = Math.round((exp / maxV) * H);
-    const future = i > curIdx;
-    const op = future ? 0.4 : 1;
-    const dash = future ? ';outline:1px dashed var(--border2);outline-offset:-1px' : '';
-    const selBg = i === sel ? 'background:var(--surface2);' : '';
-    return `<div onclick="selectTimelineMonth(${i})" title="${FULL[i]}" style="flex:1 1 0;min-width:40px;cursor:pointer;display:flex;flex-direction:column;align-items:center;border-radius:8px;padding:2px 0;${selBg}">
-      <div style="height:${H}px;display:flex;align-items:flex-end;justify-content:center;width:100%">
-        <div style="width:58%;max-width:20px;height:${incH}px;min-height:${inc > 0 ? 2 : 0}px;background:var(--accent2);border-radius:3px 3px 0 0;opacity:${op}${dash}"></div>
-      </div>
-      <div style="height:2px;width:80%;background:var(--border2)"></div>
-      <div style="height:${H}px;display:flex;align-items:flex-start;justify-content:center;width:100%">
-        <div style="width:58%;max-width:20px;height:${expH}px;min-height:${exp > 0 ? 2 : 0}px;background:var(--red);border-radius:0 0 3px 3px;opacity:${op}${dash}"></div>
-      </div>
-      <div style="font-size:10px;margin-top:4px;color:${i === curIdx ? 'var(--accent)' : 'var(--muted)'};font-weight:${i === sel || i === curIdx ? 700 : 600}">${name}</div>
-    </div>`;
-  }).join('');
-
-  const chart = `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-    <div style="position:relative;min-width:360px">
-      ${curIdx > 0 ? `<div style="position:absolute;top:0;bottom:20px;left:0;width:${todayPct}%;background:var(--surface2);opacity:0.4;border-radius:6px;pointer-events:none"></div>` : ''}
-      <div style="display:flex;align-items:stretch;gap:2px;position:relative">${cols}</div>
-      ${
-        curIdx >= 0 && curIdx < 12
-          ? `<div style="position:absolute;top:0;bottom:20px;left:${todayPct}%;border-left:2px dashed var(--accent);pointer-events:none"></div>
-      <div style="position:absolute;top:-4px;left:${todayPct}%;transform:translateX(-50%);font-size:9px;font-weight:700;background:var(--accent);color:#1a1206;padding:1px 6px;border-radius:7px;pointer-events:none">Ma</div>`
-          : ''
-      }
-    </div>
-  </div>`;
-
-  const sw = (c) =>
-    `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c};margin-right:5px;vertical-align:-1px"></span>`;
-  const listHtml = (items, cls) =>
-    items.length
-      ? items
-          .slice()
-          .sort((a, b) => b.amount - a.amount)
-          .map(
-            (it) =>
-              `<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0"><span style="color:var(--muted)">${it.label}</span><span class="${cls}" style="font-weight:600;white-space:nowrap">${fmtAgg(it.amount)}</span></div>`
-          )
-          .join('')
-      : '<div style="font-size:12px;color:var(--muted);padding:3px 0">—</div>';
-
-  const status = sel < curIdx ? 'past' : sel === curIdx ? 'cur' : 'future';
-  const badge =
-    status === 'past'
-      ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--surface2);color:var(--muted)">Elmúlt</span>'
-      : status === 'cur'
-        ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--accent);color:#1a1206">Aktuális</span>'
-        : '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:var(--surface2);color:var(--accent2)">Hátravan</span>';
-  const selNet = income[sel] - expense[sel];
-  const detail = `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-      <strong style="font-size:14px">${FULL[sel]} ${YEAR}</strong>
-      ${badge}
-      <span style="margin-left:auto;font-weight:700" class="${selNet >= 0 ? 'green' : 'red'}">${selNet >= 0 ? '+' : ''}${fmtAgg(selNet)}</span>
-    </div>
-    <div class="grid g2" style="gap:12px">
-      <div>
-        <div style="font-size:11.5px;font-weight:700;margin-bottom:5px">${sw('var(--accent2)')}Bevétel · <span class="green">${fmtAgg(income[sel])}</span></div>
-        ${listHtml(incItems[sel], 'green')}
-      </div>
-      <div>
-        <div style="font-size:11.5px;font-weight:700;margin-bottom:5px">${sw('var(--red)')}Kiadás · <span class="red">${fmtAgg(expense[sel])}</span></div>
-        ${listHtml(expItems[sel], 'red')}
-      </div>
-    </div>
-  </div>`;
-
-  box.innerHTML = `
-    <div style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;font-size:12px;align-items:center">
-      <span>${sw('var(--accent2)')}Bevétel: <strong class="green">${fmtAgg(totIn)}</strong></span>
-      <span>${sw('var(--red)')}Kiadás: <strong class="red">${fmtAgg(totOut)}</strong></span>
-      <span style="margin-left:auto">Éves egyenleg: <strong class="${totNet >= 0 ? 'green' : 'red'}">${totNet >= 0 ? '+' : ''}${fmtAgg(totNet)}</strong></span>
-    </div>
-    ${chart}
-    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:8px">
-      <span>Tömör sáv = elmúlt · halvány sáv = még hátra van</span>
-      <span>Kattints egy hónapra a részletekért</span>
-    </div>
-    ${detail}
-    <div style="font-size:10.5px;color:var(--muted);margin-top:12px;line-height:1.5">A fizetés, a hiteltörlesztő és az előfizetések minden hónapban ismétlődnek; az arany- és részvényvétel és az osztalék a tényleges dátumuk hónapjában jelenik meg. Az előfizetések havi szintre vetítve (az éves díjak 1/12-e) szerepelnek.</div>`;
-}
-
 function renderDashboard() {
   const m = state.modules || {};
   const useGold = m.gold !== false,
@@ -5270,7 +5045,7 @@ function renderDashboard() {
     label: L('Teljes vagyon', 'Net worth'),
     value: fmtAggCompact(netWorth)
   });
-  renderCapacity(useLoans ? loansMonthlyTotal() : 0, useServices ? servicesMonthlyTotal() : 0);
+  renderCapacity(useLoans ? loansMonthlyTotal() : 0, useServices ? servicesMonthlyTotal(resolveAccount('otp')) : 0);
   const spot = state.goldSpot || 28000;
   const totalLiab = totalLoan + totalPledge;
   const unrealPL = currentValue - investedCost;
@@ -5484,7 +5259,6 @@ function renderDashboard() {
       dc.innerHTML =
         '<div style="color:var(--muted);font-size:12px;padding:8px 0">A Részvény modul ki van kapcsolva.</div>';
   }
-  renderCashTimeline();
 }
 function renderWatch() {
   updateFxLabel();

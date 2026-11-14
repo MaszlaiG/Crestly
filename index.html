@@ -183,14 +183,6 @@
             <div id="d-salary-tax"></div>
           </div>
         </div>
-
-        <div class="card" id="d-timeline-card" style="margin-bottom: 24px">
-          <div class="card-title">Pénzügyi idővonal — 2026</div>
-          <div style="color: var(--muted); font-size: 12px; margin-bottom: 8px">
-            Havi összes bevétel és kiadás (az arany- és részvényvétel is kiadás)
-          </div>
-          <div id="d-timeline"></div>
-        </div>
       </div>
 
       <div class="tab-content" id="tab-watch">
@@ -782,11 +774,12 @@
           <div class="card card-stat-red">
             <div class="card-title">Havi összköltség</div>
             <div class="stat-value red" id="sv-monthly">0 Ft</div>
-            <div class="stat-sub" id="sv-split"></div>
+            <div class="stat-sub" id="sv-split" style="display:flex;flex-direction:column;gap:2px"></div>
           </div>
           <div class="card card-stat-yellow">
             <div class="card-title">Éves összköltség</div>
             <div class="stat-value yellow" id="sv-yearly">0 Ft</div>
+            <div class="stat-sub" id="sv-split-yearly" style="display:flex;flex-direction:column;gap:2px"></div>
           </div>
           <div class="card card-stat-cyan">
             <div class="card-title">Aktív előfizetések</div>
