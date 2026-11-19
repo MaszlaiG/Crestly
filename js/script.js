@@ -4202,14 +4202,16 @@ function renderPledges() {
   feeEl.className = 'stat-value ' + (feeTotal < 0 ? 'red' : 'green');
   const feeSubEl = document.getElementById('pl-sum-fee-sofar');
   if (feeSubEl) feeSubEl.textContent = `${L('Eddig:', 'So far:')} ${fmtAgg(feeSoFar)}`;
-  const prolongEl = document.getElementById('pl-sum-prolong');
-  if (prolongEl) {
-    const prolongTotal = state.pledges
-      .filter((p) => !p.redeemed && p.prolongPct)
-      .reduce((a, p) => a + (calcPledgeDebt(p).principal * p.prolongPct) / 100, 0);
-    prolongEl.textContent = prolongTotal
-      ? `${L('Prolongálás:', 'Extension:')} ${fmtAgg(prolongTotal)}`
-      : '';
+  const extendEl = document.getElementById('pl-sum-extend');
+  if (extendEl) {
+    // Prolongálás most = az eddig felgyűlt kamat + prolongálási díj (a tőke marad)
+    const extendTotal = state.pledges
+      .filter((p) => !p.redeemed)
+      .reduce((a, p) => {
+        const d = calcPledgeDebt(p);
+        return a + d.accrued + (d.principal * (p.prolongPct || 0)) / 100;
+      }, 0);
+    extendEl.textContent = `${L('Prolongálva (kamat + díj):', 'If extended (interest + fee):')} ${fmtAgg(extendTotal)}`;
   }
   if (_openPledgeId) {
     const dv = document.getElementById('pledge-detail-view');
