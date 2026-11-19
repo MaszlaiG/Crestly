@@ -205,6 +205,8 @@ const I18N_HU_EN = {
   'Aranytétel(ek) — fedezet (több is választható)': 'Gold item(s) — collateral (multiple allowed)',
   'Zálogjegy sorszáma': 'Pawn ticket number',
   'Kezelési költség (%)': 'Handling fee (%)',
+  'Prolongálási díj (%)': 'Extension fee (%)',
+  'Prolongálási díj: ': 'Extension fee: ',
   'Kölcsön összeg (Ft)': 'Loan amount (HUF)',
   'Zálogba adás dátuma': 'Pledge date',
   'Kamat (% / év)': 'Interest (% / year)',
@@ -220,6 +222,7 @@ const I18N_HU_EN = {
   'Kiváltás rögzítése': 'Record redemption',
   'Zálog szerkesztése': 'Edit pledge',
   'Kölcsön díja': 'Loan fee',
+  'Prolongálási díj': 'Extension fee',
   'Kiváltási összeg': 'Redemption amount',
   'Hitel Nyilvántartás': 'Loan Register',
   '+ Hitel rögzítése': '+ Record loan',
@@ -3753,6 +3756,9 @@ function updatePledgeNet() {
   if (principal) {
     const fee = (principal * feePct) / 100;
     info.textContent = `${L('Kézhez kapott:', 'Amount received:')} ${fmt(principal - fee)} (${L('kölcsön', 'loan')} ${fmt(principal)} − ${L('kezelési', 'handling')} ${feePct}% = ${fmt(fee)})`;
+    const pPct = parseFloat((document.getElementById('pl-prolong') || {}).value) || 0;
+    if (pPct)
+      info.textContent += ` · ${L('Prolongálás:', 'Extension:')} ${pPct}% = ${fmt((principal * pPct) / 100)}`;
   } else {
     info.textContent = '';
   }
@@ -3760,7 +3766,7 @@ function updatePledgeNet() {
 let pledgeEditId = null;
 function openPledgeAdd() {
   pledgeEditId = null;
-  ['pl-principal', 'pl-fee', 'pl-rate', 'pl-thm', 'pl-end', 'pl-ticket'].forEach((id) => {
+  ['pl-principal', 'pl-fee', 'pl-rate', 'pl-thm', 'pl-prolong', 'pl-end', 'pl-ticket'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -3796,6 +3802,7 @@ function openPledgeEdit(id) {
   setV('pl-term', p.days);
   setV('pl-rate', p.rate);
   setV('pl-thm', p.thm);
+  setV('pl-prolong', p.prolongPct);
   const gsel = document.getElementById('pl-gold-wrap');
   if (gsel) gsel.style.display = 'none';
   const t = document.getElementById('pledge-modal-title');
@@ -3814,6 +3821,7 @@ function addPledge() {
   const days = parseInt(document.getElementById('pl-term').value) || 0;
   const rate = parseFloat(document.getElementById('pl-rate').value) || 0;
   const thm = parseFloat(document.getElementById('pl-thm').value) || 0;
+  const prolongPct = parseFloat(document.getElementById('pl-prolong').value) || 0;
   if (!principal || !days) return;
   const endD = pledgeAddDays(start, days - 1);
   const end = endD ? toLocalDateStr(endD) : '';
@@ -3828,6 +3836,7 @@ function addPledge() {
         days,
         rate,
         thm,
+        prolongPct,
         end
       });
   } else {
@@ -3846,12 +3855,13 @@ function addPledge() {
       days,
       rate,
       thm,
+      prolongPct,
       end
     });
   }
   save();
   pledgeEditId = null;
-  ['pl-principal', 'pl-fee', 'pl-rate', 'pl-thm', 'pl-end', 'pl-ticket'].forEach((id) => {
+  ['pl-principal', 'pl-fee', 'pl-rate', 'pl-thm', 'pl-prolong', 'pl-end', 'pl-ticket'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -3887,7 +3897,8 @@ function openRedeemModal(id) {
   document.getElementById('redeem-info').innerHTML =
     `<strong style="color:var(--text);font-size:14px">${names.join(', ') || '—'}</strong><br>` +
     `Jelenlegi tartozás: <strong style="color:var(--red)">${fmt(d.currentDebt)}</strong> &nbsp;|&nbsp; ` +
-    `Kiváltás lejáratkor: <strong>${fmt(d.totalRepay)}</strong>`;
+    `Kiváltás lejáratkor: <strong>${fmt(d.totalRepay)}</strong>` +
+    (p.prolongPct ? `<br>Prolongálás lejáratkor: <strong>${p.prolongPct}% (${fmt((d.principal * p.prolongPct) / 100)})</strong>` : '');
   document.getElementById('redeem-date').value = now();
   const amtEl = document.getElementById('redeem-amount');
   amtEl.value = Math.round(d.currentDebt).toLocaleString('hu-HU');
@@ -4056,6 +4067,7 @@ function buildPledgeDetailHTML(p) {
         <div><span style="color:var(--muted)">Kezelési költség: </span><strong class="red">${d.feePct}% (${fmt(d.fee)})</strong></div>
         <div><span style="color:var(--muted)">Kamat: </span><strong>${p.rate}% / év</strong></div>
         <div><span style="color:var(--muted)">THM: </span><strong>${p.thm ? p.thm + '%' : '—'}</strong></div>
+        <div><span style="color:var(--muted)">Prolongálási díj: </span><strong class="yellow">${p.prolongPct ? p.prolongPct + '% (' + fmt((d.principal * p.prolongPct) / 100) + ')' : '—'}</strong></div>
         <div><span style="color:var(--muted)">Futamidő: </span><strong>${d.termLabel}</strong></div>
         <div><span style="color:var(--muted)">Eddigi kamat: </span><strong class="yellow">${fmt(d.accrued)}</strong></div>
         <div><span style="color:var(--muted)">Teljes kamat (lejáratig): </span><strong class="yellow">${fmt(d.totalInterest)}</strong></div>
@@ -4163,6 +4175,7 @@ function renderPledges() {
           <div><span style="color:var(--muted)">Kezelési költség: </span><strong class="red">${d.feePct}% (${fmt(d.fee)})</strong></div>
           <div><span style="color:var(--muted)">Kamat: </span><strong>${p.rate}% / év</strong></div>
           <div><span style="color:var(--muted)">THM: </span><strong>${p.thm ? p.thm + '%' : '—'}</strong></div>
+          <div><span style="color:var(--muted)">Prolongálási díj: </span><strong class="yellow">${p.prolongPct ? p.prolongPct + '% (' + fmt((d.principal * p.prolongPct) / 100) + ')' : '—'}</strong></div>
           <div><span style="color:var(--muted)">Futamidő: </span><strong>${d.termLabel}</strong></div>
           <div><span style="color:var(--muted)">Eddigi kamat: </span><strong class="yellow">${fmt(d.accrued)}</strong></div>
           <div><span style="color:var(--muted)">Teljes kamat (lejáratig): </span><strong class="yellow">${fmt(d.totalInterest)}</strong></div>
@@ -4189,6 +4202,15 @@ function renderPledges() {
   feeEl.className = 'stat-value ' + (feeTotal < 0 ? 'red' : 'green');
   const feeSubEl = document.getElementById('pl-sum-fee-sofar');
   if (feeSubEl) feeSubEl.textContent = `${L('Eddig:', 'So far:')} ${fmtAgg(feeSoFar)}`;
+  const prolongEl = document.getElementById('pl-sum-prolong');
+  if (prolongEl) {
+    const prolongTotal = state.pledges
+      .filter((p) => !p.redeemed && p.prolongPct)
+      .reduce((a, p) => a + (calcPledgeDebt(p).principal * p.prolongPct) / 100, 0);
+    prolongEl.textContent = prolongTotal
+      ? `${L('Prolongálás:', 'Extension:')} ${fmtAgg(prolongTotal)}`
+      : '';
+  }
   if (_openPledgeId) {
     const dv = document.getElementById('pledge-detail-view');
     if (dv && dv.style.display !== 'none') {
@@ -5352,6 +5374,12 @@ function renderWatch() {
           ['P&L', plStr, pl >= 0 ? 'green' : 'red'],
           ['Kölcsön díja', `${fmtAgg(fee)} (${feePct.toFixed(1)}%)`, 'red']
         ];
+        if (pledge.prolongPct)
+          rows.push([
+            'Prolongálási díj',
+            `${fmtAgg(pledge.prolongFee)} (${pledge.prolongPct}%)`,
+            'yellow'
+          ]);
       } else {
         rows = [
           ['Darab', darab, ''],
@@ -5414,7 +5442,9 @@ function renderWatch() {
               const d = calcPledgeDebt(grp.pledge);
               pledgeInfo = {
                 loan: d.cashReceived,
-                debt: d.currentDebt
+                debt: d.currentDebt,
+                prolongPct: grp.pledge.prolongPct || 0,
+                prolongFee: ((grp.pledge.prolongPct || 0) * d.principal) / 100
               };
             }
             return goldTile(

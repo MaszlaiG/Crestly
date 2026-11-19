@@ -381,6 +381,26 @@ main {
   grid-column: 1;
   grid-row: 2 / span 2;
 }
+#d-upcoming-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+#d-upcoming-card #quick-status {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+@media (min-width: 1181px) {
+  /* a csempe magassága a rácsból jön (cashflow kártyákkal egy sorban), a lista kitölti és görgethető */
+  .dash-span-grid > #d-upcoming-card {
+    contain: size;
+  }
+  #d-upcoming-card #quick-status {
+    max-height: none;
+  }
+}
 #d-cashflow-wrap {
   grid-column: 2;
   grid-row: 2 / span 2;
